@@ -1,9 +1,9 @@
 /*******************************************************************************
 
-    Client DMQ Consume v1 request handler.
+    Client DMQ Consume v3 request handler.
 
     Copyright:
-        Copyright (c) 2016-2017 sociomantic labs GmbH. All rights reserved.
+        Copyright (c) 2017 sociomantic labs GmbH. All rights reserved.
 
     License:
         Boost Software License Version 1.0. See LICENSE.txt for details.
@@ -12,34 +12,13 @@
 
 module dmqproto.client.request.internal.Consume;
 
-/*******************************************************************************
-
-    Imports
-
-*******************************************************************************/
-
 import ocean.transition;
-import ocean.util.log.Logger;
 
 import swarm.neo.client.RequestOnConn;
 
-import dmqproto.common.Consume;
-
 /*******************************************************************************
 
-    Module logger
-
-*******************************************************************************/
-
-private Logger log;
-static this ( )
-{
-    log = Log.lookup("dmqproto.client.request.internal.Consume");
-}
-
-/*******************************************************************************
-
-    Consume request implementation.
+    Consume v3 request implementation.
 
     Note that request structs act simply as namespaces for the collection of
     symbols required to implement a request. They are never instantiated and
@@ -61,11 +40,19 @@ static this ( )
 
 public struct Consume
 {
+    import dmqproto.common.Consume;
     import dmqproto.client.request.Consume;
     import dmqproto.common.RequestCodes;
     import swarm.neo.client.mixins.RequestCore;
+    import swarm.neo.client.mixins.AllNodesRequestCore;
+    import swarm.neo.client.mixins.BatchRequestCore;
+    import swarm.neo.client.RequestHandlers;
+    import dmqproto.client.internal.SharedResources;
 
     import ocean.io.select.protocol.generic.ErrnoIOException: IOError;
+
+    import ocean.transition;
+    mixin TypeofThis!();
 
     /***************************************************************************
 
@@ -74,205 +61,23 @@ public struct Consume
 
     ***************************************************************************/
 
-    public static scope class Controller : IController
-    {
-        import ocean.core.Enforce;
-
-        /***********************************************************************
-
-            Base mixin.
-
-        ***********************************************************************/
-
-        mixin ControllerBase;
-
-        /***********************************************************************
-
-            Custom fiber resume code, used when the request handling fiber is
-            resumed by the controller.
-
-        ***********************************************************************/
-
-        private enum ConsumeFiberResumeCode
-        {
-            ControlMessage = 3
-        }
-
-        /***********************************************************************
-
-            Tells the nodes to stop sending data to this request.
-
-            Returns:
-                false if the controller cannot be used because a control change
-                is already in progress
-
-        ***********************************************************************/
-
-        override public bool suspend ( )
-        {
-            return this.changeDesiredState(MessageType.Suspend);
-        }
-
-        /***********************************************************************
-
-            Tells the nodes to resume sending data to this request.
-
-            Returns:
-                false if the controller cannot be used because a control change
-                is already in progress
-
-        ***********************************************************************/
-
-        override public bool resume ( )
-        {
-            return this.changeDesiredState(MessageType.Resume);
-        }
-
-        /***********************************************************************
-
-            Tells the nodes to cleanly end the request.
-
-            Returns:
-                false if the controller cannot be used because a control change
-                is already in progress
-
-        ***********************************************************************/
-
-        override public bool stop ( )
-        {
-            return this.changeDesiredState(MessageType.Stop);
-        }
-
-        /***********************************************************************
-
-            Changes the desired state to that specified. Sets the desired state
-            flag and resumes any handler fibers which are suspended, passing the
-            control message flag to the fiber via the return value of suspend().
-
-            If one or more connections are not ready to change state, the
-            control change doesn not occur. A connection is ready to change the
-            request state unless the handler is currently waiting for an
-            acknowledgement message when beginning the request or changing its
-            state.
-
-            Params:
-                code = desried state
-
-            Returns:
-                true if the state change has been accepted and will be sent to
-                all active nodes, false if one or more connections is already in
-                the middle of changing state
-
-        ***********************************************************************/
-
-        private bool changeDesiredState ( MessageType code )
-        {
-            auto context = Consume.getContext(this.request_controller.context_blob);
-
-            if (context.shared_working.handlers_waiting_for_ack)
-                return false;
-
-            auto info = RequestInfo(context.request_id);
-            Notification notification;
-
-            // Set the desired state in the shared working data
-            with ( MessageType ) switch ( code )
-            {
-                case Resume:
-                    context.shared_working.desired_state =
-                        SharedWorking.DesiredState.Running;
-                    notification.resumed = info;
-                    break;
-                case Suspend:
-                    context.shared_working.desired_state =
-                        SharedWorking.DesiredState.Suspended;
-                    notification.suspended = info;
-                    break;
-                case Stop:
-                    context.shared_working.desired_state =
-                        SharedWorking.DesiredState.Stopped;
-                    notification.stopped = info;
-                    break;
-
-                default: assert(false,
-                    "Consume.Controller: Unexpected message type");
-            }
-
-            // If one or more connections are ready to send a state change
-            // message to the node, we initiate this.
-            if (context.shared_working.handlers_ready_for_state_change)
-            {
-                this.request_controller.resumeSuspendedHandlers(
-                    ConsumeFiberResumeCode.ControlMessage);
-            }
-            // If no connections are ready to send state change messages, the
-            // state change essentially occurs immediately (without the need for
-            // node contact). We just call the notifier.
-            else
-            {
-                Consume.notify(context.user_params, notification);
-            }
-
-            return true;
-        }
-    }
+    mixin BatchController!(typeof(this), IController);
 
     /***************************************************************************
 
-        Data which the request needs while it is progress. An instance of this
-        struct is stored in the request's context (which is passed to the
-        request handler).
+        Data which the request needs while it is in progress. An instance of
+        this struct is stored per connection on which the request runs and is
+        passed to the request handler.
 
     ***************************************************************************/
 
-    private static struct SharedWorking
+    private struct SharedWorking
     {
-        private enum DesiredState
-        {
-            None,
-            Running,
-            Suspended,
-            Stopped
-        }
+        /// Shared working data required for core all-nodes request behaviour.
+        AllNodesRequestSharedWorkingData all_nodes;
 
-        public DesiredState desired_state = DesiredState.Running;
-
-        /***********************************************************************
-
-            The number of handlers that are currently waiting for an
-            acknowledgement message from the node after the request was started
-            or its state changed. Using the controller to request changing the
-            request state is possible if and only if this number is 0. Whenever
-            this number is counted down to 0, the user notifier is called
-            because at that point all available nodes have acknowledged the
-            start or a state change of the request.
-
-        ***********************************************************************/
-
-        public uint handlers_waiting_for_ack;
-
-        /***********************************************************************
-
-            Flag set when the user's started notifier has been called. This is
-            needed to ensure that this notification only occurs once.
-            (Otherwise, it would be repeated if a connection died and was
-            reestablished, for example.)
-
-        ***********************************************************************/
-
-        public bool called_started_notifier;
-
-        /***********************************************************************
-
-            The number of handlers that are currently ready to send state change
-            messages to the node. A handler is not ready for state changes if
-            the connection is down or the node returned an error status code. We
-            track this state as it is required in Controller.changeDesiredState,
-            where we need to decide whether to resume waiting handlers.
-
-        ***********************************************************************/
-
-        public uint handlers_ready_for_state_change;
+        /// Data required by the BatchController
+        BatchRequestSharedWorkingData suspendable_control;
     }
 
     /***************************************************************************
@@ -283,10 +88,7 @@ public struct Consume
 
     ***************************************************************************/
 
-    private static struct Working
-    {
-        MessageType requested_control_msg = MessageType.None;
-    }
+    private struct Working { } // Dummy struct.
 
     /***************************************************************************
 
@@ -296,15 +98,15 @@ public struct Consume
 
     ***************************************************************************/
 
-    mixin RequestCore!(RequestType.AllNodes, RequestCode.Consume, 2,
-        Args, SharedWorking, Working, Notification);
+    mixin RequestCore!(RequestType.AllNodes, RequestCode.Consume, 3, Args,
+        SharedWorking, Working, Notification);
 
     /***************************************************************************
 
         Request handler. Called from RequestOnConn.runHandler().
 
         Params:
-            conn = connection event dispatcher
+            conn = request-on-conn event dispatcher
             context_blob = untyped chunk of data containing the serialized
                 context of the request which is to be handled
             working_blob = untyped chunk of data containing the serialized
@@ -315,41 +117,13 @@ public struct Consume
     public static void handler ( RequestOnConn.EventDispatcherAllNodes conn,
         void[] context_blob, void[] working_blob )
     {
-        scope h = new Handler(conn, context_blob);
+        auto context = This.getContext(context_blob);
 
-        bool reconnect;
-        do
-        {
-            reconnect = false;
-
-            try
-            {
-                h.run(h.State.EstablishingConnection);
-            }
-            // Only retry in the case of a connection error. Other errors
-            // indicate internal problems and should not be retried.
-            catch (IOError e)
-            {
-                // Reset the working data of this connection to the initial state.
-                auto working = Consume.getWorkingData(working_blob);
-                *working = Working.init;
-
-                // Notify the user of the disconnection. The user may use the
-                // controller, at this point, but as the request is not active
-                // on this connection, no special behaviour is needed.
-                Notification notification;
-                notification.node_disconnected =
-                    NodeExceptionInfo(conn.remote_address, e);
-                Consume.notify(h.context.user_params, notification);
-
-                reconnect = true;
-            }
-            finally
-            {
-                h.setNotReadyForStateChange();
-            }
-        }
-        while ( reconnect );
+        auto shared_resources = SharedResources.fromObject(
+            context.request_resources.get());
+        scope acquired_resources = shared_resources.new RequestResources;
+        scope handler = new ConsumeHandler(conn, context, acquired_resources);
+        handler.run();
     }
 
     /***************************************************************************
@@ -378,574 +152,596 @@ public struct Consume
 
 /*******************************************************************************
 
-    Consume handler class instantiated inside the main handler() function,
-    above.
+    Client Consume v3 request handler.
 
 *******************************************************************************/
 
-private scope class Handler
+private scope class ConsumeHandler
 {
-    import swarm.neo.util.StateMachine;
+    import swarm.neo.connection.RequestOnConnBase;
+    import swarm.neo.client.mixins.AllNodesRequestCore;
+    import swarm.neo.client.mixins.BatchRequestCore;
+    import swarm.neo.request.RequestEventDispatcher;
+    import swarm.neo.util.MessageFiber;
+
+    import dmqproto.common.Consume;
     import dmqproto.client.request.Consume;
-    import swarm.neo.request.Command : StatusCode;
-    import dmqproto.common.RequestCodes;
-    import swarm.neo.util.StateMachine;
+    import dmqproto.client.internal.SharedResources;
 
-    /***************************************************************************
+    alias Consume.BatchRequestSharedWorkingData.Signal ControllerSignal;
 
-        Mixin core of state machine.
-
-    ***************************************************************************/
-
-    mixin(genStateMachine([
-        "EstablishingConnection",
-        "Initialising",
-        "Receiving",
-        "RequestingStateChange"
-    ]));
-
-    /***************************************************************************
-
-        Event dispatcher for this connection.
-
-    ***************************************************************************/
-
+    /// Request-on-conn event dispatcher.
     private RequestOnConn.EventDispatcherAllNodes conn;
 
-    /***************************************************************************
+    /// Request context.
+    private Consume.Context* context;
 
-        Deserialized request context.
+    /// Request resource acquirer.
+    private SharedResources.RequestResources resources;
 
-    ***************************************************************************/
-
-    public Consume.Context* context;
-
-    /***************************************************************************
-
-        True while this handler can send a state change message to the node.
-        The actual purpose of this flag is for `setNotReadyForStateChange()` to
-        tell whether `context.shared_working.handlers_ready_for_state_change`
-        was already decremented.
-
-    ***************************************************************************/
-
-    private bool ready_for_state_change;
+    /// Request event dispatcher.
+    private RequestEventDispatcher* request_event_dispatcher;
 
     /***************************************************************************
 
         Constructor.
 
         Params:
-            conn = Event dispatcher for this connection
-            context_blob = serialized request context
+            conn = request-on-conn event dispatcher to communicate with node
+            context = deserialised request context
+            resources = request resource acquirer
 
     ***************************************************************************/
 
     public this ( RequestOnConn.EventDispatcherAllNodes conn,
-                  void[] context_blob )
+        Consume.Context* context, SharedResources.RequestResources resources )
     {
         this.conn = conn;
-        this.context = Consume.getContext(context_blob);
+        this.context = context;
+        this.resources = resources;
+        this.request_event_dispatcher = resources.request_event_dispatcher;
     }
 
     /***************************************************************************
 
-        Waits for the connection to be established if it is down.
-
-        Next state:
-            - Initialising (by default)
-            - Exit if the desired state becomes Stopped, while connection is in
-              progress.
-
-        Returns:
-            next state
+        Main request handling entry point.
 
     ***************************************************************************/
 
-    private State stateEstablishingConnection ( )
+    public void run ( )
     {
-        while (true)
+        auto initialiser = createAllNodesRequestInitialiser!(Consume)(
+            this.conn, this.context, &this.fillPayload, &this.handleStatusCode);
+        auto request = createAllNodesRequest!(Consume)(this.conn, this.context,
+            &this.connect, &this.disconnected, initialiser, &this.handle);
+        request.run();
+    }
+
+    /***************************************************************************
+
+        Connect policy, called from AllNodesRequest template to ensure the
+        connection to the node is up.
+
+        Returns:
+            true to continue handling the request; false to abort
+
+    ***************************************************************************/
+
+    private bool connect ( )
+    {
+        return batchRequestConnector(this.conn);
+    }
+
+    /***************************************************************************
+
+        Disconnected policy, called from AllNodesRequest template when an I/O
+        error occurs on the connection.
+
+        Params:
+            e = exception indicating error which occurred on the connection
+
+    ***************************************************************************/
+
+    private void disconnected ( Exception e )
+    {
+        // Notify the user of the disconnection. The user may use the
+        // controller, at this point, but as the request is not active
+        // on this connection, no special behaviour is needed.
+        Consume.Notification notification;
+        notification.node_disconnected =
+            NodeExceptionInfo(this.conn.remote_address, e);
+        Consume.notify(this.context.user_params, notification);
+    }
+
+    /***************************************************************************
+
+        FillPayload policy, called from AllNodesRequestInitialiser template
+        to add request-specific data to the initial message payload send to the
+        node to begin the request.
+
+        Params:
+            payload = message payload to be filled
+
+    ***************************************************************************/
+
+    private void fillPayload ( RequestOnConnBase.EventDispatcher.Payload payload )
+    {
+        payload.addArray(this.context.user_params.args.channel);
+        payload.addArray(this.context.user_params.args.subscriber);
+    }
+
+    /***************************************************************************
+
+        HandleStatusCode policy, called from AllNodesRequestInitialiser
+        template to decide how to handle the status code received from the node.
+
+        Params:
+            status = status code received from the node in response to the
+                initial message
+
+        Returns:
+            true to continue handling the request (OK status); false to abort
+            (error status)
+
+    ***************************************************************************/
+
+    private bool handleStatusCode ( ubyte status )
+    {
+        auto consume_status = cast(RequestStatusCode)status;
+
+        if ( Consume.handleGlobalStatusCodes(consume_status,
+            this.context, this.conn.remote_address) )
         {
-            switch (this.conn.waitForReconnect())
-            {
-                case conn.FiberResumeCodeReconnected:
-                case 0: // The connection is already up
-                    return State.Initialising;
-
-                case Consume.Controller.ConsumeFiberResumeCode.ControlMessage:
-                    if (this.context.shared_working.desired_state ==
-                        this.context.shared_working.desired_state.Stopped)
-                        // The user requested to stop this request, so we don't
-                        // need to wait for a reconnection any more.
-                        return State.Exit;
-                    else
-                        break;
-
-                default:
-                    assert(false,
-                        typeof(this).stringof ~ ".stateWaitingForReconnect: " ~
-                        "Unexpected fiber resume code when reconnecting");
-            }
+            return false; // Global code, e.g. request/version not supported
         }
-    }
 
-    /***************************************************************************
-
-        Sends the request code, version, channel, etc. to the node to begin the
-        request, then receives the status code from the node (unless the desired
-        state is Stopped; nothing is done in that case).
-
-        Next state:
-            - Receiving (by default)
-            - RequestingStateChange if the user changed the state in the
-              notifier
-            - Exit if the desired state is Stopped
-
-        Returns:
-            next state
-
-    ***************************************************************************/
-
-    private State stateInitialising ( )
-    in
-    {
-        assert(!this.ready_for_state_change);
-    }
-    out (state)
-    {
-        if (state != state.Exit)
-            assert(this.ready_for_state_change);
-        else
-            assert(!this.ready_for_state_change);
-    }
-    body
-    {
-        // Figure out what starting state to tell the node to begin handling the
-        // request in.
-        StartState start_state;
-        with (this.context.shared_working) switch (desired_state)
+        // Consume-specific codes
+        switch (consume_status)
         {
-            case desired_state.Running:
-                start_state = start_state.Running;
-                break;
+            case consume_status.Started:
+                // Expected "request started" code
+                return true;
 
-            case desired_state.Suspended:
-                start_state = start_state.Suspended;
-                break;
-
-            case desired_state.Stopped:
-                return State.Exit;
-
+            // Treat unknown codes as internal errors.
+            case consume_status.Error:
             default:
-                assert(false, typeof(this).stringof ~ ".stateInitialising: invalid desired state");
+                // The node returned an error code. Notify the user and
+                // end the request.
+                Consume.Notification n;
+                n.node_error = NodeInfo(conn.remote_address);
+                Consume.notify(this.context.user_params, n);
+                return false;
         }
 
-        // Memorize the state that will be sent to the node in order to detect a
-        // state change in the user's notifier.
-        auto last_state = this.context.shared_working.desired_state;
-
-        try
-        {
-            // stateWaitingForReconnect should guarantee we're already connected
-            assert(this.conn.waitForReconnect() == 0);
-
-            // We know that the connection is up, so from now on we count this
-            // request among those which the started notification depends on.
-            this.context.shared_working.handlers_waiting_for_ack++;
-
-            // Send request info to node
-            this.conn.send(
-                ( conn.Payload payload )
-                {
-                    payload.add(Consume.cmd.code);
-                    payload.add(Consume.cmd.ver);
-                    payload.addArray(this.context.user_params.args.channel);
-                    payload.addArray(this.context.user_params.args.subscriber);
-                    payload.add(start_state);
-                }
-            );
-
-            // Receive status from node and stop the request if not Ok
-            auto status = conn.receiveValue!(StatusCode)();
-            if ( !Consume.handleGlobalStatusCodes(status, context,
-                conn.remote_address) )
-            {
-                switch ( status )
-                {
-                    case RequestStatusCode.Started:
-                        break;
-
-                    case RequestStatusCode.Error:
-                        // The node returned an error code. Notify the user and
-                        // end the request on this connection.
-                        Notification n;
-                        n.node_error = NodeInfo(this.conn.remote_address);
-                        Consume.notify(this.context.user_params, n);
-                        return State.Exit;
-
-                default:
-                    log.warn("Received unknown status code {} from node in "
-                        ~ "response to Consume request. Treating as Error.",
-                        status);
-                    goto case RequestStatusCode.Error;
-                }
-            }
-        }
-        finally
-        {
-            assert(this.context.shared_working.handlers_waiting_for_ack);
-            --this.context.shared_working.handlers_waiting_for_ack;
-        }
-
-        // Now we're ready to receive records from the node or to handle state
-        // change requests from the user via the controller.
-        this.ready_for_state_change = true;
-        this.context.shared_working.handlers_ready_for_state_change++;
-
-        // Notify the user when all connections are running.
-        if (!this.context.shared_working.called_started_notifier &&
-            !this.context.shared_working.handlers_waiting_for_ack)
-        {
-            this.context.shared_working.called_started_notifier = true;
-            Notification notification;
-            notification.started = RequestInfo(this.context.request_id);
-            Consume.notify(this.context.user_params, notification);
-        }
-
-        // After successfully starting the request, the notifier delegate is
-        // called. The user may use the controller, at this point, so we need to
-        // check for newly requested state changes, i.e. if desired_state
-        // changed.
-        return (last_state == this.context.shared_working.desired_state)
-            ? State.Receiving
-            : State.RequestingStateChange;
+        assert(false);
     }
 
     /***************************************************************************
 
-        Default running state. Receives one record message from the node and
-        passes it to the user's notifier delegate.
-
-        Next state:
-            - again Receiving (by default)
-            - RequestingStateChange if the user changed the state
-
-        Returns:
-            next state
+        Handler policy, called from AllNodesRequest template to run the
+        request's main handling logic.
 
     ***************************************************************************/
 
-    private State stateReceiving ( )
+    private void handle ( )
     {
-        // Inside handleMessage(), the notifier delegate is called. The
-        // user may use the controller, at this point, so we need to check
-        // for newly requested state changes, i.e. if desired_state changed.
-        auto last_state = this.context.shared_working.desired_state;
-        MessageType received_msg_type;
-        auto resume_code = this.conn.receiveAndHandleEvents(
-            ( in void[] received )
-            {
-                received_msg_type = this.handleMessage(received);
-            }
-        );
+        scope record_stream = this.new RecordStream;
+        scope reader = this.new Reader(record_stream);
+        scope controller = this.new Controller(record_stream);
 
-        if ( resume_code < 0 )
+        this.request_event_dispatcher.eventLoop(this.conn);
+
+        with (record_stream.fiber)  assert(state == state.TERM);
+        with (reader.fiber)         assert(state == state.TERM);
+        with (controller.fiber)     assert(state == state.TERM);
+    }
+
+    /***************************************************************************
+
+        Codes for signals sent across the fibers.
+
+    ***************************************************************************/
+
+    enum FiberSignal: ubyte
+    {
+        /// Resumes the `RecordStream` fiber.
+        ResumeRecordStream = ControllerSignal.max + 1,
+        /// Tells the `Controller` to terminate.
+        StopController
+    }
+
+    /***************************************************************************
+
+        The fiber that waits for a batch of records to arrive and passes it to
+        the user, then sends the `Continue` message to the node, in a loop.
+        Handles suspending the request through the controller, for resuming call
+        `resume`. Calling `stop` makes this routine terminate after all
+        remaining records have been passed to the user.
+
+    ***************************************************************************/
+
+    private class RecordStream
+    {
+        /// The acquired buffer to store a batch of records.
+        private Const!(void)[]* batch_buffer;
+
+        /// Slices the records in *batch_buffer that haven't been processed yet.
+        private Const!(void)[] remaining_batch = null;
+
+        /// The fiber.
+        private MessageFiber fiber;
+
+        /// Tells if the fiber is suspended, and if yes, what it is waiting for.
+        enum FiberSuspended: uint
         {
-            switch (received_msg_type)
+            No,
+            WaitingForRecords,
+            RequestSuspended
+        }
+
+        /// Ditto
+        private FiberSuspended fiber_suspended;
+
+        /***********************************************************************
+
+            If true, causes the fiber to exit after processing remaining records
+            in the batch. Set if the stop method is called.
+
+        ***********************************************************************/
+
+        private bool stopped = false;
+
+        /// Token passed to fiber suspend/resume calls.
+        private static MessageFiber.Token token =
+            MessageFiber.Token(typeof(this).stringof);
+
+        /// Constructor, starts the fiber.
+        private this ( )
+        {
+            this.batch_buffer = cast(Const!(void)[]*)this.outer.resources.getBuffer();
+            this.fiber = this.outer.resources.getFiber(&this.fiberMethod);
+            this.fiber.start();
+        }
+
+        /***********************************************************************
+
+            Adds a batch of records to be passed to the user notifier and
+            resumes the fiber if it is waiting for more records. Called by the
+            `Reader` when a `Records` message from the node has arrived.
+
+            Params:
+                record_batch = the batch of records to add
+
+        ***********************************************************************/
+
+        public void addRecords ( in void[] record_batch )
+        {
+            // Append record_batch to *this.batch_buffer, which may or may not
+            // be empty.
+
+            if (!(*this.batch_buffer).length)
+                enableStomping(*this.batch_buffer);
+
+            // Append record_batch, then set this.remaining_batch to reference
+            // the remaining records. To avoid a dangling slice if
+            // *this.batch_buffer is relocated, set this.remaining_batch to null
+            // first.
+            size_t n_processed = (*this.batch_buffer).length - this.remaining_batch.length;
+            this.remaining_batch = null;
+            (*this.batch_buffer) ~= record_batch;
+            this.remaining_batch = (*this.batch_buffer)[n_processed .. $];
+
+            if (this.fiber_suspended == fiber_suspended.WaitingForRecords)
+                this.resumeFiber();
+        }
+
+        /***********************************************************************
+
+            Resumes passing records to the user. Called by `Controller` when the
+            user resumes the request through the controller.
+
+        ***********************************************************************/
+
+        public void resume ( )
+        {
+            if (this.fiber_suspended == fiber_suspended.RequestSuspended)
+                this.resumeFiber();
+        }
+
+        /***********************************************************************
+
+            Requests the fiber to terminate when all remaining records have been
+            passed to the user. Called when a `Stopped` message from the node
+            has arrived.
+
+        ***********************************************************************/
+
+        public void stop ( )
+        {
+            this.stopped = true;
+            if (this.fiber_suspended == fiber_suspended.WaitingForRecords)
+                this.resumeFiber();
+        }
+
+        /***********************************************************************
+
+            Waits for a batch of records to be fed to it by the `Reader` and
+            passes it to the user, then sends the `Continue` message to the
+            node, in a loop. Handles suspending the request through the
+            controller, for resuming call `resume`. Calling `stop` makes this
+            routine terminate after all remaining records have been passed to
+            the user.
+
+        ***********************************************************************/
+
+        private void fiberMethod ( )
+        {
+            while (this.waitForRecords())
             {
-                case received_msg_type.Record:
-                    // The received record has been sent to the user (see
-                    // handleMessage())
+                for (uint yield_count = 0; this.remaining_batch.length; yield_count++)
+                {
+                    if (yield_count >= 10) // yield every 10th record
+                    {
+                        yield_count = 0;
+                        this.outer.request_event_dispatcher.yield(this.fiber);
+                    }
+
+                    if (this.outer.context.shared_working.suspendable_control.suspended)
+                    {
+                        yield_count = 0;
+                        this.suspendFiber(FiberSuspended.RequestSuspended);
+                    }
+
+                    this.passRecordToUser(
+                        this.outer.conn.message_parser.getArray
+                        !(Const!(void))(this.remaining_batch)
+                    );
+                }
+
+                this.remaining_batch = null;
+                (*this.batch_buffer).length = 0;
+
+                if (this.stopped)
                     break;
 
-                case received_msg_type.ChannelRemoved:
-                    Notification notification;
-                    notification.channel_removed =
-                        NodeInfo(this.conn.remote_address);
-                    Consume.notify(this.context.user_params, notification);
-                    return State.Exit;
-
-                default:
-                    throw this.conn.shutdownWithProtocolError(
-                        "Expected message type Record or ChannelRemoved");
+                this.outer.request_event_dispatcher.send(
+                    this.fiber,
+                    (conn.Payload payload)
+                    {
+                        payload.addConstant(MessageType_v3.Continue);
+                    }
+                );
             }
+
+            this.outer.request_event_dispatcher.signal(this.outer.conn,
+                FiberSignal.StopController);
         }
 
-        return (last_state == this.context.shared_working.desired_state)
-            ? State.Receiving
-            : State.RequestingStateChange;
+        /***********************************************************************
+
+            Suspends the fiber to be resumed by `addRecords` or `stop`.
+
+            Returns:
+                true if the fiber was resumed by `addRecords` or false if
+                resumed by `stop`.
+
+        ***********************************************************************/
+
+        private bool waitForRecords ( )
+        {
+            this.suspendFiber(FiberSuspended.WaitingForRecords);
+            return !this.stopped;
+        }
+
+        /***********************************************************************
+
+            Calls the user notifier to pass `record` to the user. Handles a
+            request state change (i.e. stopping the request) if the user uses
+            the controller in the notifier.
+
+            Params:
+                record = the record to pass to the user
+
+        ***********************************************************************/
+
+        private void passRecordToUser ( in void[] record )
+        {
+            bool initially_stopped =
+                this.outer.context.shared_working.suspendable_control.stopped;
+
+            Notification notification;
+            notification.received = RequestDataInfo(this.outer.context.request_id, record);
+            Consume.notify(this.outer.context.user_params, notification);
+
+            if (!initially_stopped &&
+                this.outer.context.shared_working.suspendable_control.stopped
+            )
+                this.outer.request_event_dispatcher.signal(this.outer.conn,
+                    ControllerSignal.Stop);
+        }
+
+        /***********************************************************************
+
+            Suspends the fiber, waiting for `FiberSignal.ResumeRecordStream`.
+            `why` specifies the current state of the fiber method and determins
+            which of the public methods should raise that signal.
+
+            Params:
+                why = the event on which the fiber method needs to be resumed
+
+        ***********************************************************************/
+
+        private void suspendFiber ( FiberSuspended why )
+        {
+            this.fiber_suspended = why;
+            try
+                this.outer.request_event_dispatcher.nextEvent(this.fiber,
+                    Signal(FiberSignal.ResumeRecordStream));
+            finally
+                this.fiber_suspended = fiber_suspended.No;
+        }
+
+        /***********************************************************************
+
+            Raises `FiberSignal.ResumeRecordStream` to resume the fiber.
+
+        ***********************************************************************/
+
+        private void resumeFiber ( )
+        {
+            this.outer.request_event_dispatcher.signal(this.outer.conn,
+                FiberSignal.ResumeRecordStream);
+        }
     }
 
     /***************************************************************************
 
-        Sends a request state change message to the node and waits for the
-        acknowledgement, handling records arriving in the mean time, as normal.
-
-        If the node connection breaks while sending the state change message or
-        receiving the acknowledgement, the state change was successful because
-        the request will be restarted with the requested state.
-
-        Next state:
-            - Receiving by default, i.e. if the desired state is Running or
-              Suspended
-            - Exit if the desired state is Stopped
-            - again RequestingStateChange if the user changed the state in the
-              notifier
-
-        Returns:
-            next state
+        The fiber that reads messages from the node and notifies `RecordStream`.
 
     ***************************************************************************/
 
-    private State stateRequestingStateChange ( )
+    private class Reader
     {
-        // Based on the desired state, decide which control message to send to
-        // the node and which notification type to use.
-        MessageType control_msg;
-        Notification notification;
-        this.stateChangeMsgAndNotification(control_msg, notification);
+        /// The fiber.
+        private MessageFiber fiber;
 
-        this.context.shared_working.handlers_waiting_for_ack++;
+        /// The `RecordStream` to notify when a message has arrived.
+        private RecordStream record_stream;
 
-        // Memorize the state that will be sent to the node in order to detect a
-        // state change in the user's notifier.
-        auto signaled_state = this.context.shared_working.desired_state;
+        /***********************************************************************
 
-        try
+            Constructor, starts the fiber.
+
+            Params:
+                record_stream = the `RecordStream` to notify when a message has
+                    arrived
+
+        ***********************************************************************/
+
+        private this ( RecordStream record_stream )
         {
-            // If throwing, set this request not ready for a state change
-            // *before* calling the notifier in the `finally` clause, where
-            // the user may request a state change.
-            scope (failure) this.setNotReadyForStateChange();
+            this.record_stream = record_stream;
+            this.fiber = this.outer.resources.getFiber(&this.fiberMethod);
+            this.fiber.start();
+        }
 
-            // Send the control message to the node and handle incoming messages.
+        /***********************************************************************
+
+            Reads messages from the node and notifies `record_strem` by calling
+            its respective methods when a `Records` or `Stopped` message has
+            arrived. Quits when a `Stopped` message has arrived because
+            `Stopped` is the last message from the node.
+
+        ***********************************************************************/
+
+        private void fiberMethod ( )
+        {
             while (true)
             {
-                bool send_interrupted;
-                MessageType received_msg_type;
-
-                // Though the user's notifier delegate may be called at this point,
-                // we do not check for state changes as the controller enforces that
-                // a state change may not be requested while the last is in progress.
-                this.conn.sendReceive(
-                    ( in void[] received )
-                    {
-                        send_interrupted = true;
-                        received_msg_type = this.handleMessage(received);
-                    },
-                    ( conn.Payload payload )
-                    {
-                        payload.add(control_msg);
-                    }
+                auto msg = this.outer.request_event_dispatcher.receive(
+                    this.fiber,
+                    Message(MessageType_v3.Records),
+                    Message(MessageType_v3.Stopped),
+                    Message(MessageType_v3.ChannelRemoved)
                 );
 
-                if ( !send_interrupted ) // The control message was sent
-                    break;
-
-                // Sending the control message was interrupted by a received
-                // message
-                switch (received_msg_type)
+                switch (msg.type)
                 {
-                    case received_msg_type.Record:
-                        // The received record has been sent to the user (see
-                        // handleMessage())
+                    case MessageType_v3.Records:
+                        Const!(void)[] received_record_batch;
+                        this.outer.conn.message_parser.parseBody(
+                            msg.payload, received_record_batch
+                        );
+                        this.record_stream.addRecords(received_record_batch);
                         break;
 
-                    case received_msg_type.ChannelRemoved:
-                        notification.channel_removed =
-                            NodeInfo(this.conn.remote_address);
-                        Consume.notify(this.context.user_params, notification);
-                        return State.Exit;
+                    case MessageType_v3.Stopped:
+                        this.record_stream.stop();
+                        return;
 
-                    case received_msg_type.Ack:
-                    default:
-                        throw this.conn.shutdownWithProtocolError(
-                            "Expected message type Record or ChannelRemoved");
-                }
-            }
-
-            // Flush the connection to ensure the control message is promptly
-            // sent.
-            this.conn.flush();
-
-            // Receive the Ack message while handling incoming record messages.
-            WaitForAck: while (true)
-            {
-                MessageType received_msg_type;
-                this.conn.receive(
-                    ( in void[] received )
-                    {
-                        received_msg_type = this.handleMessage(received);
-                    }
-                );
-
-                switch (received_msg_type)
-                {
-                    case received_msg_type.Ack:
-                        break WaitForAck;
-
-                    case received_msg_type.Record:
-                        // Continue receiving until an Ack message arrives.
+                    case MessageType_v3.ChannelRemoved:
+                        // TODO
                         break;
 
-                    case received_msg_type.ChannelRemoved:
-                        notification.channel_removed =
-                            NodeInfo(this.conn.remote_address);
-                        Consume.notify(this.context.user_params, notification);
-                        return State.Exit;
-
                     default:
-                        throw this.conn.shutdownWithProtocolError(
-                            "Expected message type Ack, Record, or ChannelRemoved");
+                        assert(false);
                 }
             }
         }
-        finally
+    }
+
+    /***************************************************************************
+
+        The fiber that handles user controller signals.
+
+    ***************************************************************************/
+
+    private class Controller
+    {
+        /// The fiber.
+        private MessageFiber fiber;
+
+        /// The `RecordStream` to notify when the request is resumed.
+        private RecordStream record_stream;
+
+        /***********************************************************************
+
+            Constructor, starts the fiber.
+
+            Params:
+                record_stream = the `RecordStream` to notify when the request is
+                    resumed
+
+        ***********************************************************************/
+
+        private this ( RecordStream record_stream )
         {
-            assert(this.context.shared_working.handlers_waiting_for_ack);
-            if (!--this.context.shared_working.handlers_waiting_for_ack)
+            this.record_stream = record_stream;
+            this.fiber = this.outer.resources.getFiber(&this.fiberMethod);
+            this.fiber.start();
+        }
+
+        /***********************************************************************
+
+            Waits for controller signals and handles them. Terminates on
+            `FiberSignal.StopController`.
+
+        ***********************************************************************/
+
+        private void fiberMethod ( )
+        {
+            while (true)
             {
-                // If this was the last connection waiting for the
-                // acknowledgement, inform the user that the requested control
-                // message has taken effect.
-                // If stopped then the notification is done in
-                // Consume.all_finished_notifier so don't do it here.
-                if (notification.active != notification.active.stopped)
-                    Consume.notify(this.context.user_params, notification);
+                auto event = this.outer.request_event_dispatcher.nextEvent(
+                    this.fiber,
+                    Signal(ControllerSignal.Resume),
+                    Signal(ControllerSignal.Stop),
+                    Signal(FiberSignal.StopController)
+                );
+
+                switch (event.signal.code)
+                {
+                    case ControllerSignal.Resume:
+                        this.record_stream.resume();
+                        break;
+
+                    case ControllerSignal.Stop:
+                        this.outer.request_event_dispatcher.send(
+                            this.fiber,
+                            (conn.Payload payload)
+                            {
+                                payload.addConstant(MessageType_v3.Stop);
+                            }
+                        );
+                        break;
+
+                    case FiberSignal.StopController:
+                        return;
+
+                    default:
+                        assert(false);
+                }
             }
         }
-
-        // After successfully changing the request state, the notifier delegate
-        // is called. The user may use the controller, at this point, so we need
-        // to check for newly requested state changes and try again.
-        return (signaled_state == this.context.shared_working.desired_state)
-            ? (signaled_state == signaled_state.Stopped)
-                ? State.Exit
-                : State.Receiving
-            : State.RequestingStateChange;
-    }
-
-    /***************************************************************************
-
-        Helper function for stateRequestingStateChange(). Besed on the currently
-        desired request state, determines:
-            1. the MessageType to send to the node
-            2. the type of notification to send to the user, once the request
-               has changed state on all nodes
-
-        Params:
-            control_msg = set to the MessageType to send to the node
-            notification = set to the notification to send to the user
-
-    ***************************************************************************/
-
-    private void stateChangeMsgAndNotification ( out MessageType control_msg,
-        out Notification notification )
-    {
-        with ( this.context.shared_working ) switch ( desired_state )
-        {
-            case desired_state.Running:
-                control_msg = MessageType.Resume;
-                notification.resumed = RequestInfo(this.context.request_id);
-                break;
-
-            case desired_state.Suspended:
-                control_msg = MessageType.Suspend;
-                notification.suspended = RequestInfo(this.context.request_id);
-                break;
-
-            case desired_state.Stopped:
-                control_msg = MessageType.Stop;
-                notification.stopped = RequestInfo(this.context.request_id);
-                break;
-
-            default: assert(false, typeof(this).stringof ~
-                ".stateChangeMsgAndNotification: " ~
-                "Unexpected desired state requested");
-        }
-    }
-
-    /***************************************************************************
-
-        Helper function to handle messages received from the node. Messages
-        containing records are passed to the user's delegate receiving
-        (specified in the request params).
-
-        Params:
-            payload = raw message payload received from the node
-
-        Returns:
-            The message type.
-
-    ***************************************************************************/
-
-    private MessageType handleMessage ( Const!(void)[] payload )
-    {
-        auto msg_type = *this.conn.message_parser.getValue!(MessageType)(payload);
-
-        if (msg_type == msg_type.Record)
-        {
-            Const!(void)[] record;
-            this.conn.message_parser.parseBody(payload, record);
-            Notification notification;
-            notification.received = RequestDataInfo(context.request_id, record);
-            Consume.notify(this.context.user_params, notification);
-        }
-
-        return msg_type;
-    }
-
-    /***************************************************************************
-
-        Decrements `context.shared_working.handlers_ready_for_state_change` if
-        `this.ready_for_state_change` is true (i.e. it hasn't already been
-        decremented).
-
-    ***************************************************************************/
-
-    private void setNotReadyForStateChange ( )
-    {
-        if (this.ready_for_state_change)
-        {
-            assert(this.context.shared_working.handlers_ready_for_state_change);
-            --this.context.shared_working.handlers_ready_for_state_change;
-            this.ready_for_state_change = false;
-        }
-    }
-
-    /***************************************************************************
-
-        Debug message, printed on state change.
-
-    ***************************************************************************/
-
-    debug (ClientConsumeState):
-
-    import ocean.io.Stdout;
-
-    private void beforeState ( )
-    {
-        static char[][] machine_msg =
-        [
-            State.WaitingForReconnect: "WaitingForReconnect",
-            State.Initialising: "Initialising",
-            State.Receiving: "Receiving",
-            State.RequestingStateChange: "RequestingStateChange",
-            State.Exit: "Exit"
-        ];
-
-        alias typeof(this.context.shared_working.desired_state) DesiredState;
-
-        static char[][] request_msg =
-        [
-            DesiredState.None: "???",
-            DesiredState.Running: "Running",
-            DesiredState.Suspended: "Suspended",
-            DesiredState.Stopped: "Stopped"
-        ];
-
-        Stdout.green.formatln("Consume state: Machine = {}, Request = {}",
-            machine_msg[this.state],
-            request_msg[this.context.shared_working.desired_state]).default_colour;
     }
 }

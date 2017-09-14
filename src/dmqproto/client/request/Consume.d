@@ -122,19 +122,19 @@ public struct Args
 
 *******************************************************************************/
 
-public union NotificationUnion
+private union NotificationUnion
 {
-    /// All known nodes have either started handling the request or are not
-    /// currently connected. The request may now be suspended / resumed /
-    /// stopped, via the controller.
-    RequestInfo started;
-
     /// A value is received from a node.
     RequestDataInfo received;
 
     /// The connection to a node disconnected; the request will automatically
     /// continue after reconnection.
     NodeExceptionInfo node_disconnected;
+
+    /// All known nodes have either stopped the request (as requested by the
+    /// user, via the controller) or are not currently connected. The request is
+    /// now finished.
+    RequestInfo stopped;
 
     /// The node returned a non-OK status code. The request cannot be handled by
     /// this node.
@@ -143,19 +143,6 @@ public union NotificationUnion
     /// The request was tried on a node and failed because it is unsupported;
     /// it will be retried on any remaining nodes.
     RequestNodeUnsupportedInfo unsupported;
-
-    /// All known nodes have either suspended the request (as requested by the
-    /// user, via the controller) or are not currently connected.
-    RequestInfo suspended;
-
-    /// All known nodes have either resumed the request (as requested by the
-    /// user, via the controller) or are not currently connected.
-    RequestInfo resumed;
-
-    /// All known nodes have either stopped the request (as requested by the
-    /// user, via the controller) or are not currently connected. The request is
-    /// now finished.
-    RequestInfo stopped;
 
     /// The channel being consumed has been removed. The request is now
     /// finished for this node.
@@ -172,7 +159,7 @@ public alias SmartUnion!(NotificationUnion) Notification;
 
 /*******************************************************************************
 
-    Type of notifcation delegate.
+    Type of notification delegate.
 
 *******************************************************************************/
 
@@ -182,22 +169,18 @@ public alias void delegate ( Notification, Args ) Notifier;
 
     Request controller, accessible via the client's `control()` method.
 
-    Note that only one control change message can be "in-flight" to the nodes at
-    a time. If the controller is used when a control change message is already
-    in-flight, the method will return false. The notifier is called when a
-    requested control change is carried through.
-
 *******************************************************************************/
 
 public interface IController
 {
     /***************************************************************************
 
-        Tells the nodes to stop sending data to this request.
+        Suspends this request. While the request is suspended the node will not
+        send records, and records that have already been received will not be
+        passed to the user notifier but held back until `resume` is called.
 
         Returns:
-            false if the controller cannot be used because a control change is
-            already in progress
+            true because this controller function can always be used.
 
     ***************************************************************************/
 
@@ -205,11 +188,10 @@ public interface IController
 
     /***************************************************************************
 
-        Tells the nodes to resume sending data to this request.
+        Resumes this request.
 
         Returns:
-            false if the controller cannot be used because a control change is
-            already in progress
+            true because this controller function can always be used.
 
     ***************************************************************************/
 
@@ -218,10 +200,13 @@ public interface IController
     /***************************************************************************
 
         Tells the nodes to cleanly end the request.
+        Records that have already been received from the node will still be
+        passed to the user. In this situation it is still possible to use
+        `suspend` and `resume`.
 
         Returns:
-            false if the controller cannot be used because a control change is
-            already in progress
+            true because this controller function can always be used (it has an
+            effect only the first time it is called, though).
 
     ***************************************************************************/
 
