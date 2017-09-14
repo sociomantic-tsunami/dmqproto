@@ -287,10 +287,6 @@ unittest
             // have fields containing more information:
             with ( info.Active ) switch ( info.active )
             {
-                case started:
-                    Stdout.formatln("The request started on all nodes.");
-                    break;
-
                 case received:
                     Stdout.formatln("'{}' received from channel '{}'",
                         cast(char[])info.received.value, args.channel);
@@ -304,14 +300,6 @@ unittest
 
                 case stopped:
                     Stdout.formatln("The request stopped on all nodes.");
-                    break;
-
-                case suspended:
-                    Stdout.formatln("The request suspended on all nodes.");
-                    break;
-
-                case resumed:
-                    Stdout.formatln("The request resumed on all nodes.");
                     break;
 
                 case channel_removed:

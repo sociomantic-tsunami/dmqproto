@@ -22,6 +22,8 @@ module dmqproto.client.mixins.NeoSupport;
 
 template NeoSupport ( )
 {
+    import dmqproto.client.internal.SharedResources;
+
     /***************************************************************************
 
         Class wrapping access to all "neo" features. (When the old protocol is
@@ -655,7 +657,7 @@ template NeoSupport ( )
     private void neoInit ( cstring auth_name, ubyte[] auth_key,
         Neo.ConnectionNotifier conn_notifier )
     {
-        this.neo = new Neo(auth_name, auth_key, conn_notifier);
+        this.neo = new Neo(auth_name, auth_key, conn_notifier, new SharedResources);
         this.blocking = new TaskBlocking;
     }
 }

@@ -36,8 +36,8 @@ public enum RequestStatusCode : StatusCode
 
 /*******************************************************************************
 
-    Message type enum. Each message sent between the client and the node as part
-    of a Consume request is prepended by a type indicator.
+    Message type enum for Consume v1 and v2. Each message sent between the
+    client and the node as part of a Consume request is prepended by a type indicator.
 
 *******************************************************************************/
 
@@ -54,6 +54,21 @@ public enum MessageType : ubyte
     // Message types sent from the node to the client:
     Ack,        // Sent by the node to acknowledge one of the above messages
     Record      // Sent by the node when it sends a record value
+}
+
+/// Message type enum for Consume v3.
+public enum MessageType_v3 : ubyte
+{
+    None,            // Invalid, default value
+
+    // Message types sent from the client to the node:
+    Continue,   // Requesting the next batch of records
+    Stop,       // Requesting to cleanly end the request
+
+    // Message types sent from the node to the client:
+    Records,    // The message contains a batch of records
+    Stopped,    // Acknowledging the request has ended
+    ChannelRemoved, // The channel being consumed is removed
 }
 
 /*******************************************************************************
