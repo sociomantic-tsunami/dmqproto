@@ -1,5 +1,5 @@
 /*******************************************************************************
-    
+
     Reusable test runner class for testing any DMQ node implementation, based
     on turtle facilities. In most cases implies providing DMQ node binary name
     to runner constructor should be enough.
@@ -46,7 +46,7 @@ class DmqTestRunner : TurtleRunnerTask!(TestedAppKind.Daemon)
     /***************************************************************************
 
         Filter out console output spam from tested application
-        
+
     ***************************************************************************/
 
     override public void prepare ( )

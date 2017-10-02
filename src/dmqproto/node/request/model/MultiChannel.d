@@ -76,7 +76,7 @@ public abstract scope class MultiChannel : DmqCommand
     }
 
     /***************************************************************************
-    
+
         If protocol for derivate request needs any parameters other than
         channel name and request code, this method must be overridden to read
         and store those.

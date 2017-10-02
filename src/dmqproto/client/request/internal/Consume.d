@@ -28,7 +28,7 @@ import dmqproto.common.Consume;
 
 *******************************************************************************/
 
-static private Logger log;
+private Logger log;
 static this ( )
 {
     log = Log.lookup("dmqproto.client.request.internal.Consume");
