@@ -67,7 +67,7 @@ public class Dmq : Node!(DmqNode, "dmq")
     import dmqproto.client.legacy.DmqConst;
 
     import ocean.core.Enforce;
-    import ocean.text.convert.Format;
+    import ocean.text.convert.Formatter;
     import ocean.util.serialize.contiguous.package_;
 
     /***************************************************************************
@@ -285,7 +285,7 @@ public class Dmq : Node!(DmqNode, "dmq")
         }
         while (total_wait < timeout);
 
-        throw new TestException(Format(
+        throw new TestException(format(
             "Expected {} records in channel '{}', got only {} during {} seconds",
             count,
             channel,

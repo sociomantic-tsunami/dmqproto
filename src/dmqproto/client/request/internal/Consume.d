@@ -19,7 +19,7 @@ module dmqproto.client.request.internal.Consume;
 *******************************************************************************/
 
 import ocean.transition;
-import ocean.util.log.Log;
+import ocean.util.log.Logger;
 import dmqproto.common.Consume;
 
 /*******************************************************************************

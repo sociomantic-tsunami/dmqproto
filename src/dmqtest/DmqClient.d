@@ -20,7 +20,7 @@ module dmqtest.DmqClient;
 *******************************************************************************/
 
 import ocean.transition;
-import ocean.util.log.Log;
+import ocean.util.log.Logger;
 
 /*******************************************************************************
 
