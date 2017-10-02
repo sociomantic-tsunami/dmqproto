@@ -18,7 +18,7 @@ module dmqtest.util.Record;
 
 *******************************************************************************/
 
-import ocean.text.convert.Format;
+import ocean.text.convert.Formatter;
 
 import ocean.transition;
 
@@ -37,8 +37,5 @@ import ocean.transition;
 
 istring getRecord ( uint i )
 {
-    mstring ret;
-    Format.format(ret, "{}", i);
-    return assumeUnique(ret);
+    return format("{}", i);
 }
-

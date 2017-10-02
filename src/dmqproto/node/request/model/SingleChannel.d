@@ -24,7 +24,7 @@ import dmqproto.client.legacy.DmqConst;
 import swarm.Const : validateChannelName;
 
 import ocean.transition;
-import ocean.text.convert.Format;
+import ocean.text.convert.Formatter;
 
 /*******************************************************************************
 
@@ -167,7 +167,7 @@ public abstract scope class SingleChannel : DmqCommand
         super.description(dst);
 
         auto channel = *this.channel_buffer;
-        Format.format(dst, " on channel '{}'", channel.length ? channel : "?");
+        sformat(dst, " on channel '{}'", channel.length ? channel : "?");
         return dst;
     }
 }

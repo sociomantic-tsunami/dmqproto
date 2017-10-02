@@ -19,7 +19,7 @@ module dmqproto.client.request.internal.Pop;
 *******************************************************************************/
 
 import ocean.transition;
-import ocean.util.log.Log;
+import ocean.util.log.Logger;
 
 /*******************************************************************************
 

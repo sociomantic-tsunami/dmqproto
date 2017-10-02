@@ -25,7 +25,6 @@ import swarm.Const : validateChannelName;
 import swarm.protocol.StringListReader;
 
 import ocean.transition;
-import ocean.text.convert.Format;
 
 /*******************************************************************************
 

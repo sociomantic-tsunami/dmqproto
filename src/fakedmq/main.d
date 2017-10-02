@@ -25,7 +25,7 @@ import dmqproto.client.legacy.DmqConst;
 
 import ocean.io.select.EpollSelectDispatcher;
 
-import ocean.util.log.Log;
+import ocean.util.log.Logger;
 import ocean.util.log.AppendStderrStdout;
 import ocean.util.log.AppendConsole;
 
@@ -53,9 +53,9 @@ void main ( )
     auto epoll = new EpollSelectDispatcher;
     auto node = new DmqNode(DmqConst.NodeItem("127.0.0.1".dup, 10000), epoll);
 
-    Log("Registering the fake node");
+    Log.root.info("Registering the fake node");
     node.register(epoll);
 
-    Log("Starting infinite event loop, kill the process if not needed anymore");
+    Log.root.info("Starting infinite event loop, kill the process if not needed anymore");
     epoll.eventLoop();
 }
