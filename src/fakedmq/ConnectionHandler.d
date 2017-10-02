@@ -68,7 +68,7 @@ public class DmqConnectionHandler :
     import fakedmq.request.RemoveChannel;
 
     /***************************************************************************
-    
+
         Provides resources required by the protocol. As this is implementation
         for testing purposes it simply allocates as much stuff as necessary to
         keep code simple.
@@ -91,7 +91,7 @@ public class DmqConnectionHandler :
         struct Buffer
         {
             mstring data;
-        }   
+        }
 
         /***********************************************************************
 

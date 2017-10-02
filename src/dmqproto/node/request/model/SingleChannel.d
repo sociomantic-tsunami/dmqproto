@@ -78,7 +78,7 @@ public abstract scope class SingleChannel : DmqCommand
     }
 
     /***************************************************************************
-    
+
         If protocol for derivate request needs any parameters other than
         channel name and request code, this method must be overridden to read
         and store those.
@@ -120,7 +120,7 @@ public abstract scope class SingleChannel : DmqCommand
     /***************************************************************************
 
         Ensures that requested channel exists or can be created and in general
-        can be read from or written to. 
+        can be read from or written to.
 
         By default this is no-op method that always succeeds.
 
@@ -142,7 +142,7 @@ public abstract scope class SingleChannel : DmqCommand
         Params:
             channel_name = channel name for request that was read and validated
                 earlier
-        
+
     ***************************************************************************/
 
     abstract protected void handleChannelRequest ( cstring channel_name );

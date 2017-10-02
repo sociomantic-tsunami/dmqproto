@@ -1,5 +1,5 @@
 /*******************************************************************************
-    
+
     Provides global test client instance used from test cases to access
     the node.
 
@@ -1497,5 +1497,5 @@ class DmqClient
         ushort neo_port = port;
         neo_port++;
         this.raw_client.neo.addNode(addr, neo_port);
-    } 
+    }
 }

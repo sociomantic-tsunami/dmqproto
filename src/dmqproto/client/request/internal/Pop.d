@@ -27,7 +27,7 @@ import ocean.util.log.Log;
 
 *******************************************************************************/
 
-static private Logger log;
+private Logger log;
 static this ( )
 {
     log = Log.lookup("dmqproto.client.request.internal.Pop");

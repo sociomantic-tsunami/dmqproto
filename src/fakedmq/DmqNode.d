@@ -1,5 +1,5 @@
 /*******************************************************************************
-    
+
     Provides turtle quenode implementation, used to emulate environment
     for tested applications that work with queue node.
 
