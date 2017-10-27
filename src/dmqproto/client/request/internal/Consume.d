@@ -20,6 +20,9 @@ module dmqproto.client.request.internal.Consume;
 
 import ocean.transition;
 import ocean.util.log.Logger;
+
+import swarm.neo.client.RequestOnConn;
+
 import dmqproto.common.Consume;
 
 /*******************************************************************************
@@ -386,7 +389,6 @@ private scope class Handler
     import dmqproto.client.request.Consume;
     import swarm.neo.request.Command : StatusCode;
     import dmqproto.common.RequestCodes;
-    import swarm.neo.client.RequestOnConn;
     import swarm.neo.util.StateMachine;
 
     /***************************************************************************

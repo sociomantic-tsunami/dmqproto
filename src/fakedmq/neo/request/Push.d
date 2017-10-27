@@ -18,6 +18,7 @@ module fakedmq.neo.request.Push;
 
 *******************************************************************************/
 
+import dmqproto.node.neo.request.core.IRequestResources;
 import dmqproto.node.neo.request.Push;
 
 import fakedmq.neo.SharedResources;
