@@ -19,6 +19,7 @@ module fakedmq.neo.request.Consume;
 *******************************************************************************/
 
 import dmqproto.node.neo.request.Consume;
+import dmqproto.node.neo.request.core.IRequestResources;
 
 import fakedmq.Storage;
 import fakedmq.neo.SharedResources;

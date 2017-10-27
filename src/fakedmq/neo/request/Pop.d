@@ -18,6 +18,7 @@ module fakedmq.neo.request.Pop;
 
 *******************************************************************************/
 
+import dmqproto.node.neo.request.core.IRequestResources;
 import dmqproto.node.neo.request.Pop;
 
 import fakedmq.neo.SharedResources;
