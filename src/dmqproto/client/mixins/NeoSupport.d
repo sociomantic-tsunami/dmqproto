@@ -351,6 +351,7 @@ template NeoSupport ( )
         import swarm.neo.client.mixins.TaskBlockingCore;
 
         import ocean.core.Array : copy;
+        import ocean.task.Task;
 
         /***********************************************************************
 
