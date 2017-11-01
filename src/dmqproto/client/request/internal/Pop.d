@@ -62,6 +62,7 @@ public struct Pop
     import dmqproto.common.RequestCodes;
     import swarm.neo.client.mixins.RequestCore;
     import swarm.neo.client.RequestHandlers : IRoundRobinConnIterator;
+    import swarm.neo.request.Command;
 
     import ocean.io.select.protocol.generic.ErrnoIOException: IOError;
 
