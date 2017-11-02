@@ -173,9 +173,9 @@ public class ExtensibleDmqClient ( Plugins ... ) : DmqClient
 
     /***********************************************************************
 
-        Constructor
-
-        Adds the nodes in the config.config member to the registry.
+        Constructor with support for only the legacy protocol. Automatically
+        calls addNodes() with the node definition file specified in the Config
+        instance.
 
         Params:
             epoll = EpollSelectDispatcher instance to use
@@ -197,10 +197,12 @@ public class ExtensibleDmqClient ( Plugins ... ) : DmqClient
 
     /***************************************************************************
 
-        Constructor
+        Constructor with support for only the legacy protocol. This constructor
+        that accepts all arguments manually (i.e. not read from a config file)
+        is mostly of use in tests.
 
         Params:
-            epoll = EpollSelectorDispatcher instance to use
+            epoll = EpollSelectDispatcher instance to use
             plugin_instances = instances of Plugins
             conn_limit = maximum number of connections to each DMQ node
             queue_size = maximum size of the per-node request queue
@@ -221,12 +223,12 @@ public class ExtensibleDmqClient ( Plugins ... ) : DmqClient
 
     /***************************************************************************
 
-        Constructor with support for the neo protocol.
-
-        TODO: the other constructor will be deprecated
+        Constructor with support for the neo and legacy protocols. This
+        constructor that accepts all arguments manually (i.e. not read from
+        config files) is mostly of use in tests.
 
         Params:
-            epoll = EpollSelectorDispatcher instance to use
+            epoll = EpollSelectDispatcher instance to use
             auth_name = client name for authorisation
             auth_key = client key (password) for authorisation
             plugin_instances = instances of Plugins
@@ -278,9 +280,9 @@ public class SchedulingDmqClient : ExtensibleDmqClient!(RequestScheduler)
 
     /***********************************************************************
 
-        Constructor
-
-        Adds the nodes in the config.config member to the registry.
+        Constructor with support for only the legacy protocol. Automatically
+        calls addNodes() with the node definition file specified in the Config
+        instance.
 
         Params:
             epoll = EpollSelectDispatcher instance to use
@@ -300,10 +302,12 @@ public class SchedulingDmqClient : ExtensibleDmqClient!(RequestScheduler)
 
     /***************************************************************************
 
-        Constructor
+        Constructor with support for only the legacy protocol. This constructor
+        that accepts all arguments manually (i.e. not read from a config file)
+        is mostly of use in tests.
 
         Params:
-            epoll = EpollSelectorDispatcher instance to use
+            epoll = EpollSelectDispatcher instance to use
             conn_limit = maximum number of connections to each DMQ node
             queue_size = maximum size of the per-node request queue
             fiber_stack_size = size of connection fibers' stack (in bytes)
@@ -325,9 +329,9 @@ public class SchedulingDmqClient : ExtensibleDmqClient!(RequestScheduler)
 
     /***************************************************************************
 
-        Constructor with support for the neo protocol.
-
-        TODO: the other constructor will be deprecated
+        Constructor with support for the neo and legacy protocols. This
+        constructor that accepts all arguments manually (i.e. not read from
+        config files) is mostly of use in tests.
 
         Params:
             epoll = EpollSelectorDispatcher instance to use
@@ -415,14 +419,15 @@ public class DmqClient : IClient
 
     /***************************************************************************
 
-        Constructor -- automatically calls addNodes() with the node definition
-        file specified in the Config instance.
+        Constructor with support for only the legacy protocol. Automatically
+        calls addNodes() with the node definition file specified in the Config
+        instance.
 
         Params:
-            epoll = EpollSelectorDispatcher instance to use
+            epoll = EpollSelectDispatcher instance to use
             config = Config instance (see swarm.client.model.IClient. The
                 Config class is designed to be read from an application's
-                config.ini file via ocean.util.config.ClassFiller)
+                config.ini file via ocean.util.config.ConfigFiller)
             fiber_stack_size = size of connection fibers' stack (in bytes)
 
     ***************************************************************************/
@@ -441,12 +446,12 @@ public class DmqClient : IClient
 
     /***************************************************************************
 
-        Constructor with support for the neo protocol.
-
-        TODO: the other constructor will be deprecated
+        Constructor with support for the neo and legacy protocols. This
+        constructor that accepts all arguments manually (i.e. not read from
+        config files) is mostly of use in tests.
 
         Params:
-            epoll = select dispatcher to use
+            epoll = EpollSelectDispatcher instance to use
             auth_name = client name for authorisation
             auth_key = client key (password) for authorisation. This should be a
                 properly generated random number which only the client and the
@@ -457,10 +462,9 @@ public class DmqClient : IClient
                 succeeds or fails (including when a connection is
                 re-established). Of type:
                 void delegate ( IPAddress node_address, Exception e )
-            conn_limit  = maximum number of connections in pool
-            queue_size = size (in bytes) of per-node queue of pending requests
-            fiber_stack_size = size (in bytes) of stack of individual connection
-                fibers
+            conn_limit = maximum number of connections to each DMQ node
+            queue_size = maximum size of the per-node request queue
+            fiber_stack_size = size of connection fibers' stack (in bytes)
 
     ***************************************************************************/
 
