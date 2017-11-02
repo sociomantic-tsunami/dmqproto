@@ -607,6 +607,33 @@ template NeoSupport ( )
 
     public TaskBlocking blocking;
 
+
+    /***************************************************************************
+
+        Helper function to initialise neo components. Automatically calls
+        addNodes() with the node definition files specified in the Config
+        instance.
+
+        Params:
+            config = swarm.client.model.IClient.Config instance. (The Config
+                class is designed to be read from an application's config.ini
+                file via ocean.util.config.ConfigFiller.)
+            conn_notifier = delegate which is called when a connection attempt
+                succeeds or fails (including when a connection is
+                re-established) and when the hash-range for a node is first
+                queried. Of type:
+                void delegate ( Neo.DhtConnNotification )
+
+    ***************************************************************************/
+
+    private void neoInit ( Neo.Config config,
+        Neo.ConnectionNotifier conn_notifier )
+    {
+        this.neo = new Neo(config, conn_notifier);
+        this.blocking = new TaskBlocking;
+    }
+
+
     /***************************************************************************
 
         Helper function to initialise neo components.
