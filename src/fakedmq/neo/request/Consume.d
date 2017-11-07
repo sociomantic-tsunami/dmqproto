@@ -57,7 +57,12 @@ public void handle ( Object shared_resources, RequestOnConn connection,
             break;
 
         case 2:
-            scope rq = new ConsumeImpl_v2(resources);
+            scope rq = new ConsumeImpl_v2or3!(2)(resources);
+            rq.handle(connection, msg_payload);
+            break;
+
+        case 3:
+            scope rq = new ConsumeImpl_v2or3!(3)(resources);
             rq.handle(connection, msg_payload);
             break;
 
@@ -216,11 +221,27 @@ private scope class ConsumeImpl_v1 : ConsumeProtocol_v1, DmqListener
 
 /*******************************************************************************
 
+    Evaluates to `ConsumeProtocol_v2` or `ConsumeProtocol_v3` according to `v`
+    which should be either 2 or 3.
+
+*******************************************************************************/
+
+private template ConsumeProtocol_v2or3 ( uint v )
+{
+    static if (v == 2)
+        alias ConsumeProtocol_v2 ConsumeProtocol_v2or3;
+    else static if (v == 3)
+        alias ConsumeProtocol_v3 ConsumeProtocol_v2or3;
+}
+
+/*******************************************************************************
+
     Fake node implementation of the v2 Consume request protocol.
 
 *******************************************************************************/
 
-private scope class ConsumeImpl_v2 : ConsumeProtocol_v2, DmqListener
+private scope class ConsumeImpl_v2or3 ( uint v ) :
+    ConsumeProtocol_v2or3!(v), DmqListener
 {
     /***************************************************************************
 
@@ -328,6 +349,14 @@ private scope class ConsumeImpl_v2 : ConsumeProtocol_v2, DmqListener
             case DataReady:
                 this.dataReady();
                 break;
+
+            static if (v == 3)
+            {
+                case Flush:
+                    this.flushBatch();
+                    break;
+            }
+
             case Finish:
                 this.channelRemoved();
                 break;
