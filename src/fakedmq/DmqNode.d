@@ -56,6 +56,7 @@ public class DmqNode
     import ocean.io.select.client.model.ISelectClient : IAdvancedSelectClient;
     import ocean.net.server.connection.IConnectionHandlerInfo;
     import ocean.io.select.protocol.generic.ErrnoIOException;
+    import ocean.io.select.client.TimerEvent;
 
     import dmqproto.client.legacy.DmqConst;
     import swarm.node.connection.ConnectionHandler;
@@ -72,6 +73,14 @@ public class DmqNode
     ***************************************************************************/
 
     private bool log_errors = true;
+
+    /***************************************************************************
+
+        Timer for periodic consumer flushing
+
+    ***************************************************************************/
+
+    private TimerEvent flush_timer;
 
     /***************************************************************************
 
@@ -108,6 +117,10 @@ public class DmqNode
 
         super(node_item, neo_port, params, neo_options, backlog);
         this.error_callback = &this.onError;
+
+        this.flush_timer = new TimerEvent(&this.onFlushTimer);
+        this.flush_timer.set(1,0,1,0);
+        epoll.register(this.flush_timer);
     }
 
     /***************************************************************************
@@ -125,7 +138,7 @@ public class DmqNode
     /***************************************************************************
 
         Override of standard `stopListener` to also clean fake node consumer
-        data in global storage.
+        data in global storage and unregister the flush timer.
 
     ***************************************************************************/
 
@@ -133,6 +146,8 @@ public class DmqNode
     {
         super.stopListener(epoll);
         global_storage.dropAllConsumers();
+        this.flush_timer.set(0,0,0,0);
+        epoll.unregister(this.flush_timer);
     }
 
     /***************************************************************************
@@ -145,6 +160,21 @@ public class DmqNode
     override public void shutdown ( )
     {
         this.ignoreErrors();
+    }
+
+    /***************************************************************************
+
+        Callback for `this.flush_timer`; flushes all consumers.
+
+        Returns:
+            true to stay registered with epoll.
+
+    ***************************************************************************/
+
+    private bool onFlushTimer ( )
+    {
+        global_storage.flushAllConsumers();
+        return true;
     }
 
     /***************************************************************************
