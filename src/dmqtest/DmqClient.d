@@ -551,8 +551,6 @@ class DmqClient
             private static struct Errors
             {
                 bool stopped;
-                uint suspended;
-                uint resumed;
                 bool channel_removed;
                 bool disconnection;
                 bool node_error;
@@ -654,10 +652,6 @@ class DmqClient
 
                 enforce(!this.errors.stopped,
                     "Stopped during Consume request");
-                enforce(!this.errors.suspended,
-                    "Suspend during Consume request");
-                enforce(!this.errors.resumed,
-                    "Resume during Consume request");
                 enforce(!this.errors.channel_removed,
                     "Channel removed during Consume request");
                 enforce(!this.errors.disconnection,
@@ -703,10 +697,6 @@ class DmqClient
 
                     enforce(this.errors.stopped,
                         "Missing stop during Consume request");
-                    enforce(!this.errors.suspended,
-                        "Suspend during Consume request");
-                    enforce(!this.errors.resumed,
-                        "Resume during Consume request");
                     enforce(!this.errors.channel_removed,
                         "Channel removed during Consume request");
                     enforce(!this.errors.disconnection,
@@ -741,30 +731,6 @@ class DmqClient
                             );
                     }
                 }
-
-                // Wait until they are all suspended.
-                uint suspended;
-                do
-                {
-                    this.errors = this.errors.init;
-                    this.waiting = true;
-                    this.task = Task.getThis();
-                    this.task.suspend();
-                    this.waiting = false;
-
-
-                    enforce(!this.errors.stopped,
-                        "Stop during Consume request");
-                    enforce(!this.errors.channel_removed,
-                        "Channel removed during Consume request");
-                    enforce(!this.errors.disconnection,
-                        "Disconnection during Consume request");
-                    enforce(!this.errors.node_error,
-                        "Node error during Consume request");
-
-                    suspended += this.errors.suspended;
-                }
-                while ( suspended < this.request_ids.length );
             }
 
             /*******************************************************************
@@ -791,29 +757,6 @@ class DmqClient
                             );
                     }
                 }
-
-                // Wait until they are all suspended.
-                uint resumed;
-                do
-                {
-                    this.errors = this.errors.init;
-                    this.waiting = true;
-                    this.task = Task.getThis();
-                    this.task.suspend();
-                    this.waiting = false;
-
-                    enforce(!this.errors.stopped,
-                        "Stop during Consume request");
-                    enforce(!this.errors.channel_removed,
-                        "Channel removed during Consume request");
-                    enforce(!this.errors.disconnection,
-                        "Disconnection during Consume request");
-                    enforce(!this.errors.node_error,
-                        "Node error during Consume request");
-
-                    resumed += this.errors.resumed;
-                }
-                while ( resumed < this.request_ids.length );
             }
 
             /*******************************************************************
@@ -831,9 +774,6 @@ class DmqClient
             {
                 with ( info.Active ) switch ( info.active )
                 {
-                    case started:
-                        break;
-
                     case received:
                         this.received_records ~= ReceivedRecord(
                             idup(args.subscriber),
@@ -855,18 +795,6 @@ class DmqClient
                             if (!this.request_ids[ichn].length)
                                 this.request_ids.remove(ichn);
                         }
-                        if (this.waiting)
-                            this.task.resume();
-                        break;
-
-                    case suspended:
-                        this.errors.suspended++;
-                        if (this.waiting)
-                            this.task.resume();
-                        break;
-
-                    case resumed:
-                        this.errors.resumed++;
                         if (this.waiting)
                             this.task.resume();
                         break;
