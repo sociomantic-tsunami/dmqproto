@@ -780,12 +780,12 @@ class SubscribeDmqTestCase : DmqTestCase
     }
     body
     {
-        Const!(char[])[][Const!(char[])][Const!(char[])]
+        cstring[][Const!(char[])][Const!(char[])]
             records_by_channel_and_subscriber;
 
         foreach (channel; this.channels)
         {
-            Const!(char[])[][Const!(char[])] records_by_subscriber;
+            cstring[][Const!(char[])] records_by_subscriber;
             foreach (subscriber_name; subscriber_names)
             {
                 assert(!(subscriber_name in records_by_subscriber),
@@ -808,11 +808,11 @@ class SubscribeDmqTestCase : DmqTestCase
             foreach (record; this.consumers.received_records)
             {
                 test!(">")(records_by_channel_and_subscriber.length, 0);
-                Const!(char[])[][Const!(char[])]* records_by_subscriber =
+                cstring[][Const!(char[])]* records_by_subscriber =
                     record.channel in records_by_channel_and_subscriber;
                 test!("!is")(records_by_subscriber, null);
                 test!(">")(records_by_subscriber.length, 0);
-                Const!(char[])[]* records = record.subscriber in *records_by_subscriber;
+                cstring[]* records = record.subscriber in *records_by_subscriber;
                 test!("!is")(records, null);
                 test!("<")(records.length, expected_records.length);
                 (*records) ~= record.value;
