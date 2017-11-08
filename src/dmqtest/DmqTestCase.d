@@ -641,6 +641,7 @@ class SubscribeDmqTestCase : DmqTestCase
 
     override public void run ( )
     {
+
         /*
          * Push a bunch of records to the queue channel.
          */
@@ -789,7 +790,7 @@ class SubscribeDmqTestCase : DmqTestCase
             {
                 assert(!(subscriber_name in records_by_subscriber),
                     "duplicate subscriber name");
-                records_by_subscriber[subscriber_name] = expected_records;
+                records_by_subscriber[subscriber_name] = null;
             }
             records_by_channel_and_subscriber[channel] = records_by_subscriber;
         }
@@ -803,7 +804,7 @@ class SubscribeDmqTestCase : DmqTestCase
             // Wait for something to happen
             this.consumers.waitNextEvent();
 
-            // Pop received records
+            // Append received records to records_by_channel_and_subscriber
             foreach (record; this.consumers.received_records)
             {
                 test!(">")(records_by_channel_and_subscriber.length, 0);
@@ -813,18 +814,8 @@ class SubscribeDmqTestCase : DmqTestCase
                 test!(">")(records_by_subscriber.length, 0);
                 Const!(char[])[]* records = record.subscriber in *records_by_subscriber;
                 test!("!is")(records, null);
-                test!(">")(records.length, 0);
-                test!("==")(record.value, (*records)[0]);
-
-                if (records.length > 1)
-                    *records = (*records)[1 .. $];
-                else
-                {
-                    (*records_by_subscriber).remove(record.subscriber);
-                    if (!records_by_subscriber.length)
-                        records_by_channel_and_subscriber.remove(record.channel);
-                }
-
+                test!("<")(records.length, expected_records.length);
+                (*records) ~= record.value;
                 popped++;
             }
 
@@ -833,6 +824,10 @@ class SubscribeDmqTestCase : DmqTestCase
         }
 
         test!("==")(popped, n_expected_records);
-        test!("==")(records_by_channel_and_subscriber.length, 0);
+
+        foreach (channel, records_by_subscriber; records_by_channel_and_subscriber)
+            foreach (subscriber, records; records_by_subscriber)
+                foreach (i, record; sort(records))
+                    test!("==")(record, expected_records[i]);
     }
 }
