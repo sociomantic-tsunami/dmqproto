@@ -363,7 +363,7 @@ private scope class ConsumeHandler
     private class RecordStream
     {
         /// The acquired buffer to store a batch of records.
-        private Const!(void)[]* batch_buffer;
+        private void[]* batch_buffer;
 
         /// Slices the records in *batch_buffer that haven't been processed yet.
         private Const!(void)[] remaining_batch = null;
@@ -398,7 +398,7 @@ private scope class ConsumeHandler
         /// Constructor, starts the fiber.
         private this ( )
         {
-            this.batch_buffer = cast(Const!(void)[]*)this.outer.resources.getBuffer();
+            this.batch_buffer = this.outer.resources.getBuffer();
             this.fiber = this.outer.resources.getFiber(&this.fiberMethod);
             this.fiber.start();
         }
