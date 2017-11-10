@@ -32,7 +32,7 @@ public ConnectionHandler.CmdHandlers request_handlers;
 
 static this ( )
 {
-    request_handlers[RequestCode.Consume] = &Consume.handle;
-    request_handlers[RequestCode.Push]    = &Push.handle;
-    request_handlers[RequestCode.Pop]     = &Pop.handle;
+    request_handlers.add(RequestCode.Consume, "consume", &Consume.handle);
+    request_handlers.add(RequestCode.Push, "push", &Push.handle);
+    request_handlers.add(RequestCode.Pop, "pop", &Pop.handle);
 }
