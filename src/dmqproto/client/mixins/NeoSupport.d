@@ -631,7 +631,7 @@ template NeoSupport ( )
     private void neoInit ( Neo.Config config,
         Neo.ConnectionNotifier conn_notifier )
     {
-        this.neo = new Neo(config, conn_notifier);
+        this.neo = new Neo(config, conn_notifier, new SharedResources);
         this.blocking = new TaskBlocking;
     }
 
