@@ -372,6 +372,7 @@ public abstract scope class ConsumeProtocol_v3
                 payload.addConstant(MessageType_v3.Stopped);
             }
         );
+        this.ed.flush();
     }
 
     /***************************************************************************

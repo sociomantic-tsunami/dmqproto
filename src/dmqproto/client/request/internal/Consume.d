@@ -511,6 +511,8 @@ private scope class ConsumeHandler
                         payload.addConstant(MessageType_v3.Continue);
                     }
                 );
+
+                this.outer.conn.flush();
             }
 
             this.outer.request_event_dispatcher.signal(this.outer.conn,
@@ -733,6 +735,7 @@ private scope class ConsumeHandler
                                 payload.addConstant(MessageType_v3.Stop);
                             }
                         );
+                        this.outer.conn.flush();
                         break;
 
                     case FiberSignal.StopController:
