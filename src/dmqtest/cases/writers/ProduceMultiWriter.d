@@ -19,6 +19,10 @@ module dmqtest.cases.writers.ProduceMultiWriter;
 *******************************************************************************/
 
 import dmqtest.cases.writers.ProduceWriter;
+import dmqtest.DmqClient;
+
+import ocean.transition;
+
 
 class ProduceMultiWriter : ProduceWriterBase
 {

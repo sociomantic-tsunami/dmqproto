@@ -19,6 +19,11 @@ module dmqtest.cases.checkers.PopChecker;
 *******************************************************************************/
 
 import dmqtest.cases.checkers.model.IChecker;
+import dmqtest.DmqClient;
+
+import ocean.core.Test;
+import ocean.transition;
+
 
 private abstract class PopCheckerBase : IChecker
 {

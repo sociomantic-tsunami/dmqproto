@@ -21,11 +21,12 @@ module dmqtest.DmqTestCase;
 
 import dmqtest.cases.writers.model.IWriter;
 import dmqtest.cases.checkers.model.IChecker;
+import dmqtest.DmqClient;
 
 import turtle.TestCase;
 
 import ocean.transition;
-
+import ocean.core.Test;
 import ocean.task.Task;
 import ocean.task.Scheduler;
 
@@ -37,8 +38,6 @@ import ocean.task.Scheduler;
 
 abstract class DmqTestCase : TestCase
 {
-    import ocean.core.Test; // makes `test` available in derivatives
-    import dmqtest.DmqClient;
     import dmqtest.util.Record;
 
     /***************************************************************************

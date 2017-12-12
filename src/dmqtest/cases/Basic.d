@@ -18,6 +18,8 @@ module dmqtest.cases.Basic;
 
 import dmqtest.DmqTestCase;
 
+import ocean.core.Test;
+
 /******************************************************************************
 
     Most simple push/pop sanity test

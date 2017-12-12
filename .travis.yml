@@ -44,6 +44,14 @@ jobs:
           env: DMD=2.070.*.s* F=production
         - <<: *test-matrix
           env: DMD=2.070.2.s* F=devel
+        - <<: *test-matrix
+          env: DMD=2.071.2.s* F=production
+        - <<: *test-matrix
+          env: DMD=2.071.2.s* F=devel
+        - <<: *test-matrix
+          env: DMD=2.078.* F=production
+        - <<: *test-matrix
+          env: DMD=2.078.* F=devel
 
         - stage: D2 Release
           # We need to include the exclusion of D2 tags because this "if"

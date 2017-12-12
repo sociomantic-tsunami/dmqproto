@@ -20,6 +20,9 @@ module dmqtest.cases.writers.PushMultiWriter;
 
 import dmqtest.cases.writers.model.IWriter;
 
+import ocean.transition;
+
+
 class PushMultiWriter : IWriter
 {
     /***************************************************************************
