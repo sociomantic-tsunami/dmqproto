@@ -18,7 +18,10 @@ module dmqtest.cases.Consume;
 
 ******************************************************************************/
 
+import dmqtest.DmqClient;
 import dmqtest.DmqTestCase;
+
+import ocean.core.Test;
 import ocean.transition;
 
 /******************************************************************************
