@@ -806,8 +806,8 @@ class DmqClient
                         break;
 
                     case node_disconnected:
-                        log.error("Consume failed due to connection "
-                            "error {} on {}:{}",
+                        log.error(
+                            "Consume failed due to connection error {} on {}:{}",
                             getMsg(info.node_disconnected.e),
                             info.node_disconnected.node_addr.address_bytes,
                             info.node_disconnected.node_addr.port);
@@ -817,8 +817,8 @@ class DmqClient
                         break;
 
                     case node_error:
-                        log.error("Consume failed due to a node "
-                            "error on {}:{}",
+                        log.error(
+                            "Consume failed due to a node error on {}:{}",
                             info.node_error.node_addr.address_bytes,
                             info.node_error.node_addr.port);
                         this.errors.node_error = true;
@@ -827,8 +827,8 @@ class DmqClient
                         break;
 
                     case unsupported:
-                        log.error("Consume failed due to an unsupported error "
-                            "on {}:{}",
+                        log.error(
+                            "Consume failed due to an unsupported error on {}:{}",
                             info.unsupported.node_addr.address_bytes,
                             info.unsupported.node_addr.port);
                         this.errors.node_error = true;
