@@ -159,8 +159,8 @@ unittest
                     break;
 
                 case node_disconnected:
-                    Stdout.formatln("The request failed due to connection "
-                        "error {} on {}:{}",
+                    Stdout.formatln(
+                        "The request failed due to connection error {} on {}:{}",
                         getMsg(info.node_disconnected.e),
                         info.node_disconnected.node_addr.address_bytes,
                         info.node_disconnected.node_addr.port);
@@ -169,8 +169,8 @@ unittest
                     break;
 
                 case node_error:
-                    Stdout.formatln("The request failed due to a node "
-                        "error on {}:{}",
+                    Stdout.formatln(
+                        "The request failed due to a node error on {}:{}",
                         info.node_error.node_addr.address_bytes,
                         info.node_error.node_addr.port);
                     // If there are more nodes left to try, the request will
@@ -181,14 +181,14 @@ unittest
                     switch ( info.unsupported.type )
                     {
                         case info.unsupported.type.RequestNotSupported:
-                            Stdout.formatln("The request is not supported by "
-                                "node {}:{}",
+                            Stdout.formatln(
+                                "The request is not supported by node {}:{}",
                                 info.unsupported.node_addr.address_bytes,
                                 info.unsupported.node_addr.port);
                             break;
                         case info.unsupported.type.RequestVersionNotSupported:
-                            Stdout.formatln("The request version is not "
-                                "supported by node {}:{}",
+                            Stdout.formatln(
+                                "The request version is not supported by node {}:{}",
                                 info.unsupported.node_addr.address_bytes,
                                 info.unsupported.node_addr.port);
                             break;
@@ -315,21 +315,21 @@ unittest
                     break;
 
                 case channel_removed:
-                    Stdout.formatln("The request ended as the channel was "
-                        "removed.");
+                    Stdout.formatln(
+                        "The request ended as the channel was removed.");
                     break;
 
                 case node_disconnected:
-                    Stdout.formatln("The request failed due to connection "
-                        "error {} on {}:{}",
+                    Stdout.formatln(
+                        "The request failed due to connection error {} on {}:{}",
                         getMsg(info.node_disconnected.e),
                         info.node_disconnected.node_addr.address_bytes,
                         info.node_disconnected.node_addr.port);
                     break;
 
                 case node_error:
-                    Stdout.formatln("The request failed due to a node "
-                        "error on {}:{}",
+                    Stdout.formatln(
+                        "The request failed due to a node error on {}:{}",
                         info.node_error.node_addr.address_bytes,
                         info.node_error.node_addr.port);
                     break;
@@ -338,14 +338,14 @@ unittest
                     switch ( info.unsupported.type )
                     {
                         case info.unsupported.type.RequestNotSupported:
-                            Stdout.formatln("The request is not supported by "
-                                "node {}:{}",
+                            Stdout.formatln(
+                                "The request is not supported by node {}:{}",
                                 info.unsupported.node_addr.address_bytes,
                                 info.unsupported.node_addr.port);
                             break;
                         case info.unsupported.type.RequestVersionNotSupported:
-                            Stdout.formatln("The request version is not "
-                                "supported by node {}:{}",
+                            Stdout.formatln(
+                                "The request version is not supported by node {}:{}",
                                 info.unsupported.node_addr.address_bytes,
                                 info.unsupported.node_addr.port);
                             break;

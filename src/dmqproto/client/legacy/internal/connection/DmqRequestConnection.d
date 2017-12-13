@@ -654,8 +654,8 @@ public class DmqRequestConnection :
             {
                 case MultipleNodeQuery: break;
                 case NoMoreNodes:
-                    debug ( SwarmClient ) Stderr.formatln("[{}:{}.{}]: "
-                        "nextRequest_ no more nodes to try",
+                    debug ( SwarmClient ) Stderr.formatln(
+                        "[{}:{}.{}]: nextRequest_ no more nodes to try",
                         this.conn_pool.address,
                         this.conn_pool.port, this.object_pool_index);
 
@@ -671,8 +671,8 @@ public class DmqRequestConnection :
                     }
                     break;
                 case Reregistered:
-                    debug ( SwarmClient ) Stderr.formatln("[{}:{}.{}]: "
-                        "nextRequest_ {}", this.conn_pool.address,
+                    debug ( SwarmClient ) Stderr.formatln(
+                        "[{}:{}.{}]: nextRequest_ {}", this.conn_pool.address,
                         this.conn_pool.port, this.object_pool_index,
                         this.exception.toString());
                     break;
