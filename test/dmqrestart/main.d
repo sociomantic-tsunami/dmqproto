@@ -62,10 +62,10 @@ void main ( )
         override public void run ( )
         {
             Dmq.initialize();
-            dmq.start("127.0.0.1", 10000);
+            dmq.start("127.0.0.1");
 
             this.dmqclient = new DmqClient(theScheduler.epoll, MAX_CONNS);
-            this.dmqclient.addNode("127.0.0.1".dup, 10000);
+            this.dmqclient.addNode("127.0.0.1".dup, dmq.node_item.Port);
 
             uint i;
             while ( this.total_pushed < RECORD_COUNT )
