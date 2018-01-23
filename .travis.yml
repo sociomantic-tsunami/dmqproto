@@ -11,19 +11,36 @@ services:
 git:
     submodules: false
 
+# Global environment variables
+env:
+    global:
+        - DIST=xenial
+        # Make sure beaver is in the PATH
+        - PATH="$(git config -f .gitmodules submodule.beaver.path)/bin:$PATH"
+
 # Do a shallow submodule fetch
 before_install: git submodule update --init
 
-env:
-    global:
-        # Make sure beaver is in the PATH
-        - PATH="$(git config -f .gitmodules submodule.beaver.path)/bin:$PATH"
-    matrix:
-        - DMD=1.081.* DIST=xenial F=production AFTER_SCRIPT=1
-        - DMD=1.081.* DIST=xenial F=devel
-        - DMD=2.070.2.s* DIST=xenial F=production
-        - DMD=2.070.2.s* DIST=xenial F=devel
-
+# Create docker images and setup environment to build
 install: beaver dlang install
 
-script: beaver dlang make
+# Basic config is inherited from the global scope
+jobs:
+    templates:
+        - &test-matrix
+          stage: Test
+          script:
+              - beaver dlang make
+              # Build packages too, this should be done by beaver:
+              # https://github.com/sociomantic-tsunami/beaver/issues/34
+              - beaver dlang make pkg
+    include:
+        # Test matrix
+        - <<: *test-matrix
+          env: DMD=1.081.* F=production
+        - <<: *test-matrix
+          env: DMD=1.081.* F=devel
+        - <<: *test-matrix
+          env: DMD=2.070.*.s* F=production
+        - <<: *test-matrix
+          env: DMD=2.070.2.s* F=devel
