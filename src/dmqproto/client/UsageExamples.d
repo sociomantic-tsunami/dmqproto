@@ -78,9 +78,8 @@ version ( UnitTest )
         }
 
         // Notifier which is called when a connection establishment attempt
-        // succeeds or fails and when the hash-range which a connected node is
-        // responsible for has been queried. (Also called after re-connection
-        // attempts are made.)
+        // succeeds or fails. (Also called after re-connection attempts are
+        // made.)
         private void connNotifier ( DmqClient.Neo.ConnNotification info )
         {
             with ( info.Active ) switch ( info.active )
