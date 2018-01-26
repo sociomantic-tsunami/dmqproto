@@ -58,6 +58,7 @@ DmqClient             dmq;
 
 *******************************************************************************/
 
+version (UnitTest) {} else
 void main ( )
 {
     void initAndRegister ( )

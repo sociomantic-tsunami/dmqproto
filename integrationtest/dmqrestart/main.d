@@ -17,6 +17,8 @@
 
 *******************************************************************************/
 
+module integrationtest.dmqrestart.main;
+
 import ocean.core.Enforce;
 import ocean.task.Scheduler;
 import ocean.task.Task;
@@ -25,6 +27,7 @@ import dmqproto.client.DmqClient;
 
 import turtle.env.Dmq;
 
+version (UnitTest) {} else
 void main ( )
 {
     class TestTask : Task
