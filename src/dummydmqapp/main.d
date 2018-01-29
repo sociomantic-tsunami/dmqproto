@@ -65,7 +65,7 @@ void main ( )
         dmq.addNodes("./etc/dmq.nodes");
 
         Stdout.formatln("Starting Consume request").flush();
-        syncXtoY("test_channel1", "test_channel2");
+        (new Sync("test_channel1", "test_channel2")).register();
     }
 
     epoll = new EpollSelectDispatcher;
@@ -76,31 +76,52 @@ void main ( )
     epoll.eventLoop();
 }
 
+
 /*******************************************************************************
 
-    Initiates Consume request on channel `src` that pushes all records
+    Initiates Consume request on channel `src` that writes all records
     to channel `dst`.
 
 *******************************************************************************/
 
-void syncXtoY ( cstring src, cstring dst )
+class Sync
 {
+    import core.thread;
+    import ocean.core.Time;
+
+    cstring src;
+    cstring dst;
+
+    this ( cstring src, cstring dst )
+    {
+        this.src = src;
+        this.dst = dst;
+    }
+
     void record ( DmqClient.RequestContext c, in cstring value )
     {
-        Stdout.formatln("Popped record '{}'", value).flush();
-        (new Pusher(dst, value)).register();
+        Stdout.formatln("Syncing '{}'", value).flush();
+        (new Pusher(this.dst, value)).register();
     }
 
     void notify ( DmqClient.RequestNotification info )
     {
         if (info.type == info.type.Finished && !info.succeeded)
         {
-            Stderr.formatln("ABORT: Consume failure").flush();
-            abort();
+            // some tests use node restart functionality - to make this simple
+            // app compatible with them, listen request needs to be restarted
+            // upon failures until the app gets killed
+            Stderr.formatln("Listen failure, trying again in 100 ms").flush();
+            Thread.sleep(seconds(0.1));
+            (new Sync(this.src, this.dst)).register();
         }
     }
 
-    dmq.assign(dmq.consume(src, &record, &notify));
+    void register ( )
+    {
+        Stdout.formatln("Starting sync from {} to {}", this.src, this.dst).flush();
+        dmq.assign(dmq.consume(this.src, &this.record, &this.notify));
+    }
 }
 
 /*******************************************************************************
