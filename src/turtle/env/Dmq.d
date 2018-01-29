@@ -69,6 +69,7 @@ public class Dmq : Node!(DmqNode, "dmq")
     import ocean.core.Enforce;
     import ocean.text.convert.Formatter;
     import ocean.util.serialize.contiguous.package_;
+    import swarm.neo.AddrPort;
 
     /***************************************************************************
 
@@ -299,13 +300,18 @@ public class Dmq : Node!(DmqNode, "dmq")
         Creates a fake node at the specified address/port.
 
         Params:
-            node_item = address/port
+            node_addrport = address/port
 
     ***************************************************************************/
 
-    override public DmqNode createNode ( NodeItem node_item )
+    override public DmqNode createNode ( AddrPort node_addrport )
     {
         auto epoll = theScheduler.epoll();
+
+        auto addr = node_addrport.address_bytes();
+        auto node_item = NodeItem(
+            format("{}.{}.{}.{}", addr[0], addr[1], addr[2], addr[3]).dup,
+            node_addrport.port());
 
         auto node = new DmqNode(node_item, epoll);
         node.register(epoll);
@@ -321,10 +327,13 @@ public class Dmq : Node!(DmqNode, "dmq")
 
     ***************************************************************************/
 
-    override public NodeItem node_item ( )
+    override public AddrPort node_addrport ( )
     {
-        assert(this.node);
-        return this.node.node_item;
+        AddrPort addrport;
+        addrport.setAddress(this.node.node_item.Address);
+        addrport.port = cast(ushort)this.node.node_item.Port;
+
+        return addrport;
     }
 
     /***************************************************************************
@@ -369,15 +378,17 @@ public class Dmq : Node!(DmqNode, "dmq")
 
     /***************************************************************************
 
-        Suppresses log output from the fake dmq if used version of dmqproto
-        supports it.
+        Suppresses/allows log output from the fake node if used version of node
+        proto supports it.
+
+        Params:
+            log = true to log errors, false to stop logging errors
 
     ***************************************************************************/
 
-    override public void ignoreErrors ( )
+    override public void log_errors ( bool log )
     {
-        static if (is(typeof(this.node.ignoreErrors())))
-            this.node.ignoreErrors();
+        this.node.log_errors = log;
     }
 
     /***************************************************************************

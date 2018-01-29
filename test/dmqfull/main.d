@@ -60,7 +60,7 @@ class TestTask : Task
         dmq.start("127.0.0.1");
 
         auto reader = new DmqClient(theScheduler.epoll());
-        reader.addNode("127.0.0.1".dup, dmq.node_item.Port);
+        reader.addNode("127.0.0.1".dup, dmq.node_addrport.port);
         reader.assign(reader.consume("test", &consumer, &notifier));
 
         for (int i; i < RECORD_COUNT; ++i)
