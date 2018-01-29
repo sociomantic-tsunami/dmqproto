@@ -1,13 +1,8 @@
 /*******************************************************************************
 
-    Tests the behaviour of the fake DMQ upon shutting down and restarting.
-
-    This test does the following:
-        * Starts a fake DMQ node.
-        * Pushes records to it with a DMQ client.
-        * Every 10 Push requests, shuts down and restarts the node.
-        * Checks that the expected number of records reach the node and that the
-          expected number of errors occur in the DMQ client.
+    Test DMQ node restart functionality in combination with external DMQ client
+    doing `Consume` request. Uses `dmqapp` as a tested application which will
+    start consuming "test_channel1" and push all records to "test_channel2".
 
     Copyright:
         Copyright (c) 2016-2017 sociomantic labs GmbH. All rights reserved.
@@ -19,126 +14,71 @@
 
 module integrationtest.dmqrestart.main;
 
-import ocean.core.Enforce;
-import ocean.task.Scheduler;
-import ocean.task.Task;
+import ocean.transition;
 
-import dmqproto.client.DmqClient;
+import turtle.runner.Runner;
+import turtle.TestCase;
 
-import turtle.env.Dmq;
-
-version (UnitTest) {} else
-void main ( )
+/// ditto
+class DmqRestartTests : TurtleRunnerTask!(TestedAppKind.Daemon)
 {
-    class TestTask : Task
+    import turtle.env.Dmq;
+
+    override protected void configureTestedApplication ( out double delay,
+        out istring[] args, out istring[istring] env )
     {
-        /** Maximum number of connections per node in the DMQ client.
-
-            FIXME: The test should work with only a single connection. However,
-            a bug in the legacy DMQ client causes the following behaviour after
-            restarting the node:
-              1. A request is assigned to a now-dead connection.
-              2. The request fails (as expected).
-              3. Faulty round-robin logic in the DMQ client reassigns the
-                 request to the same node, pushing it to the request queue.
-              4. This continues through the whole test until the last request is
-                 finished. The remaining queued request then fires, causing the
-                 notifier in push() to be called out-of-scope = segfault.
-        */
-        const uint MAX_CONNS = 2;
-
-        /// Total number of records to push
-        const RECORD_COUNT = 100;
-
-        /// DMQ client instance used to send records to fake DMQ
-        private DmqClient dmqclient;
-
-        /// Total count of successful Push requests
-        private uint total_pushed;
-
-        /// Count of consecutive failed Push requests. This is not expected to
-        /// exceed the number of connections owned by the client. (When the fake
-        /// node is shut down, all active requests -- at most one per connection
-        /// -- will fail.)
-        private uint consecutive_errors;
-
-        override public void run ( )
-        {
-            Dmq.initialize();
-            dmq.start("127.0.0.1");
-
-            this.dmqclient = new DmqClient(theScheduler.epoll, MAX_CONNS);
-            this.dmqclient.addNode("127.0.0.1".dup, dmq.node_addrport.port);
-
-            uint i;
-            while ( this.total_pushed < RECORD_COUNT )
-            {
-                // Restart the node periodically. Doing so will cause all
-                // in-progress requests to fail, incrementing
-                // this.consecutive_errors.
-                if ( i++ % 10 == 0 )
-                {
-                    // Check that the expected number of records are in the DMQ.
-                    enforce!("==")(dmq.getSize("test").records, this.total_pushed);
-
-                    // Restart the DMQ. The data should remain intact.
-                    dmq.stop();
-                    dmq.restart();
-
-                    enforce!("==")(dmq.getSize("test").records, this.total_pushed);
-                }
-
-                // Push a record
-                this.push();
-                enforce!("<=")(this.consecutive_errors, MAX_CONNS);
-            }
-
-            dmq.stop();
-
-            // FIXME: the fake node connections do not unregister their clients
-            // when finalized. This line could be removed, if they did.
-            theScheduler.shutdown();
-        }
-
-        /// Assigns a Push request and suspends the fiber until it finishes
-        private void push ( )
-        {
-            bool finished;
-
-            void notifier ( DmqClient.RequestNotification info )
-            {
-                if ( info.type == info.type.Finished )
-                {
-                    finished = true;
-
-                    if ( info.succeeded )
-                    {
-                        this.consecutive_errors = 0;
-                        this.total_pushed++;
-                    }
-                    else
-                    {
-                        this.consecutive_errors++;
-                    }
-
-                    if (this.suspended)
-                        this.resume();
-                }
-            }
-
-            char[] pushDg ( DmqClient.RequestContext context )
-            {
-                return "some value".dup;
-            }
-
-            this.dmqclient.assign(this.dmqclient.push("test", &pushDg, &notifier));
-
-            if ( !finished )
-                this.suspend();
-        }
+        delay = 0.1;
     }
 
-    initScheduler(SchedulerConfiguration.init);
-    theScheduler.schedule(new TestTask);
-    theScheduler.eventLoop();
+    override public void prepare ( )
+    {
+        Dmq.initialize();
+        dmq.start("127.0.0.1", 0);
+        dmq.genConfigFiles(this.context.paths.sandbox ~ "/etc");
+    }
+
+    override public void reset ( )
+    {
+        dmq.clear();
+    }
+}
+
+version ( UnitTest ) { }
+else
+int main ( istring[] args )
+{
+    auto runner = new TurtleRunner!(DmqRestartTests)("dmqapp", "");
+    return runner.main(args);
+}
+
+/*******************************************************************************
+
+    Verifies scenario where test cases pushes records to a channel tested app
+    listens on, both before and after fake node restart.
+
+*******************************************************************************/
+
+class RestartWithConsumer : TestCase
+{
+    import turtle.env.Dmq;
+
+    import ocean.core.Test;
+    import ocean.task.util.Timer;
+
+    override void run ( )
+    {
+        dmq.push("test_channel1", "value");
+        wait(100_000); // small delay to ensure fakedmq manages to process
+                       // `Push` request to "test_channel2"
+
+        dmq.stop();
+        dmq.restart();
+        wait(300_000); // small delay to ensure tested app reassigns Listen
+
+        dmq.push("test_channel1", "value2");
+        wait(100_000); // small delay to ensure fakedmq manages to process
+                       // `Push` request to "test_channel2"
+        test!("==")(dmq.pop!(cstring)("test_channel2"), "value");
+        test!("==")(dmq.pop!(cstring)("test_channel2"), "value2");
+    }
 }
