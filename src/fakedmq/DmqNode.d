@@ -25,7 +25,7 @@ import ocean.util.log.Logger;
 
 import fakedmq.ConnectionHandler;
 
-import swarm.node.model.NeoNode;
+import swarm.node.model.Node;
 
 /*******************************************************************************
 
@@ -59,9 +59,6 @@ public class DmqNode
 
     import dmqproto.client.legacy.DmqConst;
     import swarm.node.connection.ConnectionHandler;
-    import swarm.neo.authentication.HmacDef: Key;
-    import Neo = swarm.neo.node.ConnectionHandler;
-    import fakedmq.neo.RequestHandlers;
     import fakedmq.Storage;
 
     /***************************************************************************
@@ -92,21 +89,7 @@ public class DmqNode
         params.epoll = epoll;
         params.node_info = this;
 
-        Options neo_options;
-        neo_options.cmd_handlers = request_handlers;
-        neo_options.epoll = epoll;
-        neo_options.no_delay = true; // favour network turn-around over packet efficiency
-        neo_options.credentials_map["test"] = Key.init;
-
-        ushort neo_port = node_item.Port;
-
-        // If original port is 0, operating system should auto-choose the port
-        if (neo_port != 0)
-        {
-            neo_port++;
-        }
-
-        super(node_item, neo_port, params, neo_options, backlog);
+        super(node_item, params, backlog);
         this.error_callback = &this.onError;
     }
 
