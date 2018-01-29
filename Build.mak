@@ -17,6 +17,9 @@ $O/test-fakedmq: $B/fakedmq
 
 $B/dmqapp: $C/src/dummydmqapp/main.d
 
+$O/test-dmqrestart: $B/dmqapp
+$O/test-dmqrestart: override LDFLAGS += -llzo2 -lebtree  -lrt -lpcre
+
 $O/test-dmqhelpers: $B/dmqapp
 $O/test-dmqhelpers: override LDFLAGS += -llzo2 -lebtree -lrt -lpcre
 
