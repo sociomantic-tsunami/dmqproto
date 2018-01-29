@@ -44,8 +44,6 @@ import dmqproto.client.DmqClient;
 
 *******************************************************************************/
 
-alias ExtensibleDmqClient!(ScopeRequestsPlugin) DmqClient;
-
 EpollSelectDispatcher epoll;
 SelectFiber           fiber;
 FiberSelectEvent      event;
@@ -62,7 +60,7 @@ void main ( )
 {
     void initAndRegister ( )
     {
-        dmq = new DmqClient(epoll, new ScopeRequestsPlugin, 2);
+        dmq = new DmqClient(epoll, 2);
         dmq.addNodes("./etc/dmq.nodes");
 
         Stdout.formatln("Starting Consume request").flush();
