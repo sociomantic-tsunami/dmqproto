@@ -1,16 +1,14 @@
 /*******************************************************************************
 
-    Protocol definition of the DMQ Push request.
-
     Copyright:
-        Copyright (c) 2016-2017 sociomantic labs GmbH. All rights reserved.
+        Copyright (c) 2015-2017 sociomantic labs GmbH. All rights reserved.
 
     License:
         Boost Software License Version 1.0. See LICENSE.txt for details.
 
 *******************************************************************************/
 
-module dmqproto.common.Push;
+module integrationtest.fakedmq.main;
 
 /*******************************************************************************
 
@@ -18,18 +16,19 @@ module dmqproto.common.Push;
 
 *******************************************************************************/
 
-import swarm.neo.request.Command;
+import ocean.transition;
+import turtle.runner.Runner;
+import dmqtest.TestRunner;
 
 /*******************************************************************************
 
-    Status code enum. Sent from the node to the client.
+     Entry point
 
 *******************************************************************************/
 
-public enum RequestStatusCode : StatusCode
+version (UnitTest) {} else
+int main ( istring[] args )
 {
-    None,   // Invalid, default value
-
-    Pushed, // Value pushed
-    Error   // Internal node error occurred
+    auto runner = new TurtleRunner!(DmqTestRunner)("fakedmq", "dmqtest.cases");
+    return runner.main(args);
 }

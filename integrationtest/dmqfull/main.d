@@ -11,6 +11,8 @@
 
 *******************************************************************************/
 
+module integrationtest.dmqfull.main;
+
 import ocean.core.Traits;
 import ocean.core.Enforce;
 import ocean.task.Task;
@@ -25,6 +27,7 @@ import ocean.io.Stdout;
 
 const RECORD_COUNT = 10000;
 
+version (UnitTest) {} else
 void main ()
 {
     global_storage.channel_size_limit = RECORD_COUNT / 10;
@@ -60,7 +63,7 @@ class TestTask : Task
         dmq.start("127.0.0.1");
 
         auto reader = new DmqClient(theScheduler.epoll());
-        reader.addNode("127.0.0.1".dup, dmq.node_item.Port);
+        reader.addNode("127.0.0.1".dup, dmq.node_addrport.port);
         reader.assign(reader.consume("test", &consumer, &notifier));
 
         for (int i; i < RECORD_COUNT; ++i)
