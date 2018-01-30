@@ -19,10 +19,10 @@ Dependencies
 
 Dependency | Version
 -----------|---------
-ocean      | v3.2.x
-swarm      | v4.2.x
-makd       | v1.6.0
-turtle     | v8.0.x
+ocean      | v4.0.x
+swarm      | v5.0.x
+makd       | v2.1.3
+turtle     | v9.0.x
 
 Versioning
 ==========
