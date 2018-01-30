@@ -163,7 +163,7 @@ public abstract scope class ConsumeProtocol_v3
             this.ed.send(
                 ( ed.Payload payload )
                 {
-                    payload.addConstant(RequestStatusCode.Error);
+                    payload.addCopy(RequestStatusCode.Error);
                 }
             );
             return;
@@ -172,7 +172,7 @@ public abstract scope class ConsumeProtocol_v3
         this.ed.send(
             ( ed.Payload payload )
             {
-                payload.addConstant(RequestStatusCode.Started);
+                payload.addCopy(RequestStatusCode.Started);
             }
         );
 
@@ -197,7 +197,7 @@ public abstract scope class ConsumeProtocol_v3
         this.ed.send(
             ( ed.Payload payload )
             {
-                payload.addConstant(MessageType_v3.ChannelRemoved);
+                payload.addCopy(MessageType_v3.ChannelRemoved);
             }
         );
     }
@@ -313,7 +313,7 @@ public abstract scope class ConsumeProtocol_v3
     {
         void fillInRecordsMessage ( ed.Payload payload )
         {
-            payload.addConstant(MessageType_v3.Records);
+            payload.addCopy(MessageType_v3.Records);
             payload.addArray(*this.record_batch);
         }
 
@@ -370,7 +370,7 @@ public abstract scope class ConsumeProtocol_v3
         this.ed.send(
             (ed.Payload payload)
             {
-                payload.addConstant(MessageType_v3.Stopped);
+                payload.addCopy(MessageType_v3.Stopped);
             }
         );
         this.ed.flush();

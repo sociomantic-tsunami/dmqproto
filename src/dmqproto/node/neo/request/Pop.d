@@ -66,7 +66,7 @@ public abstract scope class PopProtocol_v0
                 ed.send(
                     ( ed.Payload payload )
                     {
-                        payload.addConstant(RequestStatusCode.Popped);
+                        payload.addCopy(RequestStatusCode.Popped);
                         payload.addArray(*value);
                     }
                 );
@@ -76,7 +76,7 @@ public abstract scope class PopProtocol_v0
                 ed.send(
                     ( ed.Payload payload )
                     {
-                        payload.addConstant(RequestStatusCode.Empty);
+                        payload.addCopy(RequestStatusCode.Empty);
                     }
                 );
             }
@@ -86,7 +86,7 @@ public abstract scope class PopProtocol_v0
             ed.send(
                 ( ed.Payload payload )
                 {
-                    payload.addConstant(
+                    payload.addCopy(
                         subscribed
                         ? RequestStatusCode.Subscribed
                         :RequestStatusCode.Error

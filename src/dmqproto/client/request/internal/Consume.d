@@ -508,7 +508,7 @@ private scope class ConsumeHandler
                     this.fiber,
                     (conn.Payload payload)
                     {
-                        payload.addConstant(MessageType_v3.Continue);
+                        payload.addCopy(MessageType_v3.Continue);
                     }
                 );
 
@@ -732,7 +732,7 @@ private scope class ConsumeHandler
                             this.fiber,
                             (conn.Payload payload)
                             {
-                                payload.addConstant(MessageType_v3.Stop);
+                                payload.addCopy(MessageType_v3.Stop);
                             }
                         );
                         this.outer.conn.flush();
