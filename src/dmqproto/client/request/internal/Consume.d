@@ -120,7 +120,7 @@ public struct Consume
         auto context = This.getContext(context_blob);
 
         auto shared_resources = SharedResources.fromObject(
-            context.request_resources.get());
+            context.shared_resources);
         scope acquired_resources = shared_resources.new RequestResources;
         scope handler = new ConsumeHandler(conn, context, acquired_resources);
         handler.run();
