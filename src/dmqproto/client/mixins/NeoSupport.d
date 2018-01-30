@@ -632,7 +632,7 @@ template NeoSupport ( )
     private void neoInit ( Neo.Config config,
         Neo.ConnectionNotifier conn_notifier )
     {
-        this.neo = new Neo(config, conn_notifier, new SharedResources);
+        this.neo = new Neo(config, Neo.Settings(conn_notifier, new SharedResources));
         this.blocking = new TaskBlocking;
     }
 
@@ -658,7 +658,7 @@ template NeoSupport ( )
     private void neoInit ( cstring auth_name, ubyte[] auth_key,
         Neo.ConnectionNotifier conn_notifier )
     {
-        this.neo = new Neo(auth_name, auth_key, conn_notifier, new SharedResources);
+        this.neo = new Neo(auth_name, auth_key, Neo.Settings(conn_notifier, new SharedResources));
         this.blocking = new TaskBlocking;
     }
 }
