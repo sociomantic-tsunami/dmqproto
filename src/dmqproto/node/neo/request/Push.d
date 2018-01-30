@@ -75,7 +75,7 @@ public abstract scope class PushProtocol_v2
             ed.send(
                 ( ed.Payload payload )
                 {
-                    payload.addConstant(RequestStatusCode.Pushed);
+                    payload.addCopy(RequestStatusCode.Pushed);
                 }
             );
         }
@@ -84,7 +84,7 @@ public abstract scope class PushProtocol_v2
             ed.send(
                 ( ed.Payload payload )
                 {
-                    payload.addConstant(RequestStatusCode.Error);
+                    payload.addCopy(RequestStatusCode.Error);
                 }
             );
         }
