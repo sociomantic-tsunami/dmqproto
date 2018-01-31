@@ -18,55 +18,9 @@ module fakedmq.neo.request.Pop;
 
 *******************************************************************************/
 
-import dmqproto.node.neo.request.core.IRequestResources;
 import dmqproto.node.neo.request.Pop;
 
-import fakedmq.neo.SharedResources;
-
-import swarm.neo.node.RequestOnConn;
-import swarm.neo.request.Command;
-import dmqproto.client.legacy.DmqConst;
-
 import ocean.transition;
-
-/*******************************************************************************
-
-    The request handler for the table of handlers. When called, runs in a fiber
-    that can be controlled via `connection`.
-
-    Params:
-        shared_resources = an opaque object containing resources owned by the
-            node which are required by the request
-        connection  = performs connection socket I/O and manages the fiber
-        cmdver      = the version number of the Consume command as specified by
-                      the client
-        msg_payload = the payload of the first message of this request
-
-*******************************************************************************/
-
-public void handle ( Object shared_resources, RequestOnConn connection,
-    Command.Version cmdver, Const!(void)[] msg_payload )
-{
-    auto resources = new SharedResources;
-
-    switch ( cmdver )
-    {
-        case 0:
-            scope rq = new PopImpl_v0(resources);
-            rq.handle(connection, msg_payload);
-            break;
-
-        default:
-            auto ed = connection.event_dispatcher;
-            ed.send(
-                ( ed.Payload payload )
-                {
-                    payload.addCopy(SupportedStatus.RequestVersionNotSupported);
-                }
-            );
-            break;
-    }
-}
 
 /*******************************************************************************
 
@@ -74,7 +28,7 @@ public void handle ( Object shared_resources, RequestOnConn connection,
 
 *******************************************************************************/
 
-private scope class PopImpl_v0 : PopProtocol_v0
+class PopImpl_v0 : PopProtocol_v0
 {
     import fakedmq.Storage;
 
@@ -85,20 +39,6 @@ private scope class PopImpl_v0 : PopProtocol_v0
     ***************************************************************************/
 
     private Queue queue;
-
-    /***************************************************************************
-
-        Constructor.
-
-        Params:
-            shared_resources = DMQ request resources getter
-
-    ***************************************************************************/
-
-    public this ( IRequestResources resources)
-    {
-        super(resources);
-    }
 
     /***************************************************************************
 

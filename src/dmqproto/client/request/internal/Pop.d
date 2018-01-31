@@ -146,16 +146,17 @@ public struct Pop
                 );
                 conn.flush();
 
-                // Read the status code and (optionally) the popped value.
-                conn.receive(
-                    ( in void[] const_payload )
-                    {
-                        Const!(void)[] payload = const_payload;
-                        auto status =
-                            *conn.message_parser.getValue!(StatusCode)(payload);
-                        if ( !Pop.handleGlobalStatusCodes(status, context,
-                            conn.remote_address) )
+                auto supported = conn.receiveValue!(SupportedStatus)();
+                if ( Pop.handleSupportedCodes(supported, context,
+                    conn.remote_address) )
+                    // Read the status code and (optionally) the popped value.
+                    conn.receive(
+                        ( in void[] const_payload )
                         {
+                            Const!(void)[] payload = const_payload;
+                            auto status =
+                                *conn.message_parser.getValue!(StatusCode)(payload);
+
                             switch ( status )
                             {
                                 case RequestStatusCode.Popped:
@@ -208,8 +209,9 @@ public struct Pop
                                     goto case RequestStatusCode.Error;
                             }
                         }
-                    }
-                );
+                    );
+                else
+                    context.shared_working.error = true;
 
                 // Once we receive a record, exit the loop.
                 if ( context.shared_working.received )
