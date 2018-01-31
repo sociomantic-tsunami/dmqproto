@@ -13,6 +13,7 @@
 module fakedmq.neo.RequestHandlers;
 
 import swarm.neo.node.ConnectionHandler;
+import swarm.neo.request.Command;
 
 import dmqproto.common.RequestCodes;
 
@@ -28,7 +29,7 @@ import Pop     = fakedmq.neo.request.Pop;
 
 *******************************************************************************/
 
-public ConnectionHandler.CmdHandlers request_handlers;
+public ConnectionHandler.RequestMap request_handlers;
 
 static this ( )
 {

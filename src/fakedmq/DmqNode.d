@@ -63,6 +63,7 @@ public class DmqNode
     import swarm.neo.authentication.HmacDef: Key;
     import Neo = swarm.neo.node.ConnectionHandler;
     import fakedmq.neo.RequestHandlers;
+    import fakedmq.neo.SharedResources;
     import fakedmq.Storage;
 
     /***************************************************************************
@@ -215,5 +216,24 @@ public class DmqNode
     override protected cstring id ( )
     {
         return "Fake Turtle DMQ Node";
+    }
+
+    /***************************************************************************
+
+        Scope allocates a request resource acquirer instance and passes it to
+        the provided delegate for use in a request.
+
+        Params:
+            handle_request_dg = delegate that receives a resources acquirer and
+                initiates handling of a request
+
+    ***************************************************************************/
+
+    override protected void getResourceAcquirer (
+        void delegate ( Object request_resources ) handle_request_dg )
+    {
+        // In the fake node, we don't actually store a shared resources
+        // instance; a new one is simply passed to each request.
+        handle_request_dg(new SharedResources);
     }
 }
