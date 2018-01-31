@@ -162,6 +162,7 @@ private scope class ConsumeHandler
     import swarm.neo.client.mixins.AllNodesRequestCore;
     import swarm.neo.client.mixins.BatchRequestCore;
     import swarm.neo.request.RequestEventDispatcher;
+    import swarm.neo.request.Command;
     import swarm.neo.util.MessageFiber;
 
     import dmqproto.common.Consume;
@@ -211,7 +212,7 @@ private scope class ConsumeHandler
     public void run ( )
     {
         auto initialiser = createAllNodesRequestInitialiser!(Consume)(
-            this.conn, this.context, &this.fillPayload, &this.handleStatusCode);
+            this.conn, this.context, &this.fillPayload, &this.handleSupportedCode);
         auto request = createAllNodesRequest!(Consume)(this.conn, this.context,
             &this.connect, &this.disconnected, initialiser, &this.handle);
         request.run();
@@ -272,30 +273,31 @@ private scope class ConsumeHandler
 
     /***************************************************************************
 
-        HandleStatusCode policy, called from AllNodesRequestInitialiser
-        template to decide how to handle the status code received from the node.
+        HandleSupportedCode policy, called from SuspendableRequestInitialiser
+        template to decide how to
+         - handle the supported code received from the node and
+         - receive the status code from the node and handle it.
 
         Params:
-            status = status code received from the node in response to the
+            code = supported code received from the node in response to the
                 initial message
 
         Returns:
-            true to continue handling the request (OK status); false to abort
-            (error status)
+            true to continue handling the request (supported and Started
+            status); false to abort (unsupported or Error status).
 
     ***************************************************************************/
 
-    private bool handleStatusCode ( ubyte status )
+    private bool handleSupportedCode ( ubyte code )
     {
-        auto consume_status = cast(RequestStatusCode)status;
-
-        if ( Consume.handleGlobalStatusCodes(consume_status,
+        if ( !Consume.handleSupportedCodes(cast(SupportedStatus)code,
             this.context, this.conn.remote_address) )
         {
-            return false; // Global code, e.g. request/version not supported
+            return false; // Request/version not supported
         }
 
-        // Consume-specific codes
+        // Handle initial started/error message from node.
+        auto consume_status = conn.receiveValue!(RequestStatusCode)();
         switch (consume_status)
         {
             case consume_status.Started:

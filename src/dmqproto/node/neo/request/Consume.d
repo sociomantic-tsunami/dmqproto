@@ -12,30 +12,23 @@
 
 module dmqproto.node.neo.request.Consume;
 
+import dmqproto.node.neo.request.core.IRequestHandlerRequest;
+
 /*******************************************************************************
 
     v3 Consume request protocol.
 
 *******************************************************************************/
 
-public abstract scope class ConsumeProtocol_v3
+public abstract scope class ConsumeProtocol_v3: IRequestHandlerRequest
 {
-    import dmqproto.node.neo.request.core.Mixins;
-
     import swarm.neo.node.RequestOnConn;
+    import dmqproto.node.neo.request.core.IRequestResources;
     import dmqproto.common.Consume;
 
     import swarm.util.RecordBatcher;
 
     import ocean.transition;
-
-    /***************************************************************************
-
-        Mixin the constructor and resources member.
-
-    ***************************************************************************/
-
-    mixin RequestCore!();
 
     /***************************************************************************
 
@@ -143,12 +136,14 @@ public abstract scope class ConsumeProtocol_v3
 
         Params:
             connection = connection to client
+            resources = request resources acquirer
             msg_payload = initial message read from client to begin the request
                 (the request code and version are assumed to be extracted)
 
     ***************************************************************************/
 
-    final public void handle ( RequestOnConn connection, Const!(void)[] msg_payload )
+    override protected void handle ( RequestOnConn connection,
+        IRequestResources resources, Const!(void)[] msg_payload )
     {
         this.connection = connection;
         this.ed = connection.event_dispatcher;
@@ -176,8 +171,8 @@ public abstract scope class ConsumeProtocol_v3
             }
         );
 
-        this.value_buffer = this.resources.getVoidBuffer();
-        this.record_batch = this.resources.getVoidBuffer();
+        this.value_buffer = resources.getVoidBuffer();
+        this.record_batch = resources.getVoidBuffer();
 
         try
         {
