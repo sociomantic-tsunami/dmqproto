@@ -12,29 +12,21 @@
 
 module dmqproto.node.neo.request.Push;
 
+import dmqproto.node.neo.request.core.IRequestHandlerRequest;
+
 /*******************************************************************************
 
     v2 Push request protocol.
 
 *******************************************************************************/
 
-public abstract scope class PushProtocol_v2
+public abstract class PushProtocol_v2: IRequestHandlerRequest
 {
-    import dmqproto.node.neo.request.core.Mixins;
-
-    import swarm.neo.node.RequestOnConn;
-    import swarm.neo.util.VoidBufferAsArrayOf;
     import dmqproto.common.Push;
 
+    import swarm.neo.util.VoidBufferAsArrayOf;
+
     import ocean.transition;
-
-    /***************************************************************************
-
-        Mixin the constructor and resources member.
-
-    ***************************************************************************/
-
-    mixin RequestCore!();
 
     /***************************************************************************
 
@@ -42,20 +34,21 @@ public abstract scope class PushProtocol_v2
 
         Params:
             connection = connection to client
+            resources = request resources acquirer
             msg_payload = initial message read from client to begin the request
                 (the request code and version are assumed to be extracted)
 
     ***************************************************************************/
 
-    final public void handle ( RequestOnConn connection,
-        Const!(void)[] msg_payload )
+    override protected void handle ( RequestOnConn connection,
+        IRequestResources resources, Const!(void)[] msg_payload )
     {
         auto ed = connection.event_dispatcher;
         auto parser = ed.message_parser;
 
         // Acquire a buffer to contain slices to the channel names in the
         // message payload (i.e. not a buffer of buffers, a buffer of slices)
-        auto channel_names = VoidBufferAsArrayOf!(cstring)(this.resources.getVoidBuffer());
+        auto channel_names = VoidBufferAsArrayOf!(cstring)(resources.getVoidBuffer());
         channel_names.length = *parser.getValue!(ubyte)(msg_payload);
 
         foreach ( ref channel_name; channel_names.array )

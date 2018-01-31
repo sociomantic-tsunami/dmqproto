@@ -144,11 +144,12 @@ public struct Push
                 );
                 conn.flush();
 
-                // Receive status from node and exit the loop if OK
-                auto status = conn.receiveValue!(StatusCode)();
-                if ( !Push.handleGlobalStatusCodes(status, context,
+                auto supported = conn.receiveValue!(SupportedStatus)();
+                if ( Push.handleSupportedCodes(supported, context,
                     conn.remote_address) )
                 {
+                    // Receive status from node and exit the loop if OK
+                    auto status = conn.receiveValue!(StatusCode)();
                     switch ( status )
                     {
                         case RequestStatusCode.Pushed:
