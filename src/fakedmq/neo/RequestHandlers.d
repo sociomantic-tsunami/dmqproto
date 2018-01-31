@@ -19,7 +19,7 @@ import dmqproto.common.RequestCodes;
 
 import Consume = fakedmq.neo.request.Consume;
 import Push    = fakedmq.neo.request.Push;
-import Pop     = fakedmq.neo.request.Pop;
+import fakedmq.neo.request.Pop;
 
 /*******************************************************************************
 
@@ -35,5 +35,5 @@ static this ( )
 {
     request_handlers.add(RequestCode.Consume, "consume", &Consume.handle);
     request_handlers.add(RequestCode.Push, "push", &Push.handle);
-    request_handlers.add(RequestCode.Pop, "pop", &Pop.handle);
+    request_handlers.add(Command(RequestCode.Pop, 0), "pop", PopImpl_v0.classinfo);
 }

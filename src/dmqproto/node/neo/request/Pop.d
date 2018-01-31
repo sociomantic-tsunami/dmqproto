@@ -12,28 +12,19 @@
 
 module dmqproto.node.neo.request.Pop;
 
+import dmqproto.node.neo.request.core.IRequestHandlerRequest;
+
 /*******************************************************************************
 
     v0 Pop request protocol.
 
 *******************************************************************************/
 
-public abstract scope class PopProtocol_v0
+public abstract class PopProtocol_v0: IRequestHandlerRequest
 {
-    import dmqproto.node.neo.request.core.Mixins;
-
-    import swarm.neo.node.RequestOnConn;
     import dmqproto.common.Pop;
 
     import ocean.transition;
-
-    /***************************************************************************
-
-        Mixin the constructor and resources member.
-
-    ***************************************************************************/
-
-    mixin RequestCore!();
 
     /***************************************************************************
 
@@ -41,13 +32,14 @@ public abstract scope class PopProtocol_v0
 
         Params:
             connection = connection to client
+            resources = request resources acquirer
             msg_payload = initial message read from client to begin the request
                 (the request code and version are assumed to be extracted)
 
     ***************************************************************************/
 
-    final public void handle ( RequestOnConn connection,
-        Const!(void)[] msg_payload )
+    override protected void handle ( RequestOnConn connection,
+        IRequestResources resources, Const!(void)[] msg_payload )
     {
         auto ed = connection.event_dispatcher;
         auto parser = ed.message_parser;
@@ -60,7 +52,7 @@ public abstract scope class PopProtocol_v0
 
         if (this.prepareChannel(channel_name, subscribed))
         {
-            auto value = this.resources.getVoidBuffer();
+            auto value = resources.getVoidBuffer();
             if ( this.getNextValue(*value) )
             {
                 ed.send(
