@@ -23,6 +23,7 @@ public abstract scope class PushProtocol_v2
     import dmqproto.node.neo.request.core.Mixins;
 
     import swarm.neo.node.RequestOnConn;
+    import swarm.neo.util.VoidBufferAsArrayOf;
     import dmqproto.common.Push;
 
     import ocean.transition;
@@ -54,20 +55,20 @@ public abstract scope class PushProtocol_v2
 
         // Acquire a buffer to contain slices to the channel names in the
         // message payload (i.e. not a buffer of buffers, a buffer of slices)
-        auto channel_names = cast(cstring[]*)this.resources.getVoidBuffer();
+        auto channel_names = VoidBufferAsArrayOf!(cstring)(this.resources.getVoidBuffer());
+        channel_names.length = *parser.getValue!(ubyte)(msg_payload);
 
-        auto num_channels = *parser.getValue!(ubyte)(msg_payload);
-
-        for ( size_t i; i < num_channels; i++ )
+        foreach ( ref channel_name; channel_names.array )
         {
-            *channel_names ~= parser.getArray!(char)(msg_payload);
+            channel_name = parser.getArray!(Const!(char))(msg_payload);
         }
 
-        auto value = parser.getArray!(char)(msg_payload);
+        Const!(void)[] value;
+        parser.parseBody(msg_payload, value);
 
-        if ( this.prepareChannels(*channel_names) )
+        if ( this.prepareChannels(channel_names.array) )
         {
-            foreach ( channel_name; *channel_names )
+            foreach ( channel_name; channel_names.array )
             {
                 this.pushToStorage(channel_name, value);
             }
