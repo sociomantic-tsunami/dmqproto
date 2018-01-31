@@ -17,7 +17,7 @@ import swarm.neo.request.Command;
 
 import dmqproto.common.RequestCodes;
 
-import Consume = fakedmq.neo.request.Consume;
+import fakedmq.neo.request.Consume;
 import fakedmq.neo.request.Push;
 import fakedmq.neo.request.Pop;
 
@@ -33,7 +33,7 @@ public ConnectionHandler.RequestMap request_handlers;
 
 static this ( )
 {
-    request_handlers.add(RequestCode.Consume, "consume", &Consume.handle);
+    request_handlers.add(Command(RequestCode.Consume, 3), "consume", ConsumeImpl_v3.classinfo);
     request_handlers.add(Command(RequestCode.Push, 2), "push", PushImpl_v2.classinfo);
     request_handlers.add(Command(RequestCode.Pop, 0), "pop", PopImpl_v0.classinfo);
 }
