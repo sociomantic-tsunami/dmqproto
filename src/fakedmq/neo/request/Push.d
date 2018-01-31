@@ -18,54 +18,9 @@ module fakedmq.neo.request.Push;
 
 *******************************************************************************/
 
-import dmqproto.node.neo.request.core.IRequestResources;
 import dmqproto.node.neo.request.Push;
 
-import fakedmq.neo.SharedResources;
-
-import swarm.neo.node.RequestOnConn;
-import swarm.neo.request.Command;
-
 import ocean.transition;
-
-/*******************************************************************************
-
-    The request handler for the table of handlers. When called, runs in a fiber
-    that can be controlled via `connection`.
-
-    Params:
-        shared_resources = an opaque object containing resources owned by the
-            node which are required by the request
-        connection  = performs connection socket I/O and manages the fiber
-        cmdver      = the version number of the Consume command as specified by
-                      the client
-        msg_payload = the payload of the first message of this request
-
-*******************************************************************************/
-
-public void handle ( Object shared_resources, RequestOnConn connection,
-    Command.Version cmdver, Const!(void)[] msg_payload )
-{
-    auto resources = new SharedResources;
-
-    switch ( cmdver )
-    {
-        case 2:
-            scope rq = new PushImpl_v2(resources);
-            rq.handle(connection, msg_payload);
-            break;
-
-        default:
-            auto ed = connection.event_dispatcher;
-            ed.send(
-                ( ed.Payload payload )
-                {
-                    payload.addCopy(SupportedStatus.RequestVersionNotSupported);
-                }
-            );
-            break;
-    }
-}
 
 /*******************************************************************************
 
@@ -73,23 +28,9 @@ public void handle ( Object shared_resources, RequestOnConn connection,
 
 *******************************************************************************/
 
-private scope class PushImpl_v2 : PushProtocol_v2
+class PushImpl_v2 : PushProtocol_v2
 {
     import fakedmq.Storage;
-
-    /***************************************************************************
-
-        Constructor.
-
-        Params:
-            shared_resources = DMQ request resources getter
-
-    ***************************************************************************/
-
-    public this ( IRequestResources resources)
-    {
-        super(resources);
-    }
 
     /***************************************************************************
 
