@@ -11,6 +11,8 @@
 
 *******************************************************************************/
 
+module integrationtest.dmqhelpers.main;
+
 import ocean.transition;
 import ocean.task.Scheduler;
 
@@ -18,6 +20,7 @@ import turtle.runner.Runner;
 import turtle.TestCase;
 import turtle.env.Dmq;
 
+version (UnitTest) {} else
 int main ( istring[] args )
 {
     // TODO: This test is currently disabled because it aborts with "Unhandled

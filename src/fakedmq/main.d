@@ -48,6 +48,7 @@ static this ( )
 
 *******************************************************************************/
 
+version (UnitTest) {} else
 void main ( )
 {
     auto epoll = new EpollSelectDispatcher;

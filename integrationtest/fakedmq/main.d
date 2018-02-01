@@ -8,7 +8,7 @@
 
 *******************************************************************************/
 
-module test.fakedmq.main;
+module integrationtest.fakedmq.main;
 
 /*******************************************************************************
 
@@ -26,6 +26,7 @@ import dmqtest.TestRunner;
 
 *******************************************************************************/
 
+version (UnitTest) {} else
 int main ( istring[] args )
 {
     auto runner = new TurtleRunner!(DmqTestRunner)("fakedmq", "dmqtest.cases");

@@ -11,6 +11,8 @@
 
 *******************************************************************************/
 
+module integrationtest.dmqfull.main;
+
 import ocean.core.Traits;
 import ocean.core.Enforce;
 import ocean.task.Task;
@@ -25,6 +27,7 @@ import ocean.io.Stdout;
 
 const RECORD_COUNT = 10000;
 
+version (UnitTest) {} else
 void main ()
 {
     global_storage.channel_size_limit = RECORD_COUNT / 10;
