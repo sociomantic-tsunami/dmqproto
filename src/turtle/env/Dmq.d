@@ -70,6 +70,10 @@ public class Dmq : Node!(DmqNode, "dmq")
     import ocean.text.convert.Formatter;
     import ocean.util.serialize.contiguous.package_;
 
+    import core.sys.posix.netinet.in_: AF_INET,  INET_ADDRSTRLEN;
+    import core.sys.posix.arpa.inet: socklen_t, inet_ntop;
+    import core.stdc.string: strlen;
+
     /***************************************************************************
 
         Prepares DMQ singleton for usage from tests
@@ -299,12 +303,18 @@ public class Dmq : Node!(DmqNode, "dmq")
         Creates a fake node at the specified address/port.
 
         Params:
-            node_item = address/port
+            node_addrport = address/port
 
     ***************************************************************************/
 
-    override public DmqNode createNode ( NodeItem node_item )
+    override public DmqNode createNode ( AddrPort node_addrport )
     {
+        auto node_item = NodeItem(new char[INET_ADDRSTRLEN], node_addrport.port());
+        Const!(char*) addrp = inet_ntop(AF_INET, &node_addrport.naddress,
+            node_item.Address.ptr, cast(socklen_t)node_item.Address.length);
+        assert(addrp);
+        node_item.Address = node_item.Address.ptr[0 .. strlen(node_item.Address.ptr)];
+
         auto epoll = theScheduler.epoll();
 
         auto node = new DmqNode(node_item, epoll);
@@ -321,10 +331,13 @@ public class Dmq : Node!(DmqNode, "dmq")
 
     ***************************************************************************/
 
-    override public NodeItem node_item ( )
+    override public AddrPort node_addrport ( )
     {
-        assert(this.node);
-        return this.node.node_item;
+        AddrPort addrport;
+        addrport.setAddress(this.node.node_item.Address);
+        addrport.port = this.node.node_item.Port;
+
+        return addrport;
     }
 
     /***************************************************************************
@@ -369,15 +382,17 @@ public class Dmq : Node!(DmqNode, "dmq")
 
     /***************************************************************************
 
-        Suppresses log output from the fake dmq if used version of dmqproto
-        supports it.
+        Suppresses/allows log output from the fake node if used version of node
+        proto supports it.
+
+        Params:
+            log = true to log errors, false to stop logging errors
 
     ***************************************************************************/
 
-    override public void ignoreErrors ( )
+    override public void log_errors ( bool log )
     {
-        static if (is(typeof(this.node.ignoreErrors())))
-            this.node.ignoreErrors();
+        this.node.log_errors = log;
     }
 
     /***************************************************************************

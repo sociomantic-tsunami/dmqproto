@@ -101,7 +101,7 @@ public struct Push
     ***************************************************************************/
 
     mixin RequestCore!(RequestType.RoundRobin, RequestCode.Push, 2, Args,
-        SharedWorking, Working, Notification);
+        SharedWorking, Notification);
 
     /***************************************************************************
 
@@ -111,13 +111,11 @@ public struct Push
             conns = round-robin getter for per-connection event dispatchers
             context_blob = untyped chunk of data containing the serialized
                 context of the request which is to be handled
-            working_blob = untyped chunk of data containing the serialized
-                working data for the request on this connection
 
     ***************************************************************************/
 
     public static void handler ( IRoundRobinConnIterator conns,
-        void[] context_blob, void[] working_blob )
+        void[] context_blob )
     {
         auto context = Push.getContext(context_blob);
         context.shared_working.succeeded = false;
@@ -192,13 +190,10 @@ public struct Push
         Params:
             context_blob = untyped chunk of data containing the serialized
                 context of the request which is finishing
-            working_data_iter = iterator over the stored working data associated
-                with each connection on which this request was run
 
     ***************************************************************************/
 
-    public static void all_finished_notifier ( void[] context_blob,
-        IRequestWorkingData working_data_iter )
+    public static void all_finished_notifier ( void[] context_blob )
     {
         auto context = Push.getContext(context_blob);
 

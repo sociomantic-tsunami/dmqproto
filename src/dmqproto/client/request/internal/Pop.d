@@ -108,7 +108,7 @@ public struct Pop
     ***************************************************************************/
 
     mixin RequestCore!(RequestType.RoundRobin, RequestCode.Pop, 0, Args,
-        SharedWorking, Working, Notification);
+        SharedWorking, Notification);
 
     /***************************************************************************
 
@@ -118,13 +118,11 @@ public struct Pop
             conns = round-robin getter for per-connection event dispatchers
             context_blob = untyped chunk of data containing the serialized
                 context of the request which is to be handled
-            working_blob = untyped chunk of data containing the serialized
-                working data for the request on this connection
 
     ***************************************************************************/
 
     public static void handler ( IRoundRobinConnIterator conns,
-        void[] context_blob, void[] working_blob )
+        void[] context_blob )
     {
         auto context = Pop.getContext(context_blob);
         context.shared_working = SharedWorking.init;
@@ -235,13 +233,10 @@ public struct Pop
         Params:
             context_blob = untyped chunk of data containing the serialized
                 context of the request which is finishing
-            working_data_iter = iterator over the stored working data associated
-                with each connection on which this request was run
 
     ***************************************************************************/
 
-    public static void all_finished_notifier ( void[] context_blob,
-        IRequestWorkingData working_data_iter )
+    public static void all_finished_notifier ( void[] context_blob )
     {
         auto context = Pop.getContext(context_blob);
 

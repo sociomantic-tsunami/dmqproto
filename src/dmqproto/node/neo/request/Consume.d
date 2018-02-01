@@ -269,7 +269,7 @@ public abstract scope class ConsumeProtocol_v3: IRequestHandlerRequest
         this.resume_fiber_on_push = true;
         this.resume_fiber_on_flush = !!(*this.record_batch).length;
 
-        auto event = this.ed.nextEvent(ed.NextEventFlags.Receive);
+        auto event = this.ed.nextEvent(ed.NextEventFlags.Receive | ed.NextEventFlags.Resume);
 
         this.resume_fiber_on_push = false;
         this.resume_fiber_on_flush = false;

@@ -18,7 +18,6 @@ import ocean.transition;
 public final class SharedResources
 {
     import swarm.neo.util.AcquiredResources;
-    import swarm.neo.request.RequestEventDispatcher;
     import swarm.neo.util.MessageFiber;
 
     import ocean.util.container.pool.FreeList;
@@ -27,9 +26,6 @@ public final class SharedResources
 
     /// Free list of recycled buffers
     private FreeList!(ubyte[]) buffers;
-
-    /// Pool of RequestEventDispatcher instances.
-    private FreeList!(RequestEventDispatcher) request_event_dispatchers;
 
     /// Pool of MessageFiber instances.
     private FreeList!(MessageFiber) fibers;
@@ -67,7 +63,6 @@ public final class SharedResources
     public this ( )
     {
         this.buffers = new FreeList!(ubyte[]);
-        this.request_event_dispatchers = new FreeList!(RequestEventDispatcher);
         this.fibers = new FreeList!(MessageFiber);
     }
 
@@ -86,10 +81,6 @@ public final class SharedResources
         /// Set of acquired buffers
         private AcquiredArraysOf!(void) acquired_buffers;
 
-        /// Singleton RequestEventDispatcher used by this request.
-        private AcquiredSingleton!(RequestEventDispatcher)
-            acquired_request_event_dispatcher;
-
         /// Set of acquired fibers.
         private Acquired!(MessageFiber) acquired_fibers;
 
@@ -104,8 +95,6 @@ public final class SharedResources
             this.acquired_buffers.initialise(this.outer.buffers);
             this.acquired_fibers.initialise(this.outer.buffers,
                 this.outer.fibers);
-            this.acquired_request_event_dispatcher.initialise(
-                this.outer.request_event_dispatchers);
         }
 
         /***********************************************************************
@@ -118,7 +107,6 @@ public final class SharedResources
         {
             this.acquired_buffers.relinquishAll();
             this.acquired_fibers.relinquishAll();
-            this.acquired_request_event_dispatcher.relinquish();
         }
 
         /***********************************************************************
@@ -131,25 +119,6 @@ public final class SharedResources
         public void[]* getBuffer ( )
         {
             return this.acquired_buffers.acquire();
-        }
-
-        /***********************************************************************
-
-            Returns:
-                pointer to singleton (one per request) RequestEventDispatcher
-                instance
-
-        ***********************************************************************/
-
-        public RequestEventDispatcher* request_event_dispatcher ( )
-        {
-            return this.acquired_request_event_dispatcher.acquire(
-                new RequestEventDispatcher,
-                ( RequestEventDispatcher* dispatcher )
-                {
-                    dispatcher.reset();
-                }
-            );
         }
 
         /***********************************************************************
