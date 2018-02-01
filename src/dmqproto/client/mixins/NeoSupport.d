@@ -144,10 +144,7 @@ template NeoSupport ( )
             );
 
             auto params = Const!(Internals.Consume.UserSpecifiedParams)(
-                Const!(Consume.Args)(channel, subscriber),
-                Const!(Internals.Consume.UserSpecifiedParams.SerializedNotifier)(
-                    *(cast(Const!(ubyte[notifier.sizeof])*)&notifier)
-                )
+                Const!(Consume.Args)(channel, subscriber), notifier
             );
 
             auto id = this.assign!(Internals.Consume)(params);
@@ -213,10 +210,7 @@ template NeoSupport ( )
                 "Push may operate on at most 255 channels");
 
             auto params = Const!(Internals.Push.UserSpecifiedParams)(
-                Const!(Push.Args)(channels, value),
-                Const!(Internals.Push.UserSpecifiedParams.SerializedNotifier)(
-                    *(cast(Const!(ubyte[notifier.sizeof])*)&notifier)
-                )
+                Const!(Push.Args)(channels, value), notifier
             );
 
             auto id = this.assign!(Internals.Push)(params);
@@ -246,10 +240,7 @@ template NeoSupport ( )
         public RequestId pop ( cstring channel, Pop.Notifier notifier )
         {
             auto params = Const!(Internals.Pop.UserSpecifiedParams)(
-                Const!(Pop.Args)(channel),
-                Const!(Internals.Pop.UserSpecifiedParams.SerializedNotifier)(
-                    *(cast(Const!(ubyte[notifier.sizeof])*)&notifier)
-                )
+                Const!(Pop.Args)(channel), notifier
             );
 
             auto id = this.assign!(Internals.Pop)(params);

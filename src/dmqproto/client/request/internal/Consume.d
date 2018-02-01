@@ -99,7 +99,7 @@ public struct Consume
     ***************************************************************************/
 
     mixin RequestCore!(RequestType.AllNodes, RequestCode.Consume, 3, Args,
-        SharedWorking, Working, Notification);
+        SharedWorking, Notification);
 
     /***************************************************************************
 
@@ -109,13 +109,11 @@ public struct Consume
             conn = request-on-conn event dispatcher
             context_blob = untyped chunk of data containing the serialized
                 context of the request which is to be handled
-            working_blob = untyped chunk of data containing the serialized
-                working data for the request on this connection
 
     ***************************************************************************/
 
     public static void handler ( RequestOnConn.EventDispatcherAllNodes conn,
-        void[] context_blob, void[] working_blob )
+        void[] context_blob )
     {
         auto context = This.getContext(context_blob);
 
@@ -133,13 +131,10 @@ public struct Consume
         Params:
             context_blob = untyped chunk of data containing the serialized
                 context of the request which is finishing
-            working_data_iter = iterator over the stored working data associated
-                with each connection on which this request was run
 
     ***************************************************************************/
 
-    public static void all_finished_notifier ( void[] context_blob,
-        IRequestWorkingData working_data_iter )
+    public static void all_finished_notifier ( void[] context_blob )
     {
         auto context = This.getContext(context_blob);
 
@@ -181,7 +176,7 @@ private scope class ConsumeHandler
     private SharedResources.RequestResources resources;
 
     /// Request event dispatcher.
-    private RequestEventDispatcher* request_event_dispatcher;
+    private RequestEventDispatcher request_event_dispatcher;
 
     /***************************************************************************
 
@@ -200,7 +195,7 @@ private scope class ConsumeHandler
         this.conn = conn;
         this.context = context;
         this.resources = resources;
-        this.request_event_dispatcher = resources.request_event_dispatcher;
+        this.request_event_dispatcher.initialise(&resources.getBuffer);
     }
 
     /***************************************************************************
@@ -212,7 +207,7 @@ private scope class ConsumeHandler
     public void run ( )
     {
         auto initialiser = createAllNodesRequestInitialiser!(Consume)(
-            this.conn, this.context, &this.fillPayload, &this.handleSupportedCode);
+            this.conn, this.context, &this.fillPayload);
         auto request = createAllNodesRequest!(Consume)(this.conn, this.context,
             &this.connect, &this.disconnected, initialiser, &this.handle);
         request.run();
@@ -273,53 +268,6 @@ private scope class ConsumeHandler
 
     /***************************************************************************
 
-        HandleSupportedCode policy, called from SuspendableRequestInitialiser
-        template to decide how to
-         - handle the supported code received from the node and
-         - receive the status code from the node and handle it.
-
-        Params:
-            code = supported code received from the node in response to the
-                initial message
-
-        Returns:
-            true to continue handling the request (supported and Started
-            status); false to abort (unsupported or Error status).
-
-    ***************************************************************************/
-
-    private bool handleSupportedCode ( ubyte code )
-    {
-        if ( !Consume.handleSupportedCodes(cast(SupportedStatus)code,
-            this.context, this.conn.remote_address) )
-        {
-            return false; // Request/version not supported
-        }
-
-        // Handle initial started/error message from node.
-        auto consume_status = conn.receiveValue!(RequestStatusCode)();
-        switch (consume_status)
-        {
-            case consume_status.Started:
-                // Expected "request started" code
-                return true;
-
-            // Treat unknown codes as internal errors.
-            case consume_status.Error:
-            default:
-                // The node returned an error code. Notify the user and
-                // end the request.
-                Consume.Notification n;
-                n.node_error = NodeInfo(conn.remote_address);
-                Consume.notify(this.context.user_params, n);
-                return false;
-        }
-
-        assert(false);
-    }
-
-    /***************************************************************************
-
         Handler policy, called from AllNodesRequest template to run the
         request's main handling logic.
 
@@ -327,6 +275,24 @@ private scope class ConsumeHandler
 
     private void handle ( )
     {
+        // Handle initial started/error message from node.
+        switch (conn.receiveValue!(RequestStatusCode)())
+        {
+            case RequestStatusCode.Started:
+                // Expected "request started" code
+                break;
+
+            // Treat unknown codes as internal errors.
+            case RequestStatusCode.Error:
+            default:
+                // The node returned an error code. Notify the user and
+                // end the request.
+                Consume.Notification n;
+                n.node_error = NodeInfo(conn.remote_address);
+                Consume.notify(this.context.user_params, n);
+                return;
+        }
+
         scope record_stream = this.new RecordStream;
         scope reader = this.new Reader(record_stream);
         scope controller = this.new Controller(record_stream);

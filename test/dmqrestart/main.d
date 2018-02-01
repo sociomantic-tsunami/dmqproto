@@ -65,7 +65,7 @@ void main ( )
             dmq.start("127.0.0.1");
 
             this.dmqclient = new DmqClient(theScheduler.epoll, MAX_CONNS);
-            this.dmqclient.addNode("127.0.0.1".dup, dmq.node_item.Port);
+            this.dmqclient.addNode("127.0.0.1".dup, dmq.node_addrport.port);
 
             uint i;
             while ( this.total_pushed < RECORD_COUNT )
