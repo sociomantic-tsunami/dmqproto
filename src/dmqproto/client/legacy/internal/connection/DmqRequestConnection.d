@@ -73,23 +73,23 @@ import ocean.transition;
 *******************************************************************************/
 
 private alias GetChannelsRequestTemplate!(IRequest,
-    IRequest.IDmqRequestResources, DmqConst.Command.E.GetChannels)
+    IDmqRequestResources, DmqConst.Command.E.GetChannels)
     GetChannelsRequest;
 
 private alias GetNumConnectionsRequestTemplate!(IRequest,
-    IRequest.IDmqRequestResources, DmqConst.Command.E.GetNumConnections)
+    IDmqRequestResources, DmqConst.Command.E.GetNumConnections)
     GetNumConnectionsRequest;
 
 private alias GetChannelSizeRequestTemplate!(IChannelRequest,
-    IRequest.IDmqRequestResources, DmqConst.Command.E.GetChannelSize)
+    IDmqRequestResources, DmqConst.Command.E.GetChannelSize)
     GetChannelSizeRequest;
 
 private alias GetSizeRequestTemplate!(IRequest,
-    IRequest.IDmqRequestResources, DmqConst.Command.E.GetSize)
+    IDmqRequestResources, DmqConst.Command.E.GetSize)
     GetSizeRequest;
 
 private alias RemoveChannelRequestTemplate!(IChannelRequest,
-    IRequest.IDmqRequestResources, DmqConst.Command.E.RemoveChannel)
+    IDmqRequestResources, DmqConst.Command.E.RemoveChannel)
     RemoveChannelRequest;
 
 
