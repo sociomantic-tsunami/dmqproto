@@ -70,6 +70,11 @@ public class Dmq : Node!(DmqNode, "dmq")
     import ocean.text.convert.Formatter;
     import ocean.util.serialize.contiguous.package_;
     import swarm.neo.AddrPort;
+    import swarm.Const: NodeItem;
+
+    import core.sys.posix.netinet.in_: AF_INET,  INET_ADDRSTRLEN;
+    import core.sys.posix.arpa.inet: socklen_t, inet_ntop;
+    import core.stdc.string: strlen;
 
     /***************************************************************************
 
@@ -306,12 +311,13 @@ public class Dmq : Node!(DmqNode, "dmq")
 
     override public DmqNode createNode ( AddrPort node_addrport )
     {
-        auto epoll = theScheduler.epoll();
+        auto node_item = NodeItem(new char[INET_ADDRSTRLEN], node_addrport.port());
+        Const!(char*) addrp = inet_ntop(AF_INET, &node_addrport.naddress,
+            node_item.Address.ptr, cast(socklen_t)node_item.Address.length);
+        assert(addrp);
+        node_item.Address = node_item.Address.ptr[0 .. strlen(node_item.Address.ptr)];
 
-        auto addr = node_addrport.address_bytes();
-        auto node_item = NodeItem(
-            format("{}.{}.{}.{}", addr[0], addr[1], addr[2], addr[3]).dup,
-            node_addrport.port());
+        auto epoll = theScheduler.epoll();
 
         auto node = new DmqNode(node_item, epoll);
         node.register(epoll);
@@ -331,7 +337,7 @@ public class Dmq : Node!(DmqNode, "dmq")
     {
         AddrPort addrport;
         addrport.setAddress(this.node.node_item.Address);
-        addrport.port = cast(ushort)this.node.node_item.Port;
+        addrport.port = this.node.node_item.Port;
 
         return addrport;
     }

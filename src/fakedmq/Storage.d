@@ -211,6 +211,21 @@ public struct Storage
 
     /***************************************************************************
 
+        Flushes all consumers.
+
+    ***************************************************************************/
+
+    public void flushAllConsumers ( )
+    {
+        foreach (channel; this.channels)
+        {
+            foreach (queue; channel)
+                queue.consumers.trigger(DmqListener.Code.Flush);
+        }
+    }
+
+    /***************************************************************************
+
         Removes all data about registered consumers from channels
 
         Intended as a tool for clean restart, must not be called while node
@@ -477,7 +492,6 @@ class Queue
                     }
                     break;
                 case code.Flush:
-                    this.sending_consumers += this.listeners.length;
                     super.trigger_(code);
                     break;
                 case code.Finish:
