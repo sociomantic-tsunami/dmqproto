@@ -250,7 +250,7 @@ public class ValueProducer : IProducer, IFlushable
     ***************************************************************************/
 
     public cstring next ( RequestParams.ProducerDg producer_dg,
-        RequestParams.Context context )
+        RequestContext context )
     {
         this.value_ready = false;
         this.busy = false;
