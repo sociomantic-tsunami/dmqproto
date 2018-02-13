@@ -25,7 +25,7 @@ import ocean.util.log.Logger;
 
 import fakedmq.ConnectionHandler;
 
-import swarm.node.model.Node;
+import swarm.node.model.NeoNode;
 
 /*******************************************************************************
 
@@ -56,9 +56,14 @@ public class DmqNode
     import ocean.io.select.client.model.ISelectClient : IAdvancedSelectClient;
     import ocean.net.server.connection.IConnectionHandlerInfo;
     import ocean.io.select.protocol.generic.ErrnoIOException;
+    import ocean.io.select.client.TimerEvent;
 
     import dmqproto.client.legacy.DmqConst;
     import swarm.node.connection.ConnectionHandler;
+    import swarm.neo.authentication.HmacDef: Key;
+    import Neo = swarm.neo.node.ConnectionHandler;
+    import fakedmq.neo.RequestHandlers;
+    import fakedmq.neo.SharedResources;
     import fakedmq.Storage;
     import swarm.neo.AddrPort;
 
@@ -70,6 +75,14 @@ public class DmqNode
     ***************************************************************************/
 
     public bool log_errors = true;
+
+    /***************************************************************************
+
+        Timer for periodic consumer flushing
+
+    ***************************************************************************/
+
+    private TimerEvent flush_timer;
 
     /***************************************************************************
 
@@ -90,14 +103,32 @@ public class DmqNode
         params.epoll = epoll;
         params.node_info = this;
 
-        super(node_item, params, backlog);
+        Options neo_options;
+        neo_options.requests = request_handlers;
+        neo_options.epoll = epoll;
+        neo_options.no_delay = true; // favour network turn-around over packet efficiency
+        neo_options.credentials_map["test"] = Key.init;
+
+        ushort neo_port = node_item.Port;
+
+        // If original port is 0, operating system should auto-choose the port
+        if (neo_port != 0)
+        {
+            neo_port++;
+        }
+
+        super(node_item, neo_port, params, neo_options, backlog);
         this.error_callback = &this.onError;
+
+        this.flush_timer = new TimerEvent(&this.onFlushTimer);
+        this.flush_timer.set(1,0,1,0);
+        epoll.register(this.flush_timer);
     }
 
     /***************************************************************************
 
         Override of standard `stopListener` to also clean fake node consumer
-        data in global storage.
+        data in global storage and unregister the flush timer.
 
     ***************************************************************************/
 
@@ -105,6 +136,8 @@ public class DmqNode
     {
         super.stopListener(epoll);
         global_storage.dropAllConsumers();
+        this.flush_timer.set(0,0,0,0);
+        epoll.unregister(this.flush_timer);
     }
 
     /***************************************************************************
@@ -117,6 +150,21 @@ public class DmqNode
     override public void shutdown ( )
     {
         this.log_errors = false;
+    }
+
+    /***************************************************************************
+
+        Callback for `this.flush_timer`; flushes all consumers.
+
+        Returns:
+            true to stay registered with epoll.
+
+    ***************************************************************************/
+
+    private bool onFlushTimer ( )
+    {
+        global_storage.flushAllConsumers();
+        return true;
     }
 
     /***************************************************************************
@@ -157,5 +205,24 @@ public class DmqNode
     override protected cstring id ( )
     {
         return "Fake Turtle DMQ Node";
+    }
+
+    /***************************************************************************
+
+        Scope allocates a request resource acquirer instance and passes it to
+        the provided delegate for use in a request.
+
+        Params:
+            handle_request_dg = delegate that receives a resources acquirer and
+                initiates handling of a request
+
+    ***************************************************************************/
+
+    override protected void getResourceAcquirer (
+        void delegate ( Object request_resources ) handle_request_dg )
+    {
+        // In the fake node, we don't actually store a shared resources
+        // instance; a new one is simply passed to each request.
+        handle_request_dg(new SharedResources);
     }
 }

@@ -2,6 +2,13 @@
 
     Asynchronous/event-driven DMQ client using non-blocking socket I/O (epoll)
 
+    The neo support is located in
+    $(LINK2 dmqproto/client/mixins/NeoSupport/NeoSupport.html, dmqproto.client.mixins.NeoSupport).
+    The methods provided, along with usage examples, are here:
+      * $(LINK2 dmqproto/client/mixins/NeoSupport/NeoSupport.Neo.html, Standard requests)
+      * $(LINK2 dmqproto/client/mixins/NeoSupport/NeoSupport.TaskBlocking.html, Task-blocking requests)
+
+
     Documentation:
 
     For detailed documentation see dmqproto.client.legacy.README.
@@ -166,9 +173,9 @@ public class ExtensibleDmqClient ( Plugins ... ) : DmqClient
 
     /***********************************************************************
 
-        Constructor
-
-        Adds the nodes in the config.config member to the registry.
+        Constructor with support for only the legacy protocol. Automatically
+        calls addNodes() with the node definition file specified in the Config
+        instance.
 
         Params:
             epoll = EpollSelectDispatcher instance to use
@@ -190,10 +197,12 @@ public class ExtensibleDmqClient ( Plugins ... ) : DmqClient
 
     /***************************************************************************
 
-        Constructor
+        Constructor with support for only the legacy protocol. This constructor
+        that accepts all arguments manually (i.e. not read from a config file)
+        is mostly of use in tests.
 
         Params:
-            epoll = EpollSelectorDispatcher instance to use
+            epoll = EpollSelectDispatcher instance to use
             plugin_instances = instances of Plugins
             conn_limit = maximum number of connections to each DMQ node
             queue_size = maximum size of the per-node request queue
@@ -209,6 +218,76 @@ public class ExtensibleDmqClient ( Plugins ... ) : DmqClient
         this.setPlugins(plugin_instances);
 
         super(epoll, conn_limit, queue_size, fiber_stack_size);
+    }
+
+
+     /***************************************************************************
+
+        Constructor with support for the neo and legacy protocols. Automatically
+        calls addNodes() with the node definition files specified in the legacy
+        and neo Config instances.
+
+        Params:
+            epoll = EpollSelectDispatcher instance to use
+            plugin_instances = instances of Plugins
+            config = swarm.client.model.IClient.Config instance. (The Config
+                class is designed to be read from an application's config.ini
+                file via ocean.util.config.ConfigFiller.)
+            neo_config = swarm.neo.client.mixins.ClientCore.Config instance.
+                (The Config class is designed to be read from an application's
+                config.ini file via ocean.util.config.ConfigFiller.)
+            conn_notifier = delegate which is called when a connection attempt
+                succeeds or fails (including when a connection is
+                re-established). Of type:
+                void delegate ( IPAddress node_address, Exception e )
+            fiber_stack_size = size (in bytes) of stack of individual connection
+                fibers
+
+    ***************************************************************************/
+
+    public this ( EpollSelectDispatcher epoll, Plugins plugin_instances,
+        IClient.Config config, Neo.Config neo_config,
+        Neo.ConnectionNotifier conn_notifier,
+        size_t fiber_stack_size = IClient.default_fiber_stack_size )
+    {
+        this.setPlugins(plugin_instances);
+
+        super(epoll, config, neo_config, conn_notifier, fiber_stack_size);
+    }
+
+
+    /***************************************************************************
+
+        Constructor with support for the neo and legacy protocols. This
+        constructor that accepts all arguments manually (i.e. not read from
+        config files) is mostly of use in tests.
+
+        Params:
+            epoll = EpollSelectDispatcher instance to use
+            auth_name = client name for authorisation
+            auth_key = client key (password) for authorisation
+            plugin_instances = instances of Plugins
+            conn_notifier = delegate which is called when a connection attempt
+                succeeds or fails (including when a connection is
+                re-established). Of type:
+                void delegate ( IPAddress node_address, Exception e )
+            conn_limit = maximum number of connections to each DMQ node
+            queue_size = maximum size of the per-node request queue
+            fiber_stack_size = size (in bytes) of stack of individual connection
+                fibers
+
+    ***************************************************************************/
+
+    public this ( EpollSelectDispatcher epoll, cstring auth_name, ubyte[] auth_key,
+        Plugins plugin_instances, Neo.ConnectionNotifier conn_notifier,
+        size_t conn_limit = IClient.Config.default_connection_limit,
+        size_t queue_size = IClient.Config.default_queue_size,
+        size_t fiber_stack_size = IClient.default_fiber_stack_size )
+    {
+        this.setPlugins(plugin_instances);
+
+        super(epoll, auth_name, auth_key, conn_notifier, conn_limit, queue_size,
+            fiber_stack_size);
     }
 }
 
@@ -236,9 +315,9 @@ public class SchedulingDmqClient : ExtensibleDmqClient!(RequestScheduler)
 
     /***********************************************************************
 
-        Constructor
-
-        Adds the nodes in the config.config member to the registry.
+        Constructor with support for only the legacy protocol. Automatically
+        calls addNodes() with the node definition file specified in the Config
+        instance.
 
         Params:
             epoll = EpollSelectDispatcher instance to use
@@ -258,10 +337,12 @@ public class SchedulingDmqClient : ExtensibleDmqClient!(RequestScheduler)
 
     /***************************************************************************
 
-        Constructor
+        Constructor with support for only the legacy protocol. This constructor
+        that accepts all arguments manually (i.e. not read from a config file)
+        is mostly of use in tests.
 
         Params:
-            epoll = EpollSelectorDispatcher instance to use
+            epoll = EpollSelectDispatcher instance to use
             conn_limit = maximum number of connections to each DMQ node
             queue_size = maximum size of the per-node request queue
             fiber_stack_size = size of connection fibers' stack (in bytes)
@@ -278,6 +359,77 @@ public class SchedulingDmqClient : ExtensibleDmqClient!(RequestScheduler)
     {
         super(epoll, new RequestScheduler(epoll, max_events), conn_limit,
             queue_size, fiber_stack_size);
+    }
+
+
+    /***************************************************************************
+
+        Constructor with support for the neo and legacy protocols. This
+        constructor that accepts all arguments manually (i.e. not read from
+        config files) is mostly of use in tests.
+
+        Params:
+            epoll = EpollSelectorDispatcher instance to use
+            auth_name = client name for authorisation
+            auth_key = client key (password) for authorisation
+            conn_notifier = delegate which is called when a connection attempt
+                succeeds or fails (including when a connection is
+                re-established). Of type:
+                void delegate ( IPAddress node_address, Exception e )
+            conn_limit = maximum number of connections to each DMQ node
+            queue_size = maximum size of the per-node request queue
+            fiber_stack_size = size (in bytes) of stack of individual connection
+                fibers
+            max_events = limit on the number of events which can be managed
+                by the scheduler at one time. (0 = no limit)
+
+    ***************************************************************************/
+
+    public this ( EpollSelectDispatcher epoll, char[] auth_name, ubyte[] auth_key,
+        Neo.ConnectionNotifier conn_notifier,
+        size_t conn_limit = IClient.Config.default_connection_limit,
+        size_t queue_size = IClient.Config.default_queue_size,
+        size_t fiber_stack_size = IClient.default_fiber_stack_size,
+        uint max_events = 0 )
+    {
+        super(epoll, auth_name, auth_key,
+            new RequestScheduler(epoll, max_events),
+            conn_notifier, conn_limit, queue_size, fiber_stack_size);
+    }
+
+
+    /***************************************************************************
+
+        Constructor with support for the neo and legacy protocols. Automatically
+        calls addNodes() with the node definition files specified in the legacy
+        and neo Config instances.
+
+        Params:
+            epoll = EpollSelectDispatcher instance to use
+            config = SchedulingDmqClient.Config instance. (The Config class is
+                designed to be read from an application's config.ini file via
+                ocean.util.config.ConfigFiller.)
+            neo_config = swarm.neo.client.mixins.ClientCore.Config instance.
+                (The Config class is designed to be read from an application's
+                config.ini file via ocean.util.config.ConfigFiller.)
+            conn_notifier = delegate which is called when a connection attempt
+                succeeds or fails (including when a connection is
+                re-established). Of type:
+                void delegate ( IPAddress node_address, Exception e )
+            fiber_stack_size = size (in bytes) of stack of individual connection
+                fibers
+            max_events = limit on the number of events which can be managed
+                by the scheduler at one time. (0 = no limit)
+
+    ***************************************************************************/
+
+    public this ( EpollSelectDispatcher epoll, SchedulingDmqClient.Config config,
+        Neo.Config neo_config, Neo.ConnectionNotifier conn_notifier,
+        size_t fiber_stack_size = IClient.default_fiber_stack_size,
+        uint max_events = 0 )
+    {
+        super(epoll, new RequestScheduler(epoll, max_events),
+            config, neo_config, conn_notifier, fiber_stack_size);
     }
 }
 
@@ -326,14 +478,26 @@ public class DmqClient : IClient
 
     /***************************************************************************
 
-        Constructor -- automatically calls addNodes() with the node definition
-        file specified in the Config instance.
+        Neo protocol support.
+
+    ***************************************************************************/
+
+    import dmqproto.client.mixins.NeoSupport;
+
+    mixin NeoSupport!();
+
+
+    /***************************************************************************
+
+        Constructor with support for only the legacy protocol. Automatically
+        calls addNodes() with the node definition file specified in the Config
+        instance.
 
         Params:
-            epoll = EpollSelectorDispatcher instance to use
+            epoll = EpollSelectDispatcher instance to use
             config = Config instance (see swarm.client.model.IClient. The
                 Config class is designed to be read from an application's
-                config.ini file via ocean.util.config.ClassFiller)
+                config.ini file via ocean.util.config.ConfigFiller)
             fiber_stack_size = size of connection fibers' stack (in bytes)
 
     ***************************************************************************/
@@ -347,6 +511,80 @@ public class DmqClient : IClient
 
             this.addNodes(nodes_file);
         }
+    }
+
+
+    /***************************************************************************
+
+        Constructor with support for the neo and legacy protocols. This
+        constructor that accepts all arguments manually (i.e. not read from
+        config files) is mostly of use in tests.
+
+        Params:
+            epoll = EpollSelectDispatcher instance to use
+            auth_name = client name for authorisation
+            auth_key = client key (password) for authorisation. This should be a
+                properly generated random number which only the client and the
+                nodes know. See `README_client_neo.rst` for suggestions. The key
+                must be of the length defined in
+                swarm.neo.authentication.HmacDef (128 bytes)
+            conn_notifier = delegate which is called when a connection attempt
+                succeeds or fails (including when a connection is
+                re-established). Of type:
+                void delegate ( IPAddress node_address, Exception e )
+            conn_limit = maximum number of connections to each DMQ node
+            queue_size = maximum size of the per-node request queue
+            fiber_stack_size = size of connection fibers' stack (in bytes)
+
+    ***************************************************************************/
+
+    public this ( EpollSelectDispatcher epoll, cstring auth_name, ubyte[] auth_key,
+        Neo.ConnectionNotifier conn_notifier,
+        size_t conn_limit = IClient.Config.default_connection_limit,
+        size_t queue_size = IClient.Config.default_queue_size,
+        size_t fiber_stack_size = IClient.default_fiber_stack_size )
+    {
+        this(epoll, conn_limit, queue_size, fiber_stack_size);
+
+        this.neoInit(auth_name, auth_key, conn_notifier);
+    }
+
+
+     /***************************************************************************
+
+        Constructor with support for the neo and legacy protocols. Automatically
+        calls addNodes() with the node definition files specified in the legacy
+        and neo Config instances.
+
+        Params:
+            epoll = EpollSelectDispatcher instance to use
+            config = swarm.client.model.IClient.Config instance. (The Config
+                class is designed to be read from an application's config.ini
+                file via ocean.util.config.ConfigFiller.)
+            neo_config = swarm.neo.client.mixins.ClientCore.Config instance.
+                (The Config class is designed to be read from an application's
+                config.ini file via ocean.util.config.ConfigFiller.)
+            conn_notifier = delegate which is called when a connection attempt
+                succeeds or fails (including when a connection is
+                re-established). Of type:
+                void delegate ( IPAddress node_address, Exception e )
+            fiber_stack_size = size (in bytes) of stack of individual connection
+                fibers
+
+    ***************************************************************************/
+
+    public this ( EpollSelectDispatcher epoll, IClient.Config config,
+        Neo.Config neo_config, Neo.ConnectionNotifier conn_notifier,
+        size_t fiber_stack_size = IClient.default_fiber_stack_size )
+    {
+        with ( config )
+        {
+            this(epoll, connection_limit(), queue_size(), fiber_stack_size);
+
+            this.addNodes(nodes_file);
+        }
+
+        this.neoInit(neo_config, conn_notifier);
     }
 
 

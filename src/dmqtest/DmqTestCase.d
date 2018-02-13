@@ -111,6 +111,7 @@ abstract class DmqTestCase : TestCase
     {
         this.dmq = new DmqClient();
         this.dmq.addNode("127.0.0.1", 10000);
+        this.dmq.neo.connect();
     }
 
     /***************************************************************************
@@ -126,6 +127,8 @@ abstract class DmqTestCase : TestCase
         {
             this.dmq.removeChannel(channel);
         }
+
+        this.dmq.neo.shutdown();
     }
 
     /***************************************************************************
@@ -303,6 +306,7 @@ class ParallelCheckedDmqTestCase : DmqTestCase
             // easiest way to do this is to block the main test task when
             // connecting.
             this.dmq.addNode("127.0.0.1", 10000);
+            this.dmq.neo.connect(this.outer.test_case_task);
         }
 
         /***********************************************************************
@@ -319,6 +323,8 @@ class ParallelCheckedDmqTestCase : DmqTestCase
             this.outer.running++;
             scope ( exit )
             {
+                this.dmq.neo.shutdown();
+
                 if ( --this.outer.running == 0 )
                     this.outer.test_case_task.resume();
             }
@@ -554,5 +560,274 @@ class ParallelCheckedDmqTestCase : DmqTestCase
 
         if ( this.write_task.e ) throw this.write_task.e;
         if ( this.check_task.e ) throw this.check_task.e;
+    }
+}
+
+/*******************************************************************************
+
+    Channel subscriber test.
+
+*******************************************************************************/
+
+class SubscribeDmqTestCase : DmqTestCase
+{
+    import dmqtest.cases.writers.model.IWriter;
+    import dmqtest.util.Record: sort;
+    import ocean.text.util.ClassName;
+
+    /***************************************************************************
+
+        DMQ consumers.
+
+    ***************************************************************************/
+
+    private DmqClient.Neo.Consumers consumers;
+
+    /***************************************************************************
+
+        The writer which is used to write data to the DMQ.
+
+    ***************************************************************************/
+
+    private IWriter writer;
+
+    /***************************************************************************
+
+        Constructor.
+
+        Params:
+            writer = the writer which is used to write data to the DMQ
+
+    ***************************************************************************/
+
+    public this ( IWriter writer )
+    {
+        super(writer.test_channels);
+        this.writer = writer;
+    }
+
+    /***************************************************************************
+
+        Initializes internal DMQ client and consumers.
+
+    ***************************************************************************/
+
+    override public void prepare ( )
+    {
+        super.prepare();
+        this.writer.prepare(this.dmq);
+        this.consumers = this.dmq.neo.new Consumers;
+    }
+
+    /***************************************************************************
+
+        Returns:
+            the test description.
+
+    ***************************************************************************/
+
+    override public Description description ( )
+    {
+        Description desc;
+        desc.name = "Channel subscribers/" ~ classname(this.writer);
+        return desc;
+    }
+
+    /***************************************************************************
+
+        Runs the test.
+
+    ***************************************************************************/
+
+    override public void run ( )
+    {
+
+        /*
+         * Push a bunch of records to the queue channel.
+         */
+        Const!(char[])[] pushed_records = this.records;
+        this.writer.run(pushed_records);
+
+        /*
+         * Pop one record, should succeed.
+         */
+        this.pop1Success(pushed_records[0]);
+        pushed_records = pushed_records[1 .. $];
+
+        /*
+         * Assign multiple subscribers to the channel. The "sub1" subscribers
+         * should share the records already in the channel while "sub2" gets
+         * nothing.
+         */
+        this.startConsumers("sub1", "sub1", "sub2");
+
+        /*
+         * Attempt to pop one record, should fail with
+         * `channel_has_subscribers`.
+         */
+        this.pop1FailureSubscribed();
+
+        /*
+         * Consume records, expecting only the "sub1" subscriber to receive the
+         * remaining records.
+         */
+        this.consume(pushed_records, "sub1");
+
+        /*
+         * Push another bunch of records to the queue channel that now has
+         * subscribers. All subscribers should now receive the records.
+         */
+        this.writer.run(this.records);
+        this.consume(this.records, "sub1", "sub2");
+
+        this.consumers.stop();
+    }
+
+    /***************************************************************************
+
+        Pops one record from all channels of the queue, expecting it to match
+        `expected_record`.
+
+        Params:
+            expected_record = the expected record
+
+    ***************************************************************************/
+
+    private void pop1Success ( cstring expected_record )
+    {
+        foreach (channel; this.channels)
+        {
+            auto record = cast(char[])this.dmq.neo.pop(channel);
+            test!("==")(record, expected_record);
+        }
+    }
+
+    /***************************************************************************
+
+        Pops one record from each channel, expecting all the Pop requests to
+        fail because the channel has subscribers.
+
+    ***************************************************************************/
+
+    private void pop1FailureSubscribed ( )
+    {
+        foreach (channel; this.channels)
+        {
+            uint[DmqClient.Neo.PopNotificationType.max + 1] notifications;
+
+            test!("==")(this.dmq.neo.pop(channel, notifications).length, 0);
+
+            with (DmqClient.Neo.PopNotificationType)
+            {
+                test!("==")(notifications[empty], 0);
+                test!("==")(notifications[received], 0);
+                test!("==")(notifications[not_connected], 0);
+                test!("!=")(notifications[failure], 0);
+                test!("==")(notifications[node_disconnected], 0);
+                test!("!=")(notifications[channel_has_subscribers], 0);
+                test!("==")(notifications[node_error], 0);
+                test!("==")(notifications[unsupported], 0);
+            }
+        }
+    }
+
+    /***************************************************************************
+
+        Starts `subscriber_names.length` consumers. Each consumer uses the
+        corresponding subscriber name. The consumers are started in the order of
+        `subscriber_names`. Duplicate subscriber names are allowed to have
+        multiple consumers sharing a queue.
+
+        Params:
+            subscriber_names = the subscriber names to use, one per consumer
+
+    ***************************************************************************/
+
+    private void startConsumers ( Const!(char[])[] subscriber_names ... )
+    {
+        foreach (channel; this.channels)
+        {
+            foreach (subscriber_name; subscriber_names)
+                this.consumers.startConsumer(channel, subscriber_name);
+        }
+    }
+
+    /***************************************************************************
+
+        Consumes records from the queue after consumers have been started via
+        `startConsumers()`. Checks the received records, expecting that all
+        subscribers to all channels receive `expected_records`. This is the case
+        when
+          1. for each channel and subscriber name one or multiple consumers are
+             started,
+          2. the channels are empty and
+          3. `expected_records` are pushed to all channels.
+
+        Params:
+            expected_records = the records expected to be received for each
+                channel and subscriber
+            subscriber_names = the names of all subscribers (duplicates are not
+                allowed)
+
+    ***************************************************************************/
+
+    private void consume ( Const!(char[])[] expected_records,
+        Const!(char[])[] subscriber_names ... )
+    in
+    {
+        assert(expected_records.length);
+        assert(subscriber_names.length);
+    }
+    body
+    {
+        cstring[][Const!(char[])][Const!(char[])]
+            records_by_channel_and_subscriber;
+
+        foreach (channel; this.channels)
+        {
+            cstring[][Const!(char[])] records_by_subscriber;
+            foreach (subscriber_name; subscriber_names)
+            {
+                assert(!(subscriber_name in records_by_subscriber),
+                    "duplicate subscriber name");
+                records_by_subscriber[subscriber_name] = null;
+            }
+            records_by_channel_and_subscriber[channel] = records_by_subscriber;
+        }
+
+        auto n_expected_records =
+            expected_records.length * subscriber_names.length *
+            this.channels.length;
+        uint popped;
+        for (popped = 0; popped < n_expected_records;)
+        {
+            // Wait for something to happen
+            this.consumers.waitNextEvent();
+
+            // Append received records to records_by_channel_and_subscriber
+            foreach (record; this.consumers.received_records)
+            {
+                test!(">")(records_by_channel_and_subscriber.length, 0);
+                cstring[][Const!(char[])]* records_by_subscriber =
+                    record.channel in records_by_channel_and_subscriber;
+                test!("!is")(records_by_subscriber, null);
+                test!(">")(records_by_subscriber.length, 0);
+                cstring[]* records = record.subscriber in *records_by_subscriber;
+                test!("!is")(records, null);
+                test!("<")(records.length, expected_records.length);
+                (*records) ~= record.value;
+                popped++;
+            }
+
+            this.consumers.received_records.length = 0;
+            enableStomping(this.consumers.received_records);
+        }
+
+        test!("==")(popped, n_expected_records);
+
+        foreach (channel, records_by_subscriber; records_by_channel_and_subscriber)
+            foreach (subscriber, records; records_by_subscriber)
+                foreach (i, record; sort(records))
+                    test!("==")(record, expected_records[i]);
     }
 }
