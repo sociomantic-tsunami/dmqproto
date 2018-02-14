@@ -363,7 +363,7 @@ class DmqClient
         {
             void[] result;
 
-            void notify ( Pop.Notification info, Pop.Args args )
+            void notify ( Pop.Notification info, Const!(Pop.Args) args )
             {
                 notifications[info.active]++;
             }
@@ -772,7 +772,7 @@ class DmqClient
             *******************************************************************/
 
             private void notifier ( Consume.Notification info,
-                Consume.Args args )
+                Const!(Consume.Args) args )
             {
                 with ( info.Active ) switch ( info.active )
                 {
