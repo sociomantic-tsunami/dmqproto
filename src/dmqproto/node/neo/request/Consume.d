@@ -28,6 +28,7 @@ public abstract scope class ConsumeProtocol_v3: IRequestHandlerRequest
 
     import swarm.util.RecordBatcher;
 
+    import ocean.core.Verify;
     import ocean.transition;
 
     /***************************************************************************
@@ -244,7 +245,7 @@ public abstract scope class ConsumeProtocol_v3: IRequestHandlerRequest
                     return;
 
                 default:
-                    assert(false, "Consume: Unexpected fiber resume code");
+                    verify(false, "Consume: Unexpected fiber resume code");
             }
         }
     }

@@ -30,6 +30,7 @@ import dmqproto.client.legacy.internal.request.notifier.RequestNotification;
 import dmqproto.client.legacy.internal.connection.model.IReregistrator;
 
 import ocean.transition;
+import ocean.core.Verify;
 
 
 /*******************************************************************************
@@ -104,7 +105,8 @@ public scope class PopRequest : IChannelRequest
             {
                 case Reregistered: break;
                 case MultipleNodeQuery:
-                    assert(false, "pop: is not multiple node");
+                    verify(false, "pop: is not multiple node");
+                    assert(false);
                 case NoMoreNodes:
                     this.finished(value); break;
                 version (D_Version2) {} else default:

@@ -19,6 +19,7 @@ module dmqproto.client.request.internal.Push;
 *******************************************************************************/
 
 import ocean.transition;
+import ocean.core.Verify;
 import ocean.util.log.Logger;
 
 /*******************************************************************************
@@ -124,7 +125,7 @@ public struct Push
         {
             try
             {
-                assert(context.user_params.args.channels.length <= 255);
+                verify(context.user_params.args.channels.length <= 255);
                 auto num_channels =
                     cast(ubyte)context.user_params.args.channels.length;
 

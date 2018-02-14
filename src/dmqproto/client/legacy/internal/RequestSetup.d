@@ -41,6 +41,7 @@ import ocean.transition;
 public template IODelegate ( istring name )
 {
     import ocean.transition;
+    import ocean.core.Verify;
     import ocean.core.TypeConvert : downcast;
 
     mixin TypeofThis;
@@ -94,7 +95,7 @@ public template IODelegate ( istring name )
     private void setup_io_item ( IRequestParams params )
     {
         auto params_ = downcast!(RequestParams)(params);
-        assert(params_);
+        verify(params_ !is null);
 
         params_.io_item = this.io_item;
     }
@@ -196,7 +197,7 @@ public template IODelegate2 ( istring name )
     private void setup_io_item2 ( IRequestParams params )
     {
         auto params_ = downcast!(RequestParams)(params);
-        assert(params_);
+        verify(params_ !is null);
 
         params_.io_item2 = this.io_item2;
     }
@@ -242,6 +243,7 @@ public template IODelegate2 ( istring name )
 public template Channels ( )
 {
     import ocean.core.TypeConvert : downcast;
+    import ocean.core.Verify;
     import ocean.transition;
 
     mixin TypeofThis;
@@ -268,12 +270,9 @@ public template Channels ( )
     ***************************************************************************/
 
     public This* channels ( Const!(char[])[] channels )
-    in
     {
-        assert(channels.length, "multi-channel request: empty list of channels");
-    }
-    body
-    {
+        verify(!!channels.length, "multi-channel request: empty list of channels");
+
         this.channel_names = channels;
         version (D_Version2)
             return &this;
@@ -295,7 +294,7 @@ public template Channels ( )
     private void setup_channel_names ( IRequestParams params )
     {
         auto params_ = downcast!(RequestParams)(params);
-        assert(params_);
+        verify(params_ !is null);
 
         params_.channels = this.channel_names;
     }

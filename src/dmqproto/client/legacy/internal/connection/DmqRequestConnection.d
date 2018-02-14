@@ -65,6 +65,7 @@ import dmqproto.client.legacy.internal.request.PushMultiRequest;
 debug ( SwarmClient ) import ocean.io.Stdout;
 
 import ocean.transition;
+import ocean.core.Verify;
 
 /*******************************************************************************
 
@@ -483,7 +484,7 @@ public class DmqRequestConnection :
 
     override protected void handleNone ( )
     {
-        assert(false, "Handling command with code None");
+        verify(false, "Handling command with code None");
     }
 
 

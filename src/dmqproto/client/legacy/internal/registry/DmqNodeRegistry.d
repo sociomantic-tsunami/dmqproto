@@ -48,6 +48,7 @@ import ocean.core.TypeConvert : castFrom, downcast;
 debug ( SwarmClient ) import ocean.io.Stdout;
 
 import ocean.transition;
+import ocean.core.Verify;
 
 /******************************************************************************
 
@@ -110,12 +111,9 @@ public class DmqNodeRegistry : NodeRegistry, IDmqNodeRegistry, IReregistrator
     public this ( EpollSelectDispatcher epoll, ClientSettings settings,
         IRequestOverflow request_overflow,
         INodeConnectionPoolErrorReporter error_reporter )
-    in
     {
-        assert(epoll !is null, typeof(this).stringof ~ ".ctor: epoll must be non-null");
-    }
-    body
-    {
+        verify(epoll !is null, typeof(this).stringof ~ ".ctor: epoll must be non-null");
+
         super(epoll, settings, request_overflow,
             new NodeSet(this.expected_nodes), error_reporter);
 
@@ -253,7 +251,7 @@ public class DmqNodeRegistry : NodeRegistry, IDmqNodeRegistry, IReregistrator
                 break;
 
             default:
-                assert(false, "invalid command");
+                verify(false, "invalid command");
         }
 
         return this.currentNode(dmq_params);
@@ -274,12 +272,9 @@ public class DmqNodeRegistry : NodeRegistry, IDmqNodeRegistry, IReregistrator
     ***************************************************************************/
 
     private uint nextPool ( ref uint index )
-    in
     {
-        assert(index < super.nodes.list.length, typeof (this).stringof ~ ".getPool - index out of range");
-    }
-    body
-    {
+        verify(index < super.nodes.list.length, typeof (this).stringof ~ ".getPool - index out of range");
+
         auto pool = index;
         if ( ++index >= super.nodes.list.length )
         {
@@ -330,10 +325,6 @@ public class DmqNodeRegistry : NodeRegistry, IDmqNodeRegistry, IReregistrator
     ***************************************************************************/
 
     private DmqNodeConnectionPool getPoolWithLowestQueueUsage ( uint start )
-    in
-    {
-        assert(start < this.nodes.list.length);
-    }
     out (node)
     {
         assert(node);
@@ -344,6 +335,8 @@ public class DmqNodeRegistry : NodeRegistry, IDmqNodeRegistry, IReregistrator
     }
     body
     {
+        verify(start < this.nodes.list.length);
+
         auto pos = start;
         auto selected_node = this.nodes.list[this.nextPool(pos)];
         auto selected_queued = selected_node.queued_bytes + selected_node.overflowed_bytes;

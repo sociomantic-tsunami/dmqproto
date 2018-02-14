@@ -50,6 +50,7 @@ import dmqproto.client.legacy.internal.request.model.IRequest;
 import ocean.core.TypeConvert : downcast;
 
 import ocean.transition;
+import ocean.core.Verify;
 
 /*******************************************************************************
 
@@ -175,7 +176,7 @@ public class DmqNodeConnectionPool : NodeConnectionPool
     override protected void queueRequest ( IRequestParams iparams )
     {
         auto params = downcast!(RequestParams)(iparams);
-        assert(params);
+        verify(params !is null);
 
         if (params.force_assign)
         {
@@ -230,7 +231,7 @@ public class DmqNodeConnectionPool : NodeConnectionPool
         super.notifyRequestQueueOverflow(iparams); // Finished notification
 
         auto params = downcast!(RequestParams)(iparams);
-        assert(params);
+        verify(params !is null);
 
         if ( params.force_assign )
         {

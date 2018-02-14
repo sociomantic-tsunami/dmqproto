@@ -31,6 +31,7 @@ import dmqproto.client.legacy.internal.connection.model.IReregistrator;
 import swarm.client.ClientExceptions;
 
 import ocean.core.Enforce;
+import ocean.core.Verify;
 
 
 
@@ -149,7 +150,8 @@ public scope class PushRequest : IChannelRequest
                     (__FILE__, __LINE__));
                 break;
             case MultipleNodeQuery:
-                assert(false, "push: is not multiple node");
+                verify(false, "push: is not multiple node");
+                assert(false);
             version (D_Version2) {} else default:
                 assert(false, "push: unknown registerNext response");
         }

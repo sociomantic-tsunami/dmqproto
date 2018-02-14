@@ -20,6 +20,7 @@ abstract class IRequestHandlerRequest: IRequestHandler
 {
     import swarm.neo.node.RequestOnConn;
     import dmqproto.node.neo.request.core.IRequestResources;
+    import ocean.core.Verify;
     import ocean.transition;
 
     /// Request-on-conn of this request handler.
@@ -52,7 +53,7 @@ abstract class IRequestHandlerRequest: IRequestHandler
     {
         this.connection = connection;
         this.resources = cast(IRequestResources)resources_object;
-        assert(this.resources !is null);
+        verify(this.resources !is null);
     }
 
     /***************************************************************************
