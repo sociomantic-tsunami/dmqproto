@@ -99,7 +99,7 @@ public scope class PopRequest : IChannelRequest
         {
             this.params.force_assign = true;
 
-            with ( RegisterNextResult ) switch ( this.resources.reregistrator.
+            with ( RegisterNextResult ) final switch ( this.resources.reregistrator.
                 registerNext(this.params) )
             {
                 case Reregistered: break;
@@ -107,7 +107,7 @@ public scope class PopRequest : IChannelRequest
                     assert(false, "pop: is not multiple node");
                 case NoMoreNodes:
                     this.finished(value); break;
-                default:
+                version (D_Version2) {} else default:
                     assert(false, "pop: unknown registerNext response");
             }
         }

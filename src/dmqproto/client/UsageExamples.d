@@ -82,7 +82,7 @@ version ( UnitTest )
         // made.)
         private void connNotifier ( DmqClient.Neo.ConnNotification info )
         {
-            with ( info.Active ) switch ( info.active )
+            with ( info.Active ) final switch ( info.active )
             {
                 case connected:
                     Stdout.formatln("Connected to {}:{}",
@@ -97,8 +97,7 @@ version ( UnitTest )
                         info.error_while_connecting.node_addr.port);
                     break;
 
-                default:
-                    assert(false);
+                mixin(typeof(info).handleInvalidCases);
             }
         }
     }
@@ -148,7 +147,7 @@ unittest
             // represents one possible notification. `info.active` denotes
             // the type of the current notification. Some notifications
             // have fields containing more information:
-            with ( info.Active ) switch ( info.active )
+            with ( info.Active ) final switch ( info.active )
             {
                 case success:
                     Stdout.formatln("The request succeeded!");
@@ -178,7 +177,7 @@ unittest
                     break;
 
                 case unsupported:
-                    switch ( info.unsupported.type )
+                    final switch ( info.unsupported.type )
                     {
                         case info.unsupported.type.RequestNotSupported:
                             Stdout.formatln(
@@ -192,11 +191,11 @@ unittest
                                 info.unsupported.node_addr.address_bytes,
                                 info.unsupported.node_addr.port);
                             break;
-                        default: assert(false);
+                        version (D_Version2) {} else default: assert(false);
                     }
                     break;
 
-                default: assert(false);
+                mixin(typeof(info).handleInvalidCases);
             }
         }
     }
@@ -285,7 +284,7 @@ unittest
             // represents one possible notification. `info.active` denotes
             // the type of the current notification. Some notifications
             // have fields containing more information:
-            with ( info.Active ) switch ( info.active )
+            with ( info.Active ) final switch ( info.active )
             {
                 case received:
                     Stdout.formatln("'{}' received from channel '{}'",
@@ -323,7 +322,7 @@ unittest
                     break;
 
                 case unsupported:
-                    switch ( info.unsupported.type )
+                    final switch ( info.unsupported.type )
                     {
                         case info.unsupported.type.RequestNotSupported:
                             Stdout.formatln(
@@ -337,11 +336,11 @@ unittest
                                 info.unsupported.node_addr.address_bytes,
                                 info.unsupported.node_addr.port);
                             break;
-                        default: assert(false);
+                        version (D_Version2) {} else default: assert(false);
                     }
                     break;
 
-                default: assert(false);
+                mixin(typeof(info).handleInvalidCases);
             }
         }
 

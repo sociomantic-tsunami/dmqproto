@@ -436,7 +436,7 @@ template NeoSupport ( )
                 if ( user_notifier )
                     user_notifier(info, args);
 
-                with ( info.Active ) switch ( info.active )
+                with ( info.Active ) final switch ( info.active )
                 {
                     case success:
                         state = state.Succeeded;
@@ -455,7 +455,7 @@ template NeoSupport ( )
                     case unsupported:
                         break;
 
-                    default: assert(false);
+                    mixin(typeof(info).handleInvalidCases);
                 }
             }
 
@@ -536,7 +536,7 @@ template NeoSupport ( )
                 if ( user_notifier )
                     user_notifier(info, args);
 
-                with ( info.Active ) switch ( info.active )
+                with ( info.Active ) final switch ( info.active )
                 {
                     case received:
                         value.copy(info.received.value);
@@ -564,7 +564,7 @@ template NeoSupport ( )
                     case channel_has_subscribers:
                         break;
 
-                    default: assert(false);
+                    mixin(typeof(info).handleInvalidCases);
                 }
             }
 

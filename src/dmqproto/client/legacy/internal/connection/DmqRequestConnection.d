@@ -649,7 +649,7 @@ public class DmqRequestConnection :
         {
             auto dmq_params = cast(RequestParams)this.params;
 
-            with ( RegisterNextResult ) switch ( this.reregistrator.
+            with ( RegisterNextResult ) final switch ( this.reregistrator.
                 registerNext(dmq_params) )
             {
                 case MultipleNodeQuery: break;
@@ -676,7 +676,7 @@ public class DmqRequestConnection :
                         this.conn_pool.port, this.object_pool_index,
                         this.exception.toString());
                     break;
-                default:
+                version (D_Version2) {} else default:
                     assert(false, "unknown registerNext response");
             }
         }
