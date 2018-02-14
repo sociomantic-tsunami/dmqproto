@@ -140,7 +140,7 @@ public scope class PushRequest : IChannelRequest
 
     private void tryNextNode ( )
     {
-        with ( RegisterNextResult ) switch ( this.resources.reregistrator.
+        with ( RegisterNextResult ) final switch ( this.resources.reregistrator.
             registerNext(this.params) )
         {
             case Reregistered: break;
@@ -150,7 +150,7 @@ public scope class PushRequest : IChannelRequest
                 break;
             case MultipleNodeQuery:
                 assert(false, "push: is not multiple node");
-            default:
+            version (D_Version2) {} else default:
                 assert(false, "push: unknown registerNext response");
         }
     }

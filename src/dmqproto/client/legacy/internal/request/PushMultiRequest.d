@@ -113,7 +113,7 @@ public scope class PushMultiRequest : IMultiChannelRequest
 
     override protected void statusActionFatal ( )
     {
-        with ( RegisterNextResult ) switch ( this.resources.reregistrator.
+        with ( RegisterNextResult ) final switch ( this.resources.reregistrator.
             registerNext(this.params) )
         {
             case Reregistered: break;
@@ -123,7 +123,7 @@ public scope class PushMultiRequest : IMultiChannelRequest
                 break;
             case MultipleNodeQuery:
                 assert(false, "pushMulti: request is not multiple node");
-            default:
+            version (D_Version2) {} else default:
                 assert(false, "pushMulti: unknown registerNext response");
         }
     }

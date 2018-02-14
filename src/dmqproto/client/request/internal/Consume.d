@@ -615,7 +615,7 @@ private scope class ConsumeHandler
                     Message(MessageType_v3.ChannelRemoved)
                 );
 
-                switch (msg.type)
+                final switch (msg.type)
                 {
                     case MessageType_v3.Records:
                         Const!(void)[] received_record_batch;
@@ -633,7 +633,7 @@ private scope class ConsumeHandler
                         // TODO
                         break;
 
-                    default:
+                    version (D_Version2) {} else default:
                         assert(false);
                 }
             }
@@ -689,7 +689,7 @@ private scope class ConsumeHandler
                     Signal(FiberSignal.StopController)
                 );
 
-                switch (event.signal.code)
+                final switch (event.signal.code)
                 {
                     case ControllerSignal.Resume:
                         this.record_stream.resume();
@@ -709,7 +709,7 @@ private scope class ConsumeHandler
                     case FiberSignal.StopController:
                         return;
 
-                    default:
+                    version (D_Version2) {} else default:
                         assert(false);
                 }
             }

@@ -379,7 +379,7 @@ public class DmqNodeRegistry : NodeRegistry, IDmqNodeRegistry, IReregistrator
 
     static private bool allNodesCommand ( uint command )
     {
-        with ( DmqConst.Command.E ) switch ( command )
+        with ( DmqConst.Command.E ) final switch ( command )
         {
             // Commands over all nodes
             case GetChannels:
@@ -398,7 +398,7 @@ public class DmqNodeRegistry : NodeRegistry, IDmqNodeRegistry, IReregistrator
             case Pop:
                 return false;
 
-            default:
+            version (D_Version2) {} else default:
                 assert(false, typeof(this).stringof ~ ".allNodesCommand: invalid request");
         }
     }

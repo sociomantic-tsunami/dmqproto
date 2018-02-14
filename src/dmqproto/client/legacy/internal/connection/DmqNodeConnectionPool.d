@@ -189,7 +189,7 @@ public class DmqNodeConnectionPool : NodeConnectionPool
              * another node.
              */
 
-            switch (this.reregistrator.registerNext(params))
+            final switch (this.reregistrator.registerNext(params))
             {
                 case RegisterNextResult.Reregistered,
                      RegisterNextResult.NoMoreNodes:
@@ -208,7 +208,7 @@ public class DmqNodeConnectionPool : NodeConnectionPool
                     super.queueRequest(params);
                     break;
 
-                default:
+                version (D_Version2) {} else default:
                     assert(false, "invalid RegisterNextResult");
             }
         }
