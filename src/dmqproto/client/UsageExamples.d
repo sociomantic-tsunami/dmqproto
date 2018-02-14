@@ -142,7 +142,7 @@ unittest
         // the Push request. See dmqproto.client.request.Push for details of
         // the parameters of the notifier. (Each request has a module like
         // this, defining its public API.)
-        private void pushNotifier ( Push.Notification info, Push.Args args )
+        private void pushNotifier ( Push.Notification info, Const!(Push.Args) args )
         {
             // `info` is a smart union, where each member of the union
             // represents one possible notification. `info.active` denotes
@@ -279,7 +279,7 @@ unittest
         // details of the parameters of the notifier. (Each request has a
         // module like this, defining its public API.)
         private void consumeNotifier ( Consume.Notification info,
-            Consume.Args args )
+            Const!(Consume.Args) args )
         {
             // `info` is a smart union, where each member of the union
             // represents one possible notification. `info.active` denotes
@@ -384,7 +384,7 @@ unittest
         // Start a Consume request
         auto request_id = dmq.neo.consume(
             "channel",
-            ( Consume.Notification, Consume.Args ) { },
+            ( Consume.Notification, Const!(Consume.Args) ) { },
             dmq.neo.Subscriber("subscriber")
         );
 

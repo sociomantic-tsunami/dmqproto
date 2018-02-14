@@ -431,7 +431,7 @@ template NeoSupport ( )
 
             FinishedStatus state;
 
-            void notifier ( Neo.Push.Notification info, Neo.Push.Args args )
+            void notifier ( Neo.Push.Notification info, Const!(Neo.Push.Args) args )
             {
                 if ( user_notifier )
                     user_notifier(info, args);
@@ -531,7 +531,7 @@ template NeoSupport ( )
 
             FinishedStatus state;
 
-            void notifier ( Neo.Pop.Notification info, Neo.Pop.Args args )
+            void notifier ( Neo.Pop.Notification info, Const!(Neo.Pop.Args) args )
             {
                 if ( user_notifier )
                     user_notifier(info, args);
