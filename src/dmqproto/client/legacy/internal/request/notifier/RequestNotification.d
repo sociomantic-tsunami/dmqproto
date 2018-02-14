@@ -26,6 +26,8 @@ import swarm.Const;
 
 import dmqproto.client.legacy.DmqConst;
 
+import ocean.core.Verify;
+
 
 
 /*******************************************************************************
@@ -48,7 +50,7 @@ public scope class RequestNotification : IRequestNotification
 
     public this ( ICommandCodes.Value command, Context context )
     {
-        assert(command in DmqConst.Command());
+        verify(!!(command in DmqConst.Command()));
 
         super(DmqConst.Command(), DmqConst.Status(), command, context);
     }

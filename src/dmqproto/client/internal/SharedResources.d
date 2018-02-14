@@ -13,6 +13,7 @@
 module dmqproto.client.internal.SharedResources;
 
 import ocean.transition;
+import ocean.core.Verify;
 
 /// ditto
 public final class SharedResources
@@ -50,7 +51,7 @@ public final class SharedResources
     public static typeof(this) fromObject ( Object obj )
     {
         auto shared_resources = downcast!(typeof(this))(obj);
-        assert(shared_resources !is null);
+        verify(shared_resources !is null);
         return shared_resources;
     }
 

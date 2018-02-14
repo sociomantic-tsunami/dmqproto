@@ -13,6 +13,7 @@
 module dmqproto.client.request.internal.Consume;
 
 import ocean.transition;
+import ocean.core.Verify;
 
 import swarm.neo.client.RequestOnConn;
 
@@ -299,9 +300,9 @@ private scope class ConsumeHandler
 
         this.request_event_dispatcher.eventLoop(this.conn);
 
-        with (record_stream.fiber)  assert(state == state.TERM);
-        with (reader.fiber)         assert(state == state.TERM);
-        with (controller.fiber)     assert(state == state.TERM);
+        with (record_stream.fiber)  verify(state == state.TERM);
+        with (reader.fiber)         verify(state == state.TERM);
+        with (controller.fiber)     verify(state == state.TERM);
     }
 
     /***************************************************************************
