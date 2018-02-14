@@ -514,6 +514,39 @@ public class DmqClient : IClient
     }
 
 
+     /***************************************************************************
+
+        Constructor with support for the neo and legacy protocols. Accepts only
+        `Neo.Config`, not `IClient.Config`, for applications that use the neo
+        protocol only.
+
+        Params:
+            epoll = EpollSelectDispatcher instance to use
+            neo_config = swarm.neo.client.mixins.ClientCore.Config instance.
+                (The Config class is designed to be read from an application's
+                config.ini file via ocean.util.config.ConfigFiller.)
+            conn_notifier = delegate which is called when a connection attempt
+                succeeds or fails (including when a connection is
+                re-established). Of type:
+                void delegate ( IPAddress node_address, Exception e )
+            conn_limit = maximum number of connections to each DMQ node
+            queue_size = maximum size of the per-node request queue
+            fiber_stack_size = size of connection fibers' stack (in bytes)
+
+    ***************************************************************************/
+
+    public this ( EpollSelectDispatcher epoll, Neo.Config neo_config,
+        Neo.ConnectionNotifier conn_notifier,
+        size_t conn_limit = IClient.Config.default_connection_limit,
+        size_t queue_size = IClient.Config.default_queue_size,
+        size_t fiber_stack_size = IClient.default_fiber_stack_size )
+    {
+        this(epoll, conn_limit, queue_size, fiber_stack_size);
+
+        this.neoInit(neo_config, conn_notifier);
+    }
+
+
     /***************************************************************************
 
         Constructor with support for the neo and legacy protocols. This
