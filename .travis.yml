@@ -55,5 +55,3 @@ jobs:
           # Some dummy env variables to make beaver happy
           env: DMD=2.070.2.s* F=devel
           script: beaver dlang d2-release
-          # Overridden to NOP, otherwise is inherited
-          after_success: true
