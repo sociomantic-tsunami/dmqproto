@@ -108,7 +108,7 @@ class RecordIndex
 
     ***************************************************************************/
 
-    public int opApply ( int delegate ( ref cstring channel ) dg )
+    public int opApply ( scope int delegate ( ref cstring channel ) dg )
     {
         foreach (channel, records; this.records_per_channel)
         {

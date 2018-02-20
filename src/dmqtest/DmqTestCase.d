@@ -48,7 +48,7 @@ abstract class DmqTestCase : TestCase
 
     ***************************************************************************/
 
-    public const size_t bulk_test_record_count = 10_000;
+    public static immutable size_t bulk_test_record_count = 10_000;
 
     /***************************************************************************
 
@@ -134,7 +134,7 @@ abstract class DmqTestCase : TestCase
 
     ***************************************************************************/
 
-    const static_this =
+    static immutable static_this =
     `
         static this ( )
         {
