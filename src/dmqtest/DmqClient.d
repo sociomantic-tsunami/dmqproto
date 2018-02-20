@@ -455,7 +455,7 @@ class DmqClient
 
                 invariant ( )
                 {
-                    assert(this.n <= this.ids.length);
+                    assert((&this).n <= (&this).ids.length);
                 }
 
                 /***************************************************************
@@ -470,8 +470,8 @@ class DmqClient
 
                 public void add ( RawClient.Neo.RequestId id )
                 {
-                    this.ids ~= id;
-                    this.n++;
+                    (&this).ids ~= id;
+                    (&this).n++;
                 }
 
                 /***************************************************************
@@ -487,14 +487,14 @@ class DmqClient
                 public uint remove ( )
                 in
                 {
-                    assert(this.n);
+                    assert((&this).n);
                 }
                 body
                 {
-                    if (!--this.n)
-                        delete this.ids;
+                    if (!--(&this).n)
+                        delete (&this).ids;
 
-                    return this.n;
+                    return (&this).n;
                 }
 
                 /***************************************************************
@@ -506,7 +506,7 @@ class DmqClient
 
                 public Const!(RawClient.Neo.RequestId)[] opSlice ( )
                 {
-                    return this.ids;
+                    return (&this).ids;
                 }
 
                 /***************************************************************
@@ -522,14 +522,14 @@ class DmqClient
 
                 ***************************************************************/
 
-                static public typeof(*this) create ( RawClient.Neo.RequestId id )
+                static public typeof(*(&this)) create ( RawClient.Neo.RequestId id )
                 out (instance)
                 {
                     assert(&instance);
                 }
                 body
                 {
-                    return typeof(*this)([id], 1);
+                    return typeof(*(&this))([id], 1);
                 }
             }
 

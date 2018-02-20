@@ -61,15 +61,15 @@ version ( UnitTest )
         public void connect ( EpollSelectDispatcher epoll )
         {
             // Create an epoll instance.
-            this.epoll = epoll;
+            (&this).epoll = epoll;
 
             // Create a DMQ client instance, passing the additional
             // arguments required by neo: the authorisation name and
             // password and the connection notifier (see below).
             auto auth_name = "neotest";
             ubyte[] auth_key = Key.init.content;
-            this.dmq = new DmqClient(this.epoll, auth_name, auth_key,
-                &this.connNotifier);
+            (&this).dmq = new DmqClient((&this).epoll, auth_name, auth_key,
+                &(&this).connNotifier);
 
             // Add some nodes.
             // Note: make sure you have a .nodes file which specifies the
@@ -124,16 +124,16 @@ unittest
         // Method which initialises the client and starts a request
         public void start ( )
         {
-            this.dmq_init.connect(new EpollSelectDispatcher);
+            (&this).dmq_init.connect(new EpollSelectDispatcher);
 
             // Assign a neo Push request. Note that the channel and value
             // are copied inside the client -- the user does not need to
             // maintain them after calling this method.
-            this.dmq_init.dmq.neo.push(["channel"], "value_to_push",
-                &this.pushNotifier);
+            (&this).dmq_init.dmq.neo.push(["channel"], "value_to_push",
+                &(&this).pushNotifier);
 
             // Start the event loop to set it all running.
-            this.dmq_init.epoll.eventLoop();
+            (&this).dmq_init.epoll.eventLoop();
         }
 
         // Notifier which is called when something of interest happens to
@@ -258,18 +258,18 @@ unittest
         // Method which initialises the client and starts a request
         public void start ( )
         {
-            this.dmq_init.connect(new EpollSelectDispatcher);
+            (&this).dmq_init.connect(new EpollSelectDispatcher);
 
             // Assign a neo Consume request. Note that we store the id of
             // the request (the return value). This can be used to control
             // the request, as it's in progress (see the `received` case in
             // consumerNotifier(), below).
-            this.rq_id = this.dmq_init.dmq.neo.consume("channel",
-                &this.consumeNotifier,
+            (&this).rq_id = (&this).dmq_init.dmq.neo.consume("channel",
+                &(&this).consumeNotifier,
                 dmq_init.dmq.neo.Subscriber("subscriber"));
 
             // Start the event loop to set it all running.
-            this.dmq_init.epoll.eventLoop();
+            (&this).dmq_init.epoll.eventLoop();
         }
 
         // Notifier which is called when something of interest happens to
@@ -298,7 +298,7 @@ unittest
                     // after a while
                     static ubyte count;
                     if ( ++count >= 10 )
-                        this.stop();
+                        (&this).stop();
                     break;
 
                 case stopped:
@@ -366,7 +366,7 @@ unittest
             // a request, while it's in progress. The Consume request
             // controller interface is in dmqproto.client.request.Consume.
             // Not all requests can be controlled in this way.
-            this.dmq_init.dmq.neo.control(this.rq_id,
+            (&this).dmq_init.dmq.neo.control((&this).rq_id,
                 ( DmqClient.Neo.Consume.IController consume )
                 {
                     // We tell the request to stop. This will cause a

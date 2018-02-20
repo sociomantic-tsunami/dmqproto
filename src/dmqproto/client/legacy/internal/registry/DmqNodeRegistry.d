@@ -67,7 +67,7 @@ public class DmqNodeRegistry : NodeRegistry, IDmqNodeRegistry, IReregistrator
 
     ***************************************************************************/
 
-    private const expected_nodes = 100;
+    private static immutable expected_nodes = 100;
 
 
     /***************************************************************************

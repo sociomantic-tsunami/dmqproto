@@ -73,7 +73,7 @@ public abstract scope class ConsumeProtocol_v1
 
     ***************************************************************************/
 
-    private const uint yield_send_count = 10;
+    private static immutable uint yield_send_count = 10;
 
     /***************************************************************************
 
@@ -582,7 +582,7 @@ public abstract scope class ConsumeProtocol_v2
 
     ***************************************************************************/
 
-    private const uint yield_send_count = 10;
+    private static immutable uint yield_send_count = 10;
 
     /***************************************************************************
 

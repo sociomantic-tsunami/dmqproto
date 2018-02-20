@@ -133,7 +133,7 @@ template NeoSupport ( )
         ***********************************************************************/
 
         public RequestId consume ( Options ... )
-            ( cstring channel, Consume.Notifier notifier, Options options )
+            ( cstring channel, scope Consume.Notifier notifier, Options options )
         {
             cstring subscriber;
             setupOptionalArgs!(options.length)(
@@ -174,7 +174,7 @@ template NeoSupport ( )
         ***********************************************************************/
 
         public RequestId push ( cstring channel, Const!(void)[] value,
-            Push.Notifier notifier )
+            scope Push.Notifier notifier )
         {
             return this.push((&channel)[0 .. 1], value, notifier);
         }
@@ -202,7 +202,7 @@ template NeoSupport ( )
         ***********************************************************************/
 
         public RequestId push ( Const!(char[][]) channels, Const!(void)[] value,
-            Push.Notifier notifier )
+            scope Push.Notifier notifier )
         {
             // Validate the channels list. The number of channels is transmitted
             // as a ubyte, so the list may contain at most 255 elements.
@@ -241,7 +241,7 @@ template NeoSupport ( )
 
         ***********************************************************************/
 
-        public RequestId pop ( cstring channel, Pop.Notifier notifier )
+        public RequestId pop ( cstring channel, scope Pop.Notifier notifier )
         {
             auto params = Const!(Internals.Pop.UserSpecifiedParams)(
                 Const!(Pop.Args)(channel),
@@ -312,7 +312,7 @@ template NeoSupport ( )
         ***********************************************************************/
 
         public bool control ( ControllerInterface ) ( RequestId id,
-            void delegate ( ControllerInterface ) dg )
+            scope void delegate ( ControllerInterface ) dg )
         {
             alias Request!(ControllerInterface) R;
 
@@ -399,7 +399,7 @@ template NeoSupport ( )
         ***********************************************************************/
 
         public PushResult push ( cstring channel, Const!(void)[] value,
-            Neo.Push.Notifier notifier = null )
+            scope Neo.Push.Notifier notifier = null )
         {
             return this.push((&channel)[0 .. 1], value, notifier);
         }
@@ -424,7 +424,7 @@ template NeoSupport ( )
         ***********************************************************************/
 
         public PushResult push ( cstring[] channels, Const!(void)[] value,
-            Neo.Push.Notifier user_notifier = null )
+            scope Neo.Push.Notifier user_notifier = null )
         {
             auto task = Task.getThis();
             assert(task, "This method may only be called from inside a Task");
@@ -524,7 +524,7 @@ template NeoSupport ( )
         ***********************************************************************/
 
         public PopResult pop ( cstring channel, ref void[] value,
-            Neo.Pop.Notifier user_notifier = null )
+            scope Neo.Pop.Notifier user_notifier = null )
         {
             auto task = Task.getThis();
             assert(task, "This method may only be called from inside a Task");
@@ -627,7 +627,7 @@ template NeoSupport ( )
     ***************************************************************************/
 
     private void neoInit ( cstring auth_name, ubyte[] auth_key,
-        Neo.ConnectionNotifier conn_notifier )
+        scope Neo.ConnectionNotifier conn_notifier )
     {
         this.neo = new Neo(auth_name, auth_key, conn_notifier);
         this.blocking = new TaskBlocking;
