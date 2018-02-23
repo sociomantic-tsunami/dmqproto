@@ -140,7 +140,6 @@ public struct Push
                         payload.addArray(context.user_params.args.value);
                     }
                 );
-                conn.flush();
 
                 auto supported = conn.receiveValue!(SupportedStatus)();
                 if ( Push.handleSupportedCodes(supported, context,

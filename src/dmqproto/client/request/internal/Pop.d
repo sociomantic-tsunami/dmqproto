@@ -142,7 +142,6 @@ public struct Pop
                         payload.addArray(context.user_params.args.channel);
                     }
                 );
-                conn.flush();
 
                 auto supported = conn.receiveValue!(SupportedStatus)();
                 if ( Pop.handleSupportedCodes(supported, context,
