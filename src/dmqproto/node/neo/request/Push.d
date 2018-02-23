@@ -82,8 +82,6 @@ public abstract class PushProtocol_v2: IRequestHandlerRequest
                 }
             );
         }
-
-        ed.flush();
     }
 
     /***************************************************************************
