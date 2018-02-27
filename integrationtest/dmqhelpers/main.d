@@ -23,12 +23,7 @@ import turtle.env.Dmq;
 version (UnitTest) {} else
 int main ( istring[] args )
 {
-    // TODO: This test is currently disabled because it aborts with "Unhandled
-    // exception in epoll/scheduler" with swarm v5.0.1.
-    version (none)
-        return (new TurtleRunner!(MyTurtleTests)("dmqapp")).main(args);
-    else
-        return 0;
+    return (new TurtleRunner!(MyTurtleTests)("dmqapp")).main(args);
 }
 
 class MyTurtleTests : TurtleRunnerTask!(TestedAppKind.Daemon)
