@@ -89,8 +89,6 @@ public abstract class PopProtocol_v0: IRequestHandlerRequest
                 }
             );
         }
-
-        ed.flush();
     }
 
     /***************************************************************************

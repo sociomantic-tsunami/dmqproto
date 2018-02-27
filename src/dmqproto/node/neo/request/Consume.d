@@ -327,7 +327,6 @@ public abstract scope class ConsumeProtocol_v3: IRequestHandlerRequest
         switch (event.active)
         {
             case event.active.sent:
-                this.ed.flush();
                 // Records sent: Wait for Consume/Stop feedback, acknowledge
                 // Stop and return true for Continue or false for Stop.
                 switch (this.ed.receiveValue!(MessageType_v3)())
@@ -369,7 +368,6 @@ public abstract scope class ConsumeProtocol_v3: IRequestHandlerRequest
                 payload.addCopy(MessageType_v3.Stopped);
             }
         );
-        this.ed.flush();
     }
 
     /***************************************************************************
