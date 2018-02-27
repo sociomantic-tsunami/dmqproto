@@ -31,6 +31,7 @@ import ocean.transition;
 class PushImpl_v2 : PushProtocol_v2
 {
     import fakedmq.Storage;
+    import dmqproto.node.neo.request.core.IRequestResources;
 
     /***************************************************************************
 
@@ -38,6 +39,7 @@ class PushImpl_v2 : PushProtocol_v2
         written to.
 
         Params:
+            resources = request resources
             channel_names = list of channel names to check
 
         Returns:
@@ -46,7 +48,8 @@ class PushImpl_v2 : PushProtocol_v2
 
     ***************************************************************************/
 
-    override protected bool prepareChannels ( in cstring[] channel_names )
+    override protected bool prepareChannels ( IRequestResources resources,
+        in cstring[] channel_names )
     {
         foreach ( channel; channel_names )
         {
@@ -62,7 +65,8 @@ class PushImpl_v2 : PushProtocol_v2
         Push a record to the specified storage channel.
 
         Params:
-            channel_name = channel to push to
+            resources = request resources
+                channel_name = channel to push to
             value = record value to push
 
         Returns:
@@ -70,8 +74,8 @@ class PushImpl_v2 : PushProtocol_v2
 
     ***************************************************************************/
 
-    override protected bool pushToStorage ( cstring channel_name,
-        in void[] value )
+    override protected bool pushToStorage ( IRequestResources resources,
+        cstring channel_name, in void[] value )
     {
         global_storage.getCreate(channel_name).push(value);
 

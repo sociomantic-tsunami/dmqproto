@@ -32,6 +32,8 @@ import ocean.transition;
 
 class ConsumeImpl_v3 : ConsumeProtocol_v3, DmqListener
 {
+    import dmqproto.node.neo.request.core.IRequestResources;
+
     /***************************************************************************
 
         Remember consumed channel
@@ -46,6 +48,7 @@ class ConsumeImpl_v3 : ConsumeProtocol_v3, DmqListener
         given name.
 
         Params:
+            resources = request resources
             channel_name = channel to subscribe to
             subscriber_name = subscriber name (v2 only)
 
@@ -54,8 +57,8 @@ class ConsumeImpl_v3 : ConsumeProtocol_v3, DmqListener
 
     ***************************************************************************/
 
-    override protected bool prepareChannel ( cstring channel_name,
-        cstring subscriber_name )
+    override protected bool prepareChannel ( IRequestResources resources,
+        cstring channel_name, cstring subscriber_name )
     {
         this.queue = global_storage.getCreate(channel_name)
             .subscribe(subscriber_name);

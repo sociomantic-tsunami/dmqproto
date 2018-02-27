@@ -31,6 +31,7 @@ import ocean.transition;
 class PopImpl_v0 : PopProtocol_v0
 {
     import fakedmq.Storage;
+    import dmqproto.node.neo.request.core.IRequestResources;
 
     /***************************************************************************
 
@@ -45,6 +46,7 @@ class PopImpl_v0 : PopProtocol_v0
         Performs any logic needed to pop from the channel of the given name.
 
         Params:
+            resources = request resources
             channel_name = channel to pop from
             subscribed = `true` if the return value is `false` because the
                 channel has subscribers so it is not possible to pop from it
@@ -54,8 +56,8 @@ class PopImpl_v0 : PopProtocol_v0
 
     ***************************************************************************/
 
-    override protected bool prepareChannel ( cstring channel_name,
-        out bool subscribed )
+    override protected bool prepareChannel ( IRequestResources resources,
+        cstring channel_name, out bool subscribed )
     {
         this.queue = global_storage.getCreate(channel_name).queue_unless_subscribed;
         subscribed = this.queue is null;
