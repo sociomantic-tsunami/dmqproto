@@ -53,7 +53,7 @@ public abstract class PopProtocol_v0: IRequestHandlerRequest
 
         bool subscribed;
 
-        if (this.prepareChannel(channel_name, subscribed))
+        if (this.prepareChannel(resources, channel_name, subscribed))
         {
             auto value = resources.getVoidBuffer();
             if ( this.getNextValue(*value) )
@@ -96,6 +96,7 @@ public abstract class PopProtocol_v0: IRequestHandlerRequest
         Performs any logic needed to pop from the channel of the given name.
 
         Params:
+            resources = request resources
             channel_name = channel to pop from
             subscribed = `true` if the return value is `false` because the
                 channel has subscribers so it is not possible to pop from it
@@ -105,8 +106,8 @@ public abstract class PopProtocol_v0: IRequestHandlerRequest
 
     ***************************************************************************/
 
-    abstract protected bool prepareChannel ( cstring channel_name,
-        out bool subscribed );
+    abstract protected bool prepareChannel ( IRequestResources resources,
+        cstring channel_name, out bool subscribed );
 
     /***************************************************************************
 

@@ -154,7 +154,7 @@ public abstract scope class ConsumeProtocol_v3: IRequestHandlerRequest
         cstring subscriber_name;
         this.parser.parseBody(msg_payload, channel_name, subscriber_name);
 
-        if ( !this.prepareChannel(channel_name, subscriber_name) )
+        if ( !this.prepareChannel(resources, channel_name, subscriber_name) )
         {
             this.ed.send(
                 ( ed.Payload payload )
@@ -398,6 +398,7 @@ public abstract scope class ConsumeProtocol_v3: IRequestHandlerRequest
         channel of the given name.
 
         Params:
+            resources = request resources
             channel_name = channel to consume from
             subscriber_name = the identifying name of the subscriber
 
@@ -406,7 +407,8 @@ public abstract scope class ConsumeProtocol_v3: IRequestHandlerRequest
 
     ***************************************************************************/
 
-    abstract protected bool prepareChannel ( cstring channel_name,
+    abstract protected bool prepareChannel ( IRequestResources resources,
+                                             cstring channel_name,
                                              cstring subscriber_name );
 
     /***************************************************************************

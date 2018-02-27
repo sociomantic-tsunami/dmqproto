@@ -36,7 +36,7 @@ public abstract class PushProtocol_v2: IRequestHandlerRequest
 
         Params:
             connection = connection to client
-            resources = request resources acquirer
+            resources = request resources
             msg_payload = initial message read from client to begin the request
                 (the request code and version are assumed to be extracted)
 
@@ -61,11 +61,11 @@ public abstract class PushProtocol_v2: IRequestHandlerRequest
         Const!(void)[] value;
         parser.parseBody(msg_payload, value);
 
-        if ( this.prepareChannels(channel_names.array) )
+        if ( this.prepareChannels(resources, channel_names.array) )
         {
             foreach ( channel_name; channel_names.array )
             {
-                this.pushToStorage(channel_name, value);
+                this.pushToStorage(resources, channel_name, value);
             }
 
             ed.send(
@@ -92,6 +92,7 @@ public abstract class PushProtocol_v2: IRequestHandlerRequest
         written to.
 
         Params:
+            resources = request resources acquirer
             channel_names = list of channel names to check
 
         Returns:
@@ -100,13 +101,15 @@ public abstract class PushProtocol_v2: IRequestHandlerRequest
 
     ***************************************************************************/
 
-    abstract protected bool prepareChannels ( in cstring[] channel_names );
+    abstract protected bool prepareChannels ( IRequestResources resources,
+        in cstring[] channel_names );
 
     /***************************************************************************
 
         Push a record to the specified storage channel.
 
         Params:
+            resources = request resources
             channel_name = channel to push to
             value = record value to push
 
@@ -115,6 +118,6 @@ public abstract class PushProtocol_v2: IRequestHandlerRequest
 
     ***************************************************************************/
 
-    abstract protected bool pushToStorage ( cstring channel_name,
-        in void[] value );
+    abstract protected bool pushToStorage ( IRequestResources resources,
+        cstring channel_name, in void[] value );
 }
