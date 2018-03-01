@@ -50,7 +50,7 @@ public abstract scope class ConsumeProtocol_v3: IRequestHandlerRequest
 
     ***************************************************************************/
 
-    private const uint yield_send_count = 10;
+    private static immutable uint yield_send_count = 10;
 
     /***************************************************************************
 
@@ -59,7 +59,7 @@ public abstract scope class ConsumeProtocol_v3: IRequestHandlerRequest
 
     ***************************************************************************/
 
-    private const size_t min_batch_length = 100000;
+    private static immutable size_t min_batch_length = 100000;
 
     /***************************************************************************
 

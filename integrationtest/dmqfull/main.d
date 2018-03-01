@@ -25,7 +25,7 @@ import fakedmq.Storage;
 
 import ocean.io.Stdout;
 
-const RECORD_COUNT = 10000;
+static immutable RECORD_COUNT = 10000;
 
 version (UnitTest) {} else
 void main ()

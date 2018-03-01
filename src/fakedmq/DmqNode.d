@@ -219,7 +219,7 @@ public class DmqNode
     ***************************************************************************/
 
     override protected void getResourceAcquirer (
-        void delegate ( Object request_resources ) handle_request_dg )
+        scope void delegate ( Object request_resources ) handle_request_dg )
     {
         // In the fake node, we don't actually store a shared resources
         // instance; a new one is simply passed to each request.
