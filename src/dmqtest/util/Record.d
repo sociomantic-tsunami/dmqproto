@@ -23,6 +23,10 @@ import core.stdc.stdlib;
 
 import ocean.transition;
 
+version (UnitTest)
+{
+    import ocean.core.Test;
+}
 
 /*******************************************************************************
 
@@ -64,7 +68,14 @@ T[] sort ( T ) ( T[] array )
 }
 
 /// `qsort` element comparison callback function, wraps `typeid(T).compare`.
-extern (C) private int cmp ( T ) ( in void* a, in void* b )
+extern (C) private int cmp ( T ) ( /* d1to2fix_inject: scope */ Const!(void*) a,
+        /* d1to2fix_inject: scope */ Const!(void*) b )
 {
     return typeid(T).compare(a, b);
+}
+
+unittest
+{
+    auto x = [1, 5, 11, 7];
+    test!("==")(sort(x), [1, 5, 7, 11]);
 }
