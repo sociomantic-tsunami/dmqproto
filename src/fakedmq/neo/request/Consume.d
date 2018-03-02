@@ -26,11 +26,11 @@ import ocean.transition;
 
 /*******************************************************************************
 
-    Fake node implementation of the v3 Consume request protocol.
+    Fake node implementation of the v4 Consume request protocol.
 
 *******************************************************************************/
 
-class ConsumeImpl_v3 : ConsumeProtocol_v3, DmqListener
+class ConsumeImpl_v4 : ConsumeProtocol_v4, DmqListener
 {
     import dmqproto.node.neo.request.core.IRequestResources;
 

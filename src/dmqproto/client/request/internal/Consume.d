@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-    Client DMQ Consume v3 request handler.
+    Client DMQ Consume v4 request handler.
 
     Copyright:
         Copyright (c) 2017 sociomantic labs GmbH. All rights reserved.
@@ -19,7 +19,7 @@ import swarm.neo.client.RequestOnConn;
 
 /*******************************************************************************
 
-    Consume v3 request implementation.
+    Consume v4 request implementation.
 
     Note that request structs act simply as namespaces for the collection of
     symbols required to implement a request. They are never instantiated and
@@ -99,7 +99,7 @@ public struct Consume
 
     ***************************************************************************/
 
-    mixin RequestCore!(RequestType.AllNodes, RequestCode.Consume, 3, Args,
+    mixin RequestCore!(RequestType.AllNodes, RequestCode.Consume, 4, Args,
         SharedWorking, Notification);
 
     /***************************************************************************

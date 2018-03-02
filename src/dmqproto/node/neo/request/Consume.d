@@ -16,11 +16,11 @@ import dmqproto.node.neo.request.core.IRequestHandlerRequest;
 
 /*******************************************************************************
 
-    v3 Consume request protocol.
+    v4 Consume request protocol.
 
 *******************************************************************************/
 
-public abstract scope class ConsumeProtocol_v3: IRequestHandlerRequest
+public abstract scope class ConsumeProtocol_v4: IRequestHandlerRequest
 {
     import swarm.neo.node.RequestOnConn;
     import dmqproto.node.neo.request.core.IRequestResources;
