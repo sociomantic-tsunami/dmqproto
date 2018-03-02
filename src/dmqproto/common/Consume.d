@@ -34,28 +34,6 @@ public enum RequestStatusCode : StatusCode
     Error    // Internal node error occurred
 }
 
-/*******************************************************************************
-
-    Message type enum for Consume v1 and v2. Each message sent between the
-    client and the node as part of a Consume request is prepended by a type indicator.
-
-*******************************************************************************/
-
-public enum MessageType : ubyte
-{
-    None,       // Invalid, default value
-
-    // Message types sent from the client to the node:
-    Suspend,    // Sent when the client wants the node to stop sending records
-    Resume,     // Sent when the client wants the node to restart sending records
-    Stop,       // Sent when the client wants the node to cleanly end the request
-    ChannelRemoved, // Sent when the channel being consumed is removed
-
-    // Message types sent from the node to the client:
-    Ack,        // Sent by the node to acknowledge one of the above messages
-    Record      // Sent by the node when it sends a record value
-}
-
 /// Message type enum for Consume v3.
 public enum MessageType_v3 : ubyte
 {
