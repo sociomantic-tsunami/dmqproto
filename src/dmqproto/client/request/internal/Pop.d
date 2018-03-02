@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-    Client DMQ Pop v0 request handler.
+    Client DMQ Pop v1 request handler.
 
     Copyright:
         Copyright (c) 2016-2017 sociomantic labs GmbH. All rights reserved.
@@ -107,7 +107,7 @@ public struct Pop
 
     ***************************************************************************/
 
-    mixin RequestCore!(RequestType.RoundRobin, RequestCode.Pop, 0, Args,
+    mixin RequestCore!(RequestType.RoundRobin, RequestCode.Pop, 1, Args,
         SharedWorking, Notification);
 
     /***************************************************************************

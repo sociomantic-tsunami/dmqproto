@@ -24,11 +24,11 @@ import ocean.transition;
 
 /*******************************************************************************
 
-    Fake node implementation of the v0 Pop request protocol.
+    Fake node implementation of the v1 Pop request protocol.
 
 *******************************************************************************/
 
-class PopImpl_v0 : PopProtocol_v0
+class PopImpl_v1 : PopProtocol_v1
 {
     import fakedmq.Storage;
     import dmqproto.node.neo.request.core.IRequestResources;
