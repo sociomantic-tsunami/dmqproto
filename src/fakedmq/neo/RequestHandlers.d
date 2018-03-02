@@ -33,7 +33,7 @@ public ConnectionHandler.RequestMap request_handlers;
 
 static this ( )
 {
-    request_handlers.add(Command(RequestCode.Consume, 3), "consume", ConsumeImpl_v3.classinfo);
+    request_handlers.add(Command(RequestCode.Consume, 4), "consume", ConsumeImpl_v4.classinfo);
     request_handlers.add(Command(RequestCode.Push, 3), "push", PushImpl_v3.classinfo);
     request_handlers.add(Command(RequestCode.Pop, 0), "pop", PopImpl_v0.classinfo);
 }
