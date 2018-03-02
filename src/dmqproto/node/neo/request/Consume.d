@@ -193,7 +193,7 @@ public abstract scope class ConsumeProtocol_v3: IRequestHandlerRequest
         this.ed.send(
             ( ed.Payload payload )
             {
-                payload.addCopy(MessageType_v3.ChannelRemoved);
+                payload.addCopy(MessageType.ChannelRemoved);
             }
         );
     }
@@ -309,7 +309,7 @@ public abstract scope class ConsumeProtocol_v3: IRequestHandlerRequest
     {
         void fillInRecordsMessage ( ed.Payload payload )
         {
-            payload.addCopy(MessageType_v3.Records);
+            payload.addCopy(MessageType.Records);
             payload.addArray(*this.record_batch);
         }
 
@@ -329,12 +329,12 @@ public abstract scope class ConsumeProtocol_v3: IRequestHandlerRequest
             case event.active.sent:
                 // Records sent: Wait for Consume/Stop feedback, acknowledge
                 // Stop and return true for Continue or false for Stop.
-                switch (this.ed.receiveValue!(MessageType_v3)())
+                switch (this.ed.receiveValue!(MessageType)())
                 {
-                    case MessageType_v3.Continue:
+                    case MessageType.Continue:
                         return true;
 
-                    case MessageType_v3.Stop:
+                    case MessageType.Stop:
                         this.sendStoppedMessage();
                         return false;
 
@@ -365,7 +365,7 @@ public abstract scope class ConsumeProtocol_v3: IRequestHandlerRequest
         this.ed.send(
             (ed.Payload payload)
             {
-                payload.addCopy(MessageType_v3.Stopped);
+                payload.addCopy(MessageType.Stopped);
             }
         );
     }
@@ -373,7 +373,7 @@ public abstract scope class ConsumeProtocol_v3: IRequestHandlerRequest
     /***************************************************************************
 
         Parses `msg_payload`, expecting the message type to be
-        `MessageType_v3.Stop`, and raises a protocol error if it is not so.
+        `MessageType.Stop`, and raises a protocol error if it is not so.
 
         Params:
             msg_payload = the payload of a received message
@@ -383,7 +383,7 @@ public abstract scope class ConsumeProtocol_v3: IRequestHandlerRequest
     private void verifyReceivedMessageIsStop ( in void[] msg_payload,
         istring file = __FILE__, int line = __LINE__ )
     {
-        MessageType_v3 msg_type;
+        MessageType msg_type;
         this.parser.parseBody(msg_payload, msg_type);
         if (msg_type != msg_type.Stop)
             throw this.ed.shutdownWithProtocolError(

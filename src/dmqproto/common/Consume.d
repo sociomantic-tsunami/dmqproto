@@ -34,8 +34,8 @@ public enum RequestStatusCode : StatusCode
     Error    // Internal node error occurred
 }
 
-/// Message type enum for Consume v3.
-public enum MessageType_v3 : ubyte
+/// Message type enum.
+public enum MessageType : ubyte
 {
     None,            // Invalid, default value
 
