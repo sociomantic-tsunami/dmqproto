@@ -48,9 +48,9 @@ template NeoSupport ( )
 
         ***********************************************************************/
 
-        import Consume = dmqproto.client.request.Consume;
-        import Push = dmqproto.client.request.Push;
-        import Pop = dmqproto.client.request.Pop;
+        public import Consume = dmqproto.client.request.Consume;
+        public import Push = dmqproto.client.request.Push;
+        public import Pop = dmqproto.client.request.Pop;
 
         /***********************************************************************
 
