@@ -16,11 +16,11 @@ import dmqproto.node.neo.request.core.IRequestHandlerRequest;
 
 /*******************************************************************************
 
-    v2 Push request protocol.
+    v3 Push request protocol.
 
 *******************************************************************************/
 
-public abstract class PushProtocol_v2: IRequestHandlerRequest
+public abstract class PushProtocol_v3: IRequestHandlerRequest
 {
     import dmqproto.common.Push;
     import dmqproto.node.neo.request.core.IRequestResources;

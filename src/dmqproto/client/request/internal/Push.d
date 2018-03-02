@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-    Client DMQ Push v2 request handler.
+    Client DMQ Push v3 request handler.
 
     Copyright:
         Copyright (c) 2016-2017 sociomantic labs GmbH. All rights reserved.
@@ -101,7 +101,7 @@ public struct Push
 
     ***************************************************************************/
 
-    mixin RequestCore!(RequestType.RoundRobin, RequestCode.Push, 2, Args,
+    mixin RequestCore!(RequestType.RoundRobin, RequestCode.Push, 3, Args,
         SharedWorking, Notification);
 
     /***************************************************************************
