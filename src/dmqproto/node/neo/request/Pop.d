@@ -20,7 +20,7 @@ import dmqproto.node.neo.request.core.IRequestHandlerRequest;
 
 *******************************************************************************/
 
-public abstract class PopProtocol_v0: IRequestHandlerRequest
+public abstract class PopProtocol_v1: IRequestHandlerRequest
 {
     import dmqproto.common.Pop;
     import dmqproto.node.neo.request.core.IRequestResources;
