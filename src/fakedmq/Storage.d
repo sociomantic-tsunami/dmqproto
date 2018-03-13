@@ -85,7 +85,7 @@ public struct Storage
     {
         size_t channel_records, channel_bytes;
 
-        foreach (name, channel; this.channels)
+        foreach (name, channel; (&this).channels)
         {
             foreach (queue; channel)
                 queue.countSize(channel_records, channel_bytes);
@@ -104,7 +104,7 @@ public struct Storage
     public cstring[] getChannelList ( )
     {
         cstring[] list;
-        foreach (channel, data; this.channels)
+        foreach (channel, data; (&this).channels)
             list ~= channel;
         return list;
     }
@@ -123,7 +123,7 @@ public struct Storage
 
     public Channel get(cstring name)
     {
-        auto channel = name in this.channels;
+        auto channel = name in (&this).channels;
         return channel is null ? null : *channel;
     }
 
@@ -144,7 +144,7 @@ public struct Storage
 
     public Channel getVerify(cstring name)
     {
-        auto channel = name in this.channels;
+        auto channel = name in (&this).channels;
         enforce!(MissingChannelException)(channel !is null);
         return *channel;
     }
@@ -163,11 +163,11 @@ public struct Storage
 
     public Channel getCreate(cstring name)
     {
-        auto channel = name in this.channels;
+        auto channel = name in (&this).channels;
         if (channel is null)
         {
-            this.channels[idup(name)] = new Channel;
-            channel = name in this.channels;
+            (&this).channels[idup(name)] = new Channel;
+            channel = name in (&this).channels;
         }
         return *channel;
     }
@@ -183,14 +183,14 @@ public struct Storage
 
     public void remove(cstring name)
     {
-        auto channel = name in this.channels;
+        auto channel = name in (&this).channels;
         if (channel is null)
             return;
 
         foreach (queue; *channel)
             queue.consumers.trigger(IListener.Code.Finish);
 
-        this.channels.remove(name);
+        (&this).channels.remove(name);
     }
 
     /***************************************************************************
@@ -201,10 +201,10 @@ public struct Storage
 
     public void clear ( )
     {
-        auto names = this.channels.keys;
+        auto names = (&this).channels.keys;
         foreach (name; names)
         {
-            foreach (queue; this.getVerify(name))
+            foreach (queue; (&this).getVerify(name))
                 queue.queue = null;
         }
     }
@@ -217,7 +217,7 @@ public struct Storage
 
     public void flushAllConsumers ( )
     {
-        foreach (channel; this.channels)
+        foreach (channel; (&this).channels)
         {
             foreach (queue; channel)
                 queue.consumers.trigger(DmqListener.Code.Flush);
@@ -235,7 +235,7 @@ public struct Storage
 
     public void dropAllConsumers ( )
     {
-        foreach (channel; this.channels)
+        foreach (channel; (&this).channels)
         {
             foreach (queue; channel)
                 queue.consumers = queue.new Consumers;
@@ -365,7 +365,7 @@ class Channel
 
     ***************************************************************************/
 
-    public int opApply ( int delegate ( ref Queue queue ) dg )
+    public int opApply ( scope int delegate ( ref Queue queue ) dg )
     {
         if (this.init_queue !is null)
             return dg(this.init_queue);
