@@ -28,7 +28,7 @@ import ocean.transition;
 
 *******************************************************************************/
 
-class PushImpl_v2 : PushProtocol_v2
+class PushImpl_v3 : PushProtocol_v3
 {
     import fakedmq.Storage;
     import dmqproto.node.neo.request.core.IRequestResources;

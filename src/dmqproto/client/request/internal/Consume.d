@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-    Client DMQ Consume v3 request handler.
+    Client DMQ Consume v4 request handler.
 
     Copyright:
         Copyright (c) 2017 sociomantic labs GmbH. All rights reserved.
@@ -19,7 +19,7 @@ import swarm.neo.client.RequestOnConn;
 
 /*******************************************************************************
 
-    Consume v3 request implementation.
+    Consume v4 request implementation.
 
     Note that request structs act simply as namespaces for the collection of
     symbols required to implement a request. They are never instantiated and
@@ -99,7 +99,7 @@ public struct Consume
 
     ***************************************************************************/
 
-    mixin RequestCore!(RequestType.AllNodes, RequestCode.Consume, 3, Args,
+    mixin RequestCore!(RequestType.AllNodes, RequestCode.Consume, 4, Args,
         SharedWorking, Notification);
 
     /***************************************************************************
@@ -477,7 +477,7 @@ private scope class ConsumeHandler
                     this.fiber,
                     (conn.Payload payload)
                     {
-                        payload.addCopy(MessageType_v3.Continue);
+                        payload.addCopy(MessageType.Continue);
                     }
                 );
             }
@@ -609,14 +609,14 @@ private scope class ConsumeHandler
             {
                 auto msg = this.outer.request_event_dispatcher.receive(
                     this.fiber,
-                    Message(MessageType_v3.Records),
-                    Message(MessageType_v3.Stopped),
-                    Message(MessageType_v3.ChannelRemoved)
+                    Message(MessageType.Records),
+                    Message(MessageType.Stopped),
+                    Message(MessageType.ChannelRemoved)
                 );
 
                 final switch (msg.type)
                 {
-                    case MessageType_v3.Records:
+                    case MessageType.Records:
                         Const!(void)[] received_record_batch;
                         this.outer.conn.message_parser.parseBody(
                             msg.payload, received_record_batch
@@ -624,11 +624,11 @@ private scope class ConsumeHandler
                         this.record_stream.addRecords(received_record_batch);
                         break;
 
-                    case MessageType_v3.Stopped:
+                    case MessageType.Stopped:
                         this.record_stream.stop();
                         return;
 
-                    case MessageType_v3.ChannelRemoved:
+                    case MessageType.ChannelRemoved:
                         // TODO
                         break;
 
@@ -699,7 +699,7 @@ private scope class ConsumeHandler
                             this.fiber,
                             (conn.Payload payload)
                             {
-                                payload.addCopy(MessageType_v3.Stop);
+                                payload.addCopy(MessageType.Stop);
                             }
                         );
                         break;
