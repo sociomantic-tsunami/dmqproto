@@ -4,9 +4,11 @@ override LDFLAGS += -llzo2 -lebtree -lrt -lgcrypt -lgpg-error -lglib-2.0 -lpcre
 override DFLAGS += -w 
 
 ifeq ($(DVER),1)
+override DFLAGS := $(filter-out -di,$(DFLAGS))
 override DFLAGS += -v2 -v2=-static-arr-params -v2=-volatile
 else
 DC:=dmd-transitional
+override DFLAGS += -de
 endif
 
 $B/fakedmq: $C/src/fakedmq/main.d
