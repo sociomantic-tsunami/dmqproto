@@ -13,7 +13,7 @@ endif
 
 $B/fakedmq: $C/src/fakedmq/main.d
 
-all += $B/fakedmq
+all += $B/fakedmq $B/neotest
 
 $O/test-fakedmq: $B/fakedmq
 
