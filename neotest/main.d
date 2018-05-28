@@ -17,12 +17,10 @@ import ocean.task.Scheduler;
 import ocean.task.Task;
 
 import ocean.io.select.client.TimerEvent;
-
+import dmqproto.client.DmqClient;
 
 abstract class DmqTest
 {
-    import dmqproto.client.DmqClient;
-
     import swarm.neo.AddrPort;
     import swarm.neo.authentication.HmacDef: Key;
 
