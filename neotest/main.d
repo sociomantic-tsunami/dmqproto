@@ -23,8 +23,8 @@ abstract class DmqTest
 {
     import dmqproto.client.DmqClient;
 
-    import swarm.core.neo.authentication.HmacDef: Key;
-    import swarm.core.neo.IPAddress;
+    import swarm.neo.AddrPort;
+    import swarm.neo.authentication.HmacDef: Key;
 
     protected DmqClient dmq;
 
@@ -44,19 +44,22 @@ abstract class DmqTest
     {
         theScheduler.eventLoop();
     }
-
-    private void connNotifier ( IPAddress node_address, Exception e )
+    private void connNotifier ( DmqClient.Neo.ConnNotification info )
     {
-        if ( e !is null )
+        with (info.Active) switch (info.active)
         {
-            Stderr.formatln("Connection error: {}", getMsg(e));
-            return;
-        }
-
-        if ( this.dmq.neo.all_nodes_connected )
-        {
+        case connected:
             Stdout.formatln("Connected. Let's Go...................................................................");
             this.go();
+            break;
+        case error_while_connecting:
+            with (info.error_while_connecting)
+            {
+                Stderr.formatln("Connection error: {}", getMsg(e));
+                return;
+            }
+        default:
+            assert(false);
         }
     }
 
@@ -180,27 +183,12 @@ abstract class DmqTest
     {
         with ( info.Active ) switch ( info.active )
         {
-            case started:
-                Stdout.formatln("Consume {} started on all nodes.",
-                    args.channel);
-                break;
-
             case received:
                 Stdout.formatln("Consumed: {}", cast(cstring)info.received.value);
                 break;
 
             case stopped:
                 Stdout.formatln("Consume {} stopped on all nodes.",
-                    args.channel);
-                break;
-
-            case suspended:
-                Stdout.formatln("Consume {} suspended on all nodes.",
-                    args.channel);
-                break;
-
-            case resumed:
-                Stdout.formatln("Consume {} resumed on all nodes.",
                     args.channel);
                 break;
 
@@ -377,7 +365,7 @@ class PushConsumeTest : DmqTest
         this.timer = new TimerEvent(&this.timer_dg);
     }
 
-    import swarm.core.neo.protocol.Message: RequestId;
+    import swarm.neo.protocol.Message: RequestId;
     RequestId consume_id;
 
     // Sets up:
