@@ -66,7 +66,7 @@ abstract class DmqTest
     abstract protected void go ( );
 
     protected void popNotifier ( DmqClient.Neo.Pop.Notification info,
-        DmqClient.Neo.Pop.Args args )
+        Const!(DmqClient.Neo.Pop.Args) args )
     {
         with ( info.Active ) switch ( info.active )
         {
@@ -127,7 +127,7 @@ abstract class DmqTest
     }
 
     protected void pushNotifier ( DmqClient.Neo.Push.Notification info,
-        DmqClient.Neo.Push.Args args )
+        Const!(DmqClient.Neo.Push.Args) args )
     {
         with ( info.Active ) switch ( info.active )
         {
@@ -179,7 +179,7 @@ abstract class DmqTest
     }
 
     protected void consumeNotifier ( DmqClient.Neo.Consume.Notification info,
-        DmqClient.Neo.Consume.Args args )
+        Const!(DmqClient.Neo.Consume.Args) args )
     {
         with ( info.Active ) switch ( info.active )
         {
