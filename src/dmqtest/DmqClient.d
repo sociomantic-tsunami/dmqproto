@@ -262,7 +262,7 @@ class DmqClient
                 {
                     this.connection_error = true;
                     log.error("Neo connection error: {} (on {}:{})",
-                            getMsg(e),
+                            e.message(),
                             node_addr.address_bytes, node_addr.port);
                 }
                 break;
@@ -880,7 +880,7 @@ class DmqClient
                     case node_disconnected:
                         log.error(
                             "Consume failed due to connection error {} on {}:{}",
-                            getMsg(info.node_disconnected.e),
+                            info.node_disconnected.e.message(),
                             info.node_disconnected.node_addr.address_bytes,
                             info.node_disconnected.node_addr.port);
                         this.errors.disconnection = true;

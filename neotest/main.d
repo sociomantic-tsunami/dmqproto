@@ -49,7 +49,7 @@ abstract class DmqTest
     {
         if ( e !is null )
         {
-            Stderr.formatln("Connection error: {}", getMsg(e));
+            Stderr.formatln("Connection error: {}", e.message());
             return;
         }
 
@@ -87,7 +87,7 @@ abstract class DmqTest
             case node_disconnected:
                 Stdout.formatln("Pop {} failed due to connection error {} on {}:{}",
                     args.channel,
-                    getMsg(info.node_disconnected.e),
+                    info.node_disconnected.e.message(),
                     info.node_disconnected.node_addr.address_bytes,
                     info.node_disconnected.node_addr.port);
                 break;
@@ -139,7 +139,7 @@ abstract class DmqTest
             case node_disconnected:
                 Stdout.formatln("Push {}:{} failed due to connection error {} on {}:{}",
                     args.channels, cast(cstring)args.value,
-                    getMsg(info.node_disconnected.e),
+                    info.node_disconnected.e.message(),
                     info.node_disconnected.node_addr.address_bytes,
                     info.node_disconnected.node_addr.port);
                 break;
@@ -212,7 +212,7 @@ abstract class DmqTest
             case node_disconnected:
                 Stdout.formatln("Consume {} failed due to connection error {} on {}:{}",
                     args.channel,
-                    getMsg(info.node_disconnected.e),
+                    info.node_disconnected.e.message(),
                     info.node_disconnected.node_addr.address_bytes,
                     info.node_disconnected.node_addr.port);
                 break;

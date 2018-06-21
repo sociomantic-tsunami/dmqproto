@@ -92,7 +92,7 @@ version ( UnitTest )
 
                 case error_while_connecting:
                     Stderr.formatln("Connection error '{}' on {}:{}",
-                        getMsg(info.error_while_connecting.e),
+                        info.error_while_connecting.e.message(),
                         info.error_while_connecting.node_addr.address_bytes,
                         info.error_while_connecting.node_addr.port);
                     break;
@@ -160,7 +160,7 @@ unittest
                 case node_disconnected:
                     Stdout.formatln(
                         "The request failed due to connection error {} on {}:{}",
-                        getMsg(info.node_disconnected.e),
+                        info.node_disconnected.e.message(),
                         info.node_disconnected.node_addr.address_bytes,
                         info.node_disconnected.node_addr.port);
                     // If there are more nodes left to try, the request will
@@ -321,7 +321,7 @@ unittest
                 case node_disconnected:
                     Stdout.formatln(
                         "The request failed due to connection error {} on {}:{}",
-                        getMsg(info.node_disconnected.e),
+                        info.node_disconnected.e.message(),
                         info.node_disconnected.node_addr.address_bytes,
                         info.node_disconnected.node_addr.port);
                     break;
