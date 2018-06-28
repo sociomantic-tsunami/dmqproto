@@ -56,7 +56,7 @@ struct LocalStore
 
         public void push ( cstring record )
         {
-            this.queue ~= record.dup;
+            (&this).queue ~= record.dup;
         }
 
         /***********************************************************************
@@ -70,11 +70,11 @@ struct LocalStore
 
         public cstring pop ( )
         {
-            if ( !this.queue.length )
+            if ( !(&this).queue.length )
                 return null;
 
-            auto record = this.queue[0];
-            this.queue.removeShift(0);
+            auto record = (&this).queue[0];
+            (&this).queue.removeShift(0);
             return record;
         }
 
@@ -87,7 +87,7 @@ struct LocalStore
 
         public size_t length ( )
         {
-            return this.queue.length;
+            return (&this).queue.length;
         }
     }
 
@@ -108,7 +108,7 @@ struct LocalStore
 
     public cstring[] channels ( )
     {
-        return this.data.keys;
+        return (&this).data.keys;
     }
 
     /***************************************************************************
@@ -123,9 +123,9 @@ struct LocalStore
 
     public void push ( cstring channel, cstring record )
     {
-        if ( !(channel in this.data) )
-            this.data[channel] = RecordQueue();
-        this.data[channel].push(record);
+        if ( !(channel in (&this).data) )
+            (&this).data[channel] = RecordQueue();
+        (&this).data[channel].push(record);
     }
 
     /***************************************************************************
@@ -142,10 +142,10 @@ struct LocalStore
 
     public cstring pop ( cstring channel )
     {
-        if ( !(channel in this.data) )
+        if ( !(channel in (&this).data) )
             return null;
 
-        return this.data[channel].pop();
+        return (&this).data[channel].pop();
     }
 }
 
