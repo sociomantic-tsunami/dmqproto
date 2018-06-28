@@ -265,7 +265,7 @@ class DmqClient
                 {
                     this.connection_error = true;
                     log.error("Neo connection error: {} (on {}:{})",
-                            getMsg(e),
+                            e.message(),
                             node_addr.address_bytes, node_addr.port);
                 }
                 break;
@@ -810,7 +810,7 @@ class DmqClient
                     case node_disconnected:
                         log.error(
                             "Consume failed due to connection error {} on {}:{}",
-                            getMsg(info.node_disconnected.e),
+                            info.node_disconnected.e.message(),
                             info.node_disconnected.node_addr.address_bytes,
                             info.node_disconnected.node_addr.port);
                         this.errors.disconnection = true;
@@ -1134,7 +1134,7 @@ class DmqClient
 
         public void waitNextEvent ( )
         {
-            if (!this.finished)
+            if (!this.events_pending)
             {
                 this.waiting = true;
                 this.task = Task.getThis();
@@ -1219,6 +1219,22 @@ class DmqClient
                 if (this.waiting)
                     this.task.resume();
             }
+        }
+
+        /***********************************************************************
+
+            Tells whether there are events pending. "Events" means that the
+            producer is ready to send another record or the  `Finished` producer
+            event has happened.
+
+            Returns:
+                `true` if events are pending or `false` if not.
+
+        ***********************************************************************/
+
+        private bool events_pending ( )
+        {
+            return this.finished || this.producers.length;
         }
     }
 
