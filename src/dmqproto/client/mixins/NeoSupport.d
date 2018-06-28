@@ -138,10 +138,8 @@ template NeoSupport ( )
             ( cstring channel, Consume.Notifier notifier, Options options )
         {
             cstring subscriber;
-            setupOptionalArgs!(options.length)(
-                options,
-                (Subscriber sub) {subscriber = sub.name;}
-            );
+            scope parse_subscriber = (Subscriber sub) { subscriber = sub.name; };
+            setupOptionalArgs!(options.length)(options, parse_subscriber);
 
             auto params = Const!(Internals.Consume.UserSpecifiedParams)(
                 Const!(Consume.Args)(channel, subscriber), notifier
