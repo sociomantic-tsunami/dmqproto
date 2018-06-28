@@ -1204,7 +1204,7 @@ class DmqClient
 
         public void waitNextEvent ( )
         {
-            if (!this.finished)
+            if (!this.events_pending)
             {
                 this.waiting = true;
                 this.task = Task.getThis();
@@ -1289,6 +1289,22 @@ class DmqClient
                 if (this.waiting)
                     this.task.resume();
             }
+        }
+
+        /***********************************************************************
+
+            Tells whether there are events pending. "Events" means that the
+            producer is ready to send another record or the  `Finished` producer
+            event has happened.
+
+            Returns:
+                `true` if events are pending or `false` if not.
+
+        ***********************************************************************/
+
+        private bool events_pending ( )
+        {
+            return this.finished || this.producers.length;
         }
     }
 
