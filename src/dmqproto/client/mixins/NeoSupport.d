@@ -22,6 +22,7 @@ module dmqproto.client.mixins.NeoSupport;
 
 template NeoSupport ( )
 {
+    import ocean.core.VersionCheck;
     import dmqproto.client.internal.SharedResources;
 
     /***************************************************************************
@@ -625,7 +626,9 @@ template NeoSupport ( )
     {
         this.neo = new Neo(config, Neo.Settings(conn_notifier, new SharedResources));
         this.blocking = new TaskBlocking;
-        this.neo.enableSocketNoDelay();
+
+        static if (!hasFeaturesFrom!("swarm", 5, 1))
+            this.neo.enableSocketNoDelay();
     }
 
 
@@ -652,6 +655,8 @@ template NeoSupport ( )
     {
         this.neo = new Neo(auth_name, auth_key, Neo.Settings(conn_notifier, new SharedResources));
         this.blocking = new TaskBlocking;
-        this.neo.enableSocketNoDelay();
+
+        static if (!hasFeaturesFrom!("swarm", 5, 1))
+            this.neo.enableSocketNoDelay();
     }
 }

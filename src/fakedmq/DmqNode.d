@@ -20,6 +20,7 @@ module fakedmq.DmqNode;
 *******************************************************************************/
 
 import ocean.transition;
+import ocean.core.VersionCheck;
 
 import ocean.util.log.Logger;
 
@@ -106,7 +107,10 @@ public class DmqNode
         Options neo_options;
         neo_options.requests = request_handlers;
         neo_options.epoll = epoll;
-        neo_options.no_delay = true; // favour network turn-around over packet efficiency
+
+        static if (!hasFeaturesFrom!("swarm", 5, 1))
+            neo_options.no_delay = true; // favour network turn-around over packet efficiency
+
         neo_options.credentials_map["test"] = Key.init;
 
         ushort neo_port = node_item.Port;
