@@ -46,9 +46,7 @@ Maintained Major Branches
 ======= ==================== =============== =====
 Major   Initial release date Supported until Notes
 ======= ==================== =============== =====
-v13.x.x v13.0.0_: 21/08/2017 30/07/2018      First open source release
 v14.x.x v14.0.0_: 30/01/2018 TBD             
 ======= ==================== =============== =====
 
-.. _v13.0.0: https://github.com/sociomantic-tsunami/dmqproto/releases/tag/v13.0.0
 .. _v14.0.0: https://github.com/sociomantic-tsunami/dmqproto/releases/tag/v14.0.0
