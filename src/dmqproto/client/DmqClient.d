@@ -242,7 +242,7 @@ public class ExtensibleDmqClient ( Plugins ... ) : DmqClient
     ***************************************************************************/
 
     public this ( EpollSelectDispatcher epoll, cstring auth_name, ubyte[] auth_key,
-        Plugins plugin_instances, Neo.ConnectionNotifier conn_notifier,
+        Plugins plugin_instances, scope Neo.ConnectionNotifier conn_notifier,
         size_t conn_limit = IClient.Config.default_connection_limit,
         size_t queue_size = IClient.Config.default_queue_size,
         size_t fiber_stack_size = IClient.default_fiber_stack_size )
@@ -347,7 +347,7 @@ public class SchedulingDmqClient : ExtensibleDmqClient!(RequestScheduler)
     ***************************************************************************/
 
     public this ( EpollSelectDispatcher epoll, char[] auth_name, ubyte[] auth_key,
-        Neo.ConnectionNotifier conn_notifier,
+        scope Neo.ConnectionNotifier conn_notifier,
         size_t conn_limit = IClient.Config.default_connection_limit,
         size_t queue_size = IClient.Config.default_queue_size,
         size_t fiber_stack_size = IClient.default_fiber_stack_size,
@@ -465,7 +465,7 @@ public class DmqClient : IClient
     ***************************************************************************/
 
     public this ( EpollSelectDispatcher epoll, cstring auth_name, ubyte[] auth_key,
-        Neo.ConnectionNotifier conn_notifier,
+        scope Neo.ConnectionNotifier conn_notifier,
         size_t conn_limit = IClient.Config.default_connection_limit,
         size_t queue_size = IClient.Config.default_queue_size,
         size_t fiber_stack_size = IClient.default_fiber_stack_size )
@@ -593,8 +593,8 @@ public class DmqClient : IClient
         mixin RequestParamsSetup; // private setup() method, used by assign()
     }
 
-    public Push push ( cstring channel, RequestParams.PutValueDg input,
-            RequestNotification.Callback notifier )
+    public Push push ( cstring channel, scope RequestParams.PutValueDg input,
+            scope RequestNotification.Callback notifier )
     {
         return *Push(DmqConst.Command.E.Push, notifier)
             .channel(channel).io(input);
@@ -646,8 +646,8 @@ public class DmqClient : IClient
         mixin RequestParamsSetup; // private setup() method, used by assign()
     }
 
-    public PushMulti pushMulti ( in cstring[] channels, RequestParams.PutValueDg input,
-            RequestNotification.Callback notifier )
+    public PushMulti pushMulti ( in cstring[] channels, scope RequestParams.PutValueDg input,
+            scope RequestNotification.Callback notifier )
     {
         return *PushMulti(DmqConst.Command.E.PushMulti, notifier)
             .channels(channels).io(input);
@@ -692,8 +692,8 @@ public class DmqClient : IClient
         mixin RequestParamsSetup; // private setup() method, used by assign()
     }
 
-    public Pop pop ( cstring channel, RequestParams.GetValueDg output,
-            RequestNotification.Callback notifier )
+    public Pop pop ( cstring channel, scope RequestParams.GetValueDg output,
+            scope RequestNotification.Callback notifier )
     {
         return *Pop(DmqConst.Command.E.Pop, notifier)
             .channel(channel).io(output);
@@ -732,8 +732,8 @@ public class DmqClient : IClient
         mixin RequestParamsSetup; // private setup() method, used by assign()
     }
 
-    public Consume consume ( cstring channel, RequestParams.GetValueDg output,
-            RequestNotification.Callback notifier )
+    public Consume consume ( cstring channel, scope RequestParams.GetValueDg output,
+            scope RequestNotification.Callback notifier )
     {
         return *Consume(DmqConst.Command.E.Consume, notifier)
             .channel(channel).io(output);
@@ -787,8 +787,8 @@ public class DmqClient : IClient
         mixin RequestParamsSetup; // private setup() method, used by assign()
     }
 
-    public Produce produce ( cstring channel, RequestParams.ProducerDg producer,
-            RequestNotification.Callback notifier )
+    public Produce produce ( cstring channel, scope RequestParams.ProducerDg producer,
+            scope RequestNotification.Callback notifier )
     {
         return *Produce(DmqConst.Command.E.Produce, notifier)
             .channel(channel).io(producer);
@@ -843,7 +843,7 @@ public class DmqClient : IClient
     }
 
     public ProduceMulti produceMulti ( in cstring[] channels,
-        RequestParams.ProducerDg producer, RequestNotification.Callback notifier )
+        scope RequestParams.ProducerDg producer, scope RequestNotification.Callback notifier )
     {
         return *ProduceMulti(DmqConst.Command.E.ProduceMulti, notifier).
             channels(channels).io(producer);
@@ -887,8 +887,8 @@ public class DmqClient : IClient
         mixin RequestParamsSetup; // private setup() method, used by assign()
     }
 
-    public GetChannels getChannels ( RequestParams.GetNodeValueDg output,
-        RequestNotification.Callback notifier )
+    public GetChannels getChannels ( scope RequestParams.GetNodeValueDg output,
+        scope RequestNotification.Callback notifier )
     {
         return *GetChannels(DmqConst.Command.E.GetChannels, notifier).io(output);
     }
@@ -927,8 +927,8 @@ public class DmqClient : IClient
         mixin RequestParamsSetup; // private setup() method, used by assign()
     }
 
-    public GetSize getSize ( RequestParams.GetSizeInfoDg output,
-        RequestNotification.Callback notifier )
+    public GetSize getSize ( scope RequestParams.GetSizeInfoDg output,
+        scope RequestNotification.Callback notifier )
     {
         return *GetSize(DmqConst.Command.E.GetSize, notifier).io(output);
     }
@@ -969,7 +969,7 @@ public class DmqClient : IClient
     }
 
     public GetChannelSize getChannelSize ( cstring channel,
-        RequestParams.GetChannelSizeInfoDg output, RequestNotification.Callback notifier )
+        scope RequestParams.GetChannelSizeInfoDg output, scope RequestNotification.Callback notifier )
     {
         return *GetChannelSize(DmqConst.Command.E.GetChannelSize, notifier)
             .channel(channel).io(output);
@@ -1003,7 +1003,7 @@ public class DmqClient : IClient
         mixin RequestParamsSetup; // private setup() method, used by assign()
     }
 
-    public RemoveChannel removeChannel ( cstring channel, RequestNotification.Callback notifier )
+    public RemoveChannel removeChannel ( cstring channel, scope RequestNotification.Callback notifier )
     {
         return *RemoveChannel(DmqConst.Command.E.RemoveChannel, notifier)
             .channel(channel);
@@ -1044,7 +1044,7 @@ public class DmqClient : IClient
         mixin RequestParamsSetup; // private setup() method, used by assign()
     }
 
-    public GetNumConnections getNumConnections ( RequestParams.GetNumConnectionsDg output, RequestNotification.Callback notifier )
+    public GetNumConnections getNumConnections ( scope RequestParams.GetNumConnectionsDg output, scope RequestNotification.Callback notifier )
     {
         return *GetNumConnections(DmqConst.Command.E.GetNumConnections, notifier)
             .io(output);
@@ -1073,7 +1073,7 @@ public class DmqClient : IClient
         mixin RequestParamsSetup; // private setup() method, used by assign()
     }
 
-    public Flush flush ( IRequestNotification.Callback notifier )
+    public Flush flush ( scope IRequestNotification.Callback notifier )
     {
         return Flush(ClientCommandParams.Command.Flush, notifier);
     }
@@ -1095,7 +1095,7 @@ public class DmqClient : IClient
     ***************************************************************************/
 
     override protected void scopeRequestParams (
-        void delegate ( IRequestParams params ) dg )
+        scope void delegate ( IRequestParams params ) dg )
     {
         scope params = new RequestParams;
         dg(params);

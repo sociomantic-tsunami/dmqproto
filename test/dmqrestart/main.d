@@ -42,10 +42,10 @@ void main ( )
                  finished. The remaining queued request then fires, causing the
                  notifier in push() to be called out-of-scope = segfault.
         */
-        const uint MAX_CONNS = 2;
+        static immutable uint MAX_CONNS = 2;
 
         /// Total number of records to push
-        const RECORD_COUNT = 100;
+        static immutable RECORD_COUNT = 100;
 
         /// DMQ client instance used to send records to fake DMQ
         private DmqClient dmqclient;
