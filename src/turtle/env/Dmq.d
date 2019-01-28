@@ -69,6 +69,8 @@ public class Dmq : Node!(DmqNode, "dmq")
     import ocean.core.Enforce;
     import ocean.text.convert.Formatter;
     import ocean.util.serialize.contiguous.package_;
+    import ocean.util.serialize.contiguous.MultiVersionDecorator;
+    import ocean.util.serialize.Version;
     import swarm.neo.AddrPort;
     import swarm.Const: NodeItem;
 
@@ -104,16 +106,20 @@ public class Dmq : Node!(DmqNode, "dmq")
 
     public void push ( T ) ( cstring channel, T data )
     {
+        mstring serialized_data;
         // make the function work with static arrays
         static if (is(T : cstring) || is(T : Const!(void)[]))
         {
-            auto serialized_data = cast(mstring) data.dup;
+            serialized_data = cast(mstring) data.dup;
+        }
+        else static if (Version.Info!(T).exists) // implies is(T == struct)
+        {
+            (new VersionDecorator).store(data, serialized_data);
         }
         else
         {
             void[] buf;
-            auto serialized_data =
-                cast(mstring) Serializer.serialize(data, buf);
+            serialized_data = cast(mstring) Serializer.serialize(data, buf);
         }
 
         enforce(serialized_data.length,
@@ -173,6 +179,11 @@ public class Dmq : Node!(DmqNode, "dmq")
         static if (is(T : cstring) || is(T : Const!(void)[]))
         {
             return cast(T) result.dup;
+        }
+        else static if (Version.Info!(T).exists) // implies is(T == struct)
+        {
+            Contiguous!(T) buf;
+            return *(new VersionDecorator).loadCopy(result, buf).ptr;
         }
         else
         {
@@ -449,5 +460,28 @@ unittest
         auto size = dmq.getSize("unittest_channel");
         test!("==")(size.records, 1);
         test!("==")(size.bytes, 4);
+    }
+
+    // Testing serialization and deserialization of versioned structs.
+    {
+        struct VersionedStruct
+        {
+            const StructVersion = 1;
+            int i;
+            char[] j;
+        }
+
+        VersionedStruct a;
+        a.i = 100;
+        a.j = "HelloWorld".dup;
+
+        initDmq();
+        dmq.push("unittest_channel", a);
+        auto size = dmq.getSize("unittest_channel");
+        test!("==")(size.records, 1);
+
+        auto result = dmq.pop!(VersionedStruct)("unittest_channel");
+        test!("==")(result.i, 100);
+        test!("==")(result.j, "HelloWorld");
     }
 }
