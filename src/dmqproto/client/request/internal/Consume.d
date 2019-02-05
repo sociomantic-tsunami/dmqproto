@@ -62,7 +62,7 @@ public struct Consume
 
     ***************************************************************************/
 
-    mixin BatchController!(typeof(this), IController);
+    mixin BatchController!(typeof((&this)), IController);
 
     /***************************************************************************
 

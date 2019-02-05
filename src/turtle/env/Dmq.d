@@ -466,7 +466,7 @@ unittest
     {
         struct VersionedStruct
         {
-            const StructVersion = 1;
+            enum StructVersion = 1;
             int i;
             char[] j;
         }

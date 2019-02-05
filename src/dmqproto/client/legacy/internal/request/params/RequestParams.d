@@ -101,8 +101,8 @@ public class RequestParams : IChannelRequestParams
 
         public uint opAssign ( uint c )
         {
-            this.start = c;
-            this.current = c;
+            (&this).start = c;
+            (&this).current = c;
 
             return c;
         }
@@ -122,11 +122,11 @@ public class RequestParams : IChannelRequestParams
 
          **********************************************************************/
 
-        public typeof(this) next ( uint end )
+        public typeof((&this)) next ( uint end )
         {
-            this.current = (this.current + 1) % end;
+            (&this).current = ((&this).current + 1) % end;
 
-            return this;
+            return (&this);
         }
 
 
@@ -140,7 +140,7 @@ public class RequestParams : IChannelRequestParams
 
         public bool finished ( )
         {
-            return this.current == this.start;
+            return (&this).current == (&this).start;
         }
     }
 
@@ -245,7 +245,7 @@ public class RequestParams : IChannelRequestParams
 
     ***************************************************************************/
 
-    override protected void notify_ ( void delegate ( IRequestNotification ) info_dg )
+    override protected void notify_ ( scope void delegate ( IRequestNotification ) info_dg )
     {
         scope info = new RequestNotification(cast(DmqConst.Command.E)this.command,
             this.context);
