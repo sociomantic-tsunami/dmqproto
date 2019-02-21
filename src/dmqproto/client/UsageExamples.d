@@ -406,7 +406,7 @@ unittest
     void getStats ( DmqClient dmq )
     {
         // See Stats in swarm.neo.client.mixins.ClientCore
-        auto stats = dmq.neo.new Stats;
+        scope stats = dmq.neo.new Stats;
 
         // Connection stats.
         Stdout.formatln("DMQ nodes registered with client: {}",
