@@ -525,14 +525,14 @@ class DmqClient
 
                 ***************************************************************/
 
-                static public typeof(*this) create ( RawClient.Neo.RequestId id )
+                static public typeof(this) create ( RawClient.Neo.RequestId id )
                 out (instance)
                 {
                     assert(&instance);
                 }
                 body
                 {
-                    return typeof(*this)([id], 1);
+                    return typeof(this)([id], 1);
                 }
             }
 
