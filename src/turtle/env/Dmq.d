@@ -68,9 +68,11 @@ public class Dmq : Node!(DmqNode, "dmq")
 
     import ocean.core.Enforce;
     import ocean.text.convert.Formatter;
-    import ocean.util.serialize.contiguous.package_;
     import ocean.util.serialize.contiguous.MultiVersionDecorator;
     import ocean.util.serialize.Version;
+    import ocean.util.serialize.contiguous.Contiguous;
+    import ocean.util.serialize.contiguous.Deserializer;
+    import ocean.util.serialize.contiguous.Serializer;
     import swarm.neo.AddrPort;
     import swarm.Const: NodeItem;
 
