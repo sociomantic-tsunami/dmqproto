@@ -97,7 +97,8 @@ version ( UnitTest )
                         info.error_while_connecting.node_addr.port);
                     break;
 
-                mixin(typeof(info).handleInvalidCases);
+                case none:
+                    break;
             }
         }
     }
@@ -195,7 +196,8 @@ unittest
                     }
                     break;
 
-                mixin(typeof(info).handleInvalidCases);
+                case none:
+                    break;
             }
         }
     }
@@ -340,7 +342,8 @@ unittest
                     }
                     break;
 
-                mixin(typeof(info).handleInvalidCases);
+                case none:
+                    break;
             }
         }
 
@@ -458,7 +461,7 @@ unittest
         {
             // See swarm.neo.client.requests.Stats
             Stdout.formatln("{} {} requests handled, mean time: {}μs",
-                stats.count, name, stats.mean_handled_time_micros);
+                stats.count, name, stats.mean_time_micros());
         }
     }
 }

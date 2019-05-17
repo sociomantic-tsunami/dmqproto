@@ -148,7 +148,7 @@ public struct Pop
                     conn.remote_address) )
                     // Read the status code and (optionally) the popped value.
                     conn.receive(
-                        ( in void[] const_payload )
+                        ( const(void)[] const_payload )
                         {
                             Const!(void)[] payload = const_payload;
                             auto status =

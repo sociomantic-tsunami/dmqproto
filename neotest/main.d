@@ -53,7 +53,7 @@ abstract class DmqTest
         case error_while_connecting:
             with (info.error_while_connecting)
             {
-                Stderr.formatln("Connection error: {}", getMsg(e));
+                Stderr.formatln("Connection error: {}", e.message);
                 return;
             }
         default:

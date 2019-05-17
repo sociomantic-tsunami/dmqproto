@@ -452,9 +452,8 @@ template NeoSupport ( )
                     case node_disconnected:
                     case node_error:
                     case unsupported:
+                    case none:
                         break;
-
-                    mixin(typeof(info).handleInvalidCases);
                 }
             }
 
@@ -561,9 +560,8 @@ template NeoSupport ( )
                     case node_error:
                     case unsupported:
                     case channel_has_subscribers:
+                    case none:
                         break;
-
-                    mixin(typeof(info).handleInvalidCases);
                 }
             }
 
