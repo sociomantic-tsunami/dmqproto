@@ -60,12 +60,9 @@ public abstract class PopProtocol_v1: RequestHandler
     override protected void handle ( RequestOnConn connection,
         IRequestResources resources, Const!(void)[] msg_payload )
     {
-        auto ed = connection.event_dispatcher;
-        auto parser = ed.message_parser;
-
         cstring channel_name;
 
-        parser.parseBody(msg_payload, channel_name);
+        this.parser.parseBody(msg_payload, channel_name);
 
         bool subscribed;
 
@@ -74,8 +71,8 @@ public abstract class PopProtocol_v1: RequestHandler
             auto value = resources.getVoidBuffer();
             if ( this.getNextValue(*value) )
             {
-                ed.send(
-                    ( ed.Payload payload )
+                this.ed.send(
+                    ( this.ed.Payload payload )
                     {
                         payload.addCopy(RequestStatusCode.Popped);
                         payload.addArray(*value);
@@ -84,8 +81,8 @@ public abstract class PopProtocol_v1: RequestHandler
             }
             else
             {
-                ed.send(
-                    ( ed.Payload payload )
+                this.ed.send(
+                    ( this.ed.Payload payload )
                     {
                         payload.addCopy(RequestStatusCode.Empty);
                     }
@@ -94,8 +91,8 @@ public abstract class PopProtocol_v1: RequestHandler
         }
         else
         {
-            ed.send(
-                ( ed.Payload payload )
+            this.ed.send(
+                ( this.ed.Payload payload )
                 {
                     payload.addCopy(
                         subscribed
