@@ -23,12 +23,28 @@ import dmqproto.node.neo.request.core.IRequestHandlerRequest;
 public abstract class PushProtocol_v3: IRequestHandlerRequest
 {
     import dmqproto.common.Push;
+    import dmqproto.common.RequestCodes;
     import dmqproto.node.neo.request.core.IRequestResources;
 
     import swarm.neo.node.RequestOnConn;
+    import swarm.neo.request.Command;
     import ocean.util.container.VoidBufferAsArrayOf;
 
     import ocean.transition;
+
+    /// Request name for stats tracking. Required by ConnectionHandler.
+    static immutable istring name = "push";
+
+    /// Request code / version. Required by ConnectionHandler.
+    static immutable Command command = Command(RequestCode.Push, 3);
+
+    /// Flag indicating whether timing stats should be gathered for requests of
+    /// this type.
+    static immutable bool timing = false;
+
+    /// Flag indicating whether this request type is scheduled for removal. (If
+    /// true, clients will be warned.)
+    static immutable bool scheduled_for_removal = false;
 
     /***************************************************************************
 
