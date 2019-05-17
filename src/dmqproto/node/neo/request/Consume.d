@@ -90,30 +90,6 @@ public abstract scope class ConsumeProtocol_v4: RequestHandler
 
     /***************************************************************************
 
-        Request-on-conn, to get the event dispatcher and control the fiber.
-
-    ***************************************************************************/
-
-    private RequestOnConn connection;
-
-    /***************************************************************************
-
-        Request-on-conn event dispatcher, to send and receive messages.
-
-    ***************************************************************************/
-
-    private RequestOnConn.EventDispatcher ed;
-
-    /***************************************************************************
-
-        Message parser
-
-    ***************************************************************************/
-
-    private RequestOnConn.EventDispatcher.MessageParser parser;
-
-    /***************************************************************************
-
         If true, dataReady() (called when a record was pushed) resumes the
         fiber.
 
@@ -162,10 +138,6 @@ public abstract scope class ConsumeProtocol_v4: RequestHandler
     override protected void handle ( RequestOnConn connection,
         IRequestResources resources, Const!(void)[] msg_payload )
     {
-        this.connection = connection;
-        this.ed = connection.event_dispatcher;
-        this.parser = this.ed.message_parser;
-
         cstring channel_name;
         cstring subscriber_name;
         this.parser.parseBody(msg_payload, channel_name, subscriber_name);
@@ -286,7 +258,8 @@ public abstract scope class ConsumeProtocol_v4: RequestHandler
         this.resume_fiber_on_push = true;
         this.resume_fiber_on_flush = !!(*this.record_batch).length;
 
-        auto event = this.ed.nextEvent(ed.NextEventFlags.Receive | ed.NextEventFlags.Resume);
+        auto event = this.ed.nextEvent(
+            this.ed.NextEventFlags.Receive | this.ed.NextEventFlags.Resume);
 
         this.resume_fiber_on_push = false;
         this.resume_fiber_on_flush = false;
@@ -323,7 +296,7 @@ public abstract scope class ConsumeProtocol_v4: RequestHandler
 
     private bool sendBatchAndReceiveFeedback ( )
     {
-        void fillInRecordsMessage ( ed.Payload payload )
+        void fillInRecordsMessage ( this.ed.Payload payload )
         {
             payload.addCopy(MessageType.Records);
             payload.addArray(*this.record_batch);
@@ -337,7 +310,7 @@ public abstract scope class ConsumeProtocol_v4: RequestHandler
 
         // Send the records but be ready to potentially receive a Stop message.
         auto event = this.ed.nextEvent(
-            ed.NextEventFlags.Receive, &fillInRecordsMessage
+            this.ed.NextEventFlags.Receive, &fillInRecordsMessage
         );
 
         switch (event.active)
@@ -381,7 +354,7 @@ public abstract scope class ConsumeProtocol_v4: RequestHandler
     private void sendStoppedMessage ( )
     {
         this.ed.send(
-            (ed.Payload payload)
+            (this.ed.Payload payload)
             {
                 payload.addCopy(MessageType.Stopped);
             }

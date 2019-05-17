@@ -24,7 +24,7 @@ abstract class RequestHandler: IRequest
     import ocean.transition;
 
     /// Request-on-conn of this request handler.
-    private RequestOnConn connection;
+    protected RequestOnConn connection;
 
     /// Acquired resources of this request.
     private IRequestResources resources;
@@ -40,27 +40,28 @@ abstract class RequestHandler: IRequest
 
     /***************************************************************************
 
-        Stores the request-on-conn and request resource acquirer, to be passed
-        to `handle`.
-
-        Params:
-            connection = request-on-conn in which the request handler is called
-            resources = request resources acquirer
+        Request-on-conn event dispatcher, to send and receive messages.
 
     ***************************************************************************/
 
-    public void initialise ( RequestOnConn connection, Object resources_object )
-    {
-        this.connection = connection;
-        this.resources = cast(IRequestResources)resources_object;
-        verify(this.resources !is null);
-    }
+    protected RequestOnConn.EventDispatcher ed;
+
+    /***************************************************************************
+
+        Message parser
+
+    ***************************************************************************/
+
+    protected RequestOnConn.EventDispatcher.MessageParser parser;
 
     /***************************************************************************
 
         Called by the connection handler after the request code and version have
         been parsed from a message received over the connection, and the
         request-supported code sent in response.
+
+        Stores the request-on-conn and request resource acquirer in the current
+        member.
 
         Note: the initial payload passed to this method is a slice of a buffer
         owned by the RequestOnConn. It is thus safe to assume that the contents
@@ -76,44 +77,19 @@ abstract class RequestHandler: IRequest
     public void handle ( RequestOnConn connection, Object resources,
         Const!(void)[] init_payload )
     {
-        // Dummy implementation to satisfy interface definition
-    }
+        this.connection = connection;
+        this.resources = cast(IRequestResources)resources;
+        verify(this.resources !is null);
 
-    /***************************************************************************
+        this.ed = connection.event_dispatcher;
+        this.parser = this.ed.message_parser;
 
-        Copies `init_payload` into an acquired buffer, to be passed to `handle`.
-
-        Params:
-            init_payload = initial message payload read from the connection
-
-    ***************************************************************************/
-
-    public void preSupportedCodeSent ( Const!(void)[] init_payload )
-    {
         void[]* buf = this.resources.getVoidBuffer();
         (*buf).length = init_payload.length;
         (*buf)[] = init_payload;
         this.msg_payload = *buf;
-    }
 
-    /***************************************************************************
-
-        Calls `handle` with the objects passed to `initialise` and
-        `preSupportedCodeSent`, then relinquishes the objects.
-
-    ***************************************************************************/
-
-    public void postSupportedCodeSent ( )
-    {
-        try
-            this.handle(this.connection, this.resources, this.msg_payload);
-        finally
-        {
-            this.connection = null;
-            this.resources = null;
-            // this.msg_payload is relinquished automatically after this
-            // method has returned.
-        }
+        this.handle(this.connection, this.resources, this.msg_payload);
     }
 
     /***************************************************************************

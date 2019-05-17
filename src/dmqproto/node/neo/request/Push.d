@@ -61,21 +61,18 @@ public abstract class PushProtocol_v3: RequestHandler
     override protected void handle ( RequestOnConn connection,
         IRequestResources resources, Const!(void)[] msg_payload )
     {
-        auto ed = connection.event_dispatcher;
-        auto parser = ed.message_parser;
-
         // Acquire a buffer to contain slices to the channel names in the
         // message payload (i.e. not a buffer of buffers, a buffer of slices)
         auto channel_names = VoidBufferAsArrayOf!(cstring)(resources.getVoidBuffer());
-        channel_names.length = *parser.getValue!(ubyte)(msg_payload);
+        channel_names.length = *this.parser.getValue!(ubyte)(msg_payload);
 
         foreach ( ref channel_name; channel_names.array )
         {
-            channel_name = parser.getArray!(Const!(char))(msg_payload);
+            channel_name = this.parser.getArray!(Const!(char))(msg_payload);
         }
 
         Const!(void)[] value;
-        parser.parseBody(msg_payload, value);
+        this.parser.parseBody(msg_payload, value);
 
         if ( this.prepareChannels(resources, channel_names.array) )
         {
@@ -84,8 +81,8 @@ public abstract class PushProtocol_v3: RequestHandler
                 this.pushToStorage(resources, channel_name, value);
             }
 
-            ed.send(
-                ( ed.Payload payload )
+            this.ed.send(
+                ( this.ed.Payload payload )
                 {
                     payload.addCopy(RequestStatusCode.Pushed);
                 }
@@ -93,8 +90,8 @@ public abstract class PushProtocol_v3: RequestHandler
         }
         else
         {
-            ed.send(
-                ( ed.Payload payload )
+            this.ed.send(
+                ( this.ed.Payload payload )
                 {
                     payload.addCopy(RequestStatusCode.Error);
                 }
