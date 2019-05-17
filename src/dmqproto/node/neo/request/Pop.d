@@ -12,7 +12,7 @@
 
 module dmqproto.node.neo.request.Pop;
 
-import dmqproto.node.neo.request.core.IRequestHandlerRequest;
+import dmqproto.node.neo.request.core.RequestHandler;
 
 /*******************************************************************************
 
@@ -20,7 +20,7 @@ import dmqproto.node.neo.request.core.IRequestHandlerRequest;
 
 *******************************************************************************/
 
-public abstract class PopProtocol_v1: IRequestHandlerRequest
+public abstract class PopProtocol_v1: RequestHandler
 {
     import dmqproto.common.Pop;
     import dmqproto.common.RequestCodes;

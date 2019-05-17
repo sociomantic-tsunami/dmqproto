@@ -11,12 +11,12 @@
 
 *******************************************************************************/
 
-module dmqproto.node.neo.request.core.IRequestHandlerRequest;
+module dmqproto.node.neo.request.core.RequestHandler;
 
 import swarm.neo.node.IRequest;
 
 /// ditto
-abstract class IRequestHandlerRequest: IRequest
+abstract class RequestHandler: IRequest
 {
     import swarm.neo.node.RequestOnConn;
     import dmqproto.node.neo.request.core.IRequestResources;
