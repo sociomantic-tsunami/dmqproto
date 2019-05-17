@@ -249,7 +249,7 @@ public class ValueProducer : IProducer, IFlushable
 
     ***************************************************************************/
 
-    public cstring next ( RequestParams.ProducerDg producer_dg,
+    public cstring next ( scope RequestParams.ProducerDg producer_dg,
         RequestContext context )
     {
         this.value_ready = false;

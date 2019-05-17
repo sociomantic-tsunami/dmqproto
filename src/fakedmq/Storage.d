@@ -365,7 +365,7 @@ class Channel
 
     ***************************************************************************/
 
-    public int opApply ( int delegate ( ref Queue queue ) dg )
+    public int opApply ( scope int delegate ( ref Queue queue ) dg )
     {
         if (this.init_queue !is null)
             return dg(this.init_queue);
