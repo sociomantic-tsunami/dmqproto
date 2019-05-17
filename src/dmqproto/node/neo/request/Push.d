@@ -12,7 +12,7 @@
 
 module dmqproto.node.neo.request.Push;
 
-import dmqproto.node.neo.request.core.IRequestHandlerRequest;
+import dmqproto.node.neo.request.core.RequestHandler;
 
 /*******************************************************************************
 
@@ -20,7 +20,7 @@ import dmqproto.node.neo.request.core.IRequestHandlerRequest;
 
 *******************************************************************************/
 
-public abstract class PushProtocol_v3: IRequestHandlerRequest
+public abstract class PushProtocol_v3: RequestHandler
 {
     import dmqproto.common.Push;
     import dmqproto.common.RequestCodes;

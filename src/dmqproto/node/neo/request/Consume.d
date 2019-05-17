@@ -12,7 +12,7 @@
 
 module dmqproto.node.neo.request.Consume;
 
-import dmqproto.node.neo.request.core.IRequestHandlerRequest;
+import dmqproto.node.neo.request.core.RequestHandler;
 
 /*******************************************************************************
 
@@ -20,7 +20,7 @@ import dmqproto.node.neo.request.core.IRequestHandlerRequest;
 
 *******************************************************************************/
 
-public abstract scope class ConsumeProtocol_v4: IRequestHandlerRequest
+public abstract scope class ConsumeProtocol_v4: RequestHandler
 {
     import swarm.neo.node.RequestOnConn;
     import swarm.neo.request.Command;
