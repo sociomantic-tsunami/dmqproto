@@ -59,4 +59,7 @@ void main ( )
 
     Log.root.info("Starting infinite event loop, kill the process if not needed anymore");
     epoll.eventLoop();
+
+    node.stopListener(epoll);
+    node.shutdown();
 }
