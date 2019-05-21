@@ -339,11 +339,13 @@ public abstract scope class ConsumeProtocol_v4: IRequestHandlerRequest
                         return false;
 
                     default:
-                        throw this.ed.shutdownWithProtocolError(
+                        this.ed.shutdownWithProtocolError(
                             "Consume: Expected Continue or Stopped message " ~
                             "from the client"
                         );
                 }
+                // Needed to indicate that this isn't a fallthrough
+                return false;
 
             case event.active.received:
                 // Received message before the records have been sent: It should
@@ -386,7 +388,7 @@ public abstract scope class ConsumeProtocol_v4: IRequestHandlerRequest
         MessageType msg_type;
         this.parser.parseBody(msg_payload, msg_type);
         if (msg_type != msg_type.Stop)
-            throw this.ed.shutdownWithProtocolError(
+            this.ed.shutdownWithProtocolError(
                 "Consume: Message received from the client is not Stop as expected",
                 file, line
             );
