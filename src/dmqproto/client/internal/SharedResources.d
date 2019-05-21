@@ -18,7 +18,7 @@ import ocean.core.Verify;
 /// ditto
 public final class SharedResources
 {
-    import swarm.neo.util.AcquiredResources;
+    import ocean.util.container.pool.AcquiredResources;
     import swarm.neo.util.MessageFiber;
 
     import ocean.util.container.pool.FreeList;

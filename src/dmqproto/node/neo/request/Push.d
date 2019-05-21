@@ -26,7 +26,7 @@ public abstract class PushProtocol_v3: IRequestHandlerRequest
     import dmqproto.node.neo.request.core.IRequestResources;
 
     import swarm.neo.node.RequestOnConn;
-    import swarm.neo.util.VoidBufferAsArrayOf;
+    import ocean.util.container.VoidBufferAsArrayOf;
 
     import ocean.transition;
 

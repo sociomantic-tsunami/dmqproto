@@ -211,6 +211,14 @@ public class RequestParams : IChannelRequestParams
 
     public RegisterSuspendableDg suspend_register;
 
+    /**************************************************************************
+
+        Suspendable request registration callback
+
+     **************************************************************************/
+
+    public RegisterSuspendableDg suspend_unregister;
+
 
     /***************************************************************************
 
@@ -271,7 +279,7 @@ public class RequestParams : IChannelRequestParams
     override protected void copy__ ( IRequestParams params )
     {
         auto dmq_params = cast(RequestParams)params;
-        copyClassFields(this, dmq_params);
+        this.tupleof[] = dmq_params.tupleof[];
     }
 
 
