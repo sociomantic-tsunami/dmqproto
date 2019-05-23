@@ -59,9 +59,6 @@ public class DmqConnectionHandler :
     import fakedmq.request.Push;
     import fakedmq.request.Produce;
     import fakedmq.request.ProduceMulti;
-    import fakedmq.request.GetChannels;
-    import fakedmq.request.GetChannelSize;
-    import fakedmq.request.GetSize;
     import fakedmq.request.GetNumConnections;
     import fakedmq.request.Consume;
     import fakedmq.request.PushMulti;
@@ -187,42 +184,6 @@ public class DmqConnectionHandler :
     override protected void handlePop ( )
     {
         this.handleCommand!(Pop);
-    }
-
-
-    /***************************************************************************
-
-        Command code 'GetChannels' handler.
-
-    ***************************************************************************/
-
-    override protected void handleGetChannels ( )
-    {
-        this.handleCommand!(GetChannels);
-    }
-
-
-    /***************************************************************************
-
-        Command code 'GetChannelSize' handler.
-
-    ***************************************************************************/
-
-    override protected void handleGetChannelSize ( )
-    {
-        this.handleCommand!(GetChannelSize);
-    }
-
-
-    /***************************************************************************
-
-        Command code 'GetSize' handler.
-
-    ***************************************************************************/
-
-    override protected void handleGetSize ( )
-    {
-        this.handleCommand!(GetSize);
     }
 
 

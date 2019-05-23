@@ -45,13 +45,6 @@ static:
 
         Push                = push a record to the DMQ
         Pop                 = pop a record from the DMQ
-        GetChannels         = get the channels in the DMQ
-        GetChannelSize      = get the total number of records and the
-                              total size (in bytes) of all records in
-                              specified channel
-        GetSize             = get the total number of records and the
-                              total size (in bytes) of all records in
-                              all channels
         Consume             = initiates an endless loop of receiving records
                               from the DMQ as they are pushed into it
         GetNumConnections   = gets the current number of active connections
@@ -69,9 +62,9 @@ static:
         mixin EnumBase!([
             "Push"[]:                  1,
             "Pop":                     2,
-            "GetChannels":             3,
-            "GetChannelSize":          4,
-            "GetSize":                 5,
+            //"GetChannels":             3,
+            //"GetChannelSize":          4,
+            //"GetSize":                 5,
             "Consume":                 6,
             //"GetSizeLimit":            7,
             "GetNumConnections":       8,

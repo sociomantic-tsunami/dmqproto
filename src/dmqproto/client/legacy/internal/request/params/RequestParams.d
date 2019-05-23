@@ -59,13 +59,10 @@ public class RequestParams : IChannelRequestParams
     public alias .PutValueDg PutValueDg;
     public alias .GetValueDg GetValueDg;
     public alias .GetNodeValueDg GetNodeValueDg;
-    public alias .GetSizeInfoDg GetSizeInfoDg;
-    public alias .GetChannelSizeInfoDg GetChannelSizeInfoDg;
     public alias .GetNumConnectionsDg GetNumConnectionsDg;
     public alias .RegisterSuspendableDg RegisterSuspendableDg;
     public alias .RegisterStreamInfoDg RegisterStreamInfoDg;
     public alias .ProducerDg ProducerDg;
-    public alias .GetChannelListDg GetChannelListDg;
 
 
     /**************************************************************************
@@ -156,11 +153,8 @@ public class RequestParams : IChannelRequestParams
         PutValueDg put_value;
         GetValueDg get_value;
         GetNodeValueDg get_node_value;
-        GetSizeInfoDg get_size_info;
-        GetChannelSizeInfoDg get_channel_size;
         GetNumConnectionsDg get_num_connections;
         ProducerDg producer;
-        GetChannelListDg get_channel_list;
     }
 
     public alias SmartUnion!(IODg) IOItemUnion;

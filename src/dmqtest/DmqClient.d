@@ -968,39 +968,6 @@ class DmqClient
 
     /***************************************************************************
 
-        Get the number of records and bytes in the specified channel.
-
-        Params:
-            channel = name of DMQ channel.
-            records = receives the number of records in the channel
-            bytes = receives the number of bytes in the channel
-
-        Throws:
-            upon request error (Exception.msg set to indicate error)
-
-    ***************************************************************************/
-
-    public void getChannelSize ( cstring channel, out ulong records,
-        out ulong bytes )
-    {
-        scope tbr = new TaskBlockingRequest;
-
-        void output ( RawClient.RequestContext context, in cstring address,
-            ushort port, in cstring channel, ulong r, ulong b )
-        {
-            records += r;
-            bytes += b;
-        }
-
-        this.raw_client.assign(
-            this.raw_client.getChannelSize(channel, &output, &tbr.notify)
-        );
-
-        tbr.wait();
-    }
-
-    /***************************************************************************
-
         Helper that wraps DMQ client removeChannel request
 
     ***************************************************************************/
