@@ -375,9 +375,6 @@ public class DmqNodeRegistry : NodeRegistry, IDmqNodeRegistry, IReregistrator
         with ( DmqConst.Command.E ) final switch ( command )
         {
             // Commands over all nodes
-            case GetChannels:
-            case GetSize:
-            case GetChannelSize:
             case RemoveChannel:
             case GetNumConnections:
             case Consume:

@@ -49,10 +49,7 @@ import dmqproto.client.legacy.internal.request.model.IRequest;
 import dmqproto.client.legacy.internal.request.model.IChannelRequest;
 import dmqproto.client.legacy.internal.request.model.IDmqRequestResources;
 
-import swarm.client.request.GetChannelsRequest;
 import swarm.client.request.GetNumConnectionsRequest;
-import swarm.client.request.GetChannelSizeRequest;
-import swarm.client.request.GetSizeRequest;
 import swarm.client.request.RemoveChannelRequest;
 
 import dmqproto.client.legacy.internal.request.PopRequest;
@@ -73,21 +70,9 @@ import ocean.core.Verify;
 
 *******************************************************************************/
 
-private alias GetChannelsRequestTemplate!(IRequest,
-    IDmqRequestResources, DmqConst.Command.E.GetChannels)
-    GetChannelsRequest;
-
 private alias GetNumConnectionsRequestTemplate!(IRequest,
     IDmqRequestResources, DmqConst.Command.E.GetNumConnections)
     GetNumConnectionsRequest;
-
-private alias GetChannelSizeRequestTemplate!(IChannelRequest,
-    IDmqRequestResources, DmqConst.Command.E.GetChannelSize)
-    GetChannelSizeRequest;
-
-private alias GetSizeRequestTemplate!(IRequest,
-    IDmqRequestResources, DmqConst.Command.E.GetSize)
-    GetSizeRequest;
 
 private alias RemoveChannelRequestTemplate!(IChannelRequest,
     IDmqRequestResources, DmqConst.Command.E.RemoveChannel)
@@ -511,45 +496,6 @@ public class DmqRequestConnection :
     {
         scope resources = new DmqRequestResources;
         this.handleCommand!(PopRequest)(resources);
-    }
-
-
-    /***************************************************************************
-
-        Command code 'GetChannels' handler.
-
-    ***************************************************************************/
-
-    override protected void handleGetChannels ( )
-    {
-        scope resources = new DmqRequestResources;
-        this.handleCommand!(GetChannelsRequest)(resources);
-    }
-
-
-    /***************************************************************************
-
-        Command code 'GetChannelSize' handler.
-
-    ***************************************************************************/
-
-    override protected void handleGetChannelSize ( )
-    {
-        scope resources = new DmqRequestResources;
-        this.handleCommand!(GetChannelSizeRequest)(resources);
-    }
-
-
-    /***************************************************************************
-
-        Command code 'GetSize' handler.
-
-    ***************************************************************************/
-
-    override protected void handleGetSize ( )
-    {
-        scope resources = new DmqRequestResources;
-        this.handleCommand!(GetSizeRequest)(resources);
     }
 
 
