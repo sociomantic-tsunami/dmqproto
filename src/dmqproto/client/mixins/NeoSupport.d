@@ -61,9 +61,9 @@ template NeoSupport ( )
 
         private struct Internals
         {
-            import dmqproto.client.request.internal.Consume;
-            import dmqproto.client.request.internal.Push;
-            import dmqproto.client.request.internal.Pop;
+            public import dmqproto.client.request.internal.Consume;
+            public import dmqproto.client.request.internal.Push;
+            public import dmqproto.client.request.internal.Pop;
         }
 
         /***********************************************************************
