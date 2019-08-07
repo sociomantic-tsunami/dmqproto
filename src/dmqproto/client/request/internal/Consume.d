@@ -165,7 +165,7 @@ private scope class ConsumeHandler
     import dmqproto.client.request.Consume;
     import dmqproto.client.internal.SharedResources;
 
-    alias Consume.BatchRequestSharedWorkingData.Signal ControllerSignal;
+    alias swarm.neo.client.mixins.BatchRequestCore.BatchRequestSharedWorkingData.Signal ControllerSignal;
 
     /// Request-on-conn event dispatcher.
     private RequestOnConn.EventDispatcherAllNodes conn;
@@ -244,7 +244,7 @@ private scope class ConsumeHandler
         // Notify the user of the disconnection. The user may use the
         // controller, at this point, but as the request is not active
         // on this connection, no special behaviour is needed.
-        Consume.Notification notification;
+        dmqproto.client.request.Consume.Notification notification;
         notification.node_disconnected =
             NodeExceptionInfo(this.conn.remote_address, e);
         Consume.notify(this.context.user_params, notification);
@@ -288,7 +288,7 @@ private scope class ConsumeHandler
             default:
                 // The node returned an error code. Notify the user and
                 // end the request.
-                Consume.Notification n;
+                dmqproto.client.request.Consume.Notification n;
                 n.node_error = NodeInfo(conn.remote_address);
                 Consume.notify(this.context.user_params, n);
                 return;
