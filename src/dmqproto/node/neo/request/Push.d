@@ -64,15 +64,15 @@ public abstract class PushProtocol_v3: RequestHandler
         // Acquire a buffer to contain slices to the channel names in the
         // message payload (i.e. not a buffer of buffers, a buffer of slices)
         auto channel_names = VoidBufferAsArrayOf!(cstring)(resources.getVoidBuffer());
-        channel_names.length = *this.parser.getValue!(ubyte)(msg_payload);
+        channel_names.length = *this.ed.message_parser.getValue!(ubyte)(msg_payload);
 
         foreach ( ref channel_name; channel_names.array )
         {
-            channel_name = this.parser.getArray!(Const!(char))(msg_payload);
+            channel_name = this.ed.message_parser.getArray!(Const!(char))(msg_payload);
         }
 
         Const!(void)[] value;
-        this.parser.parseBody(msg_payload, value);
+        this.ed.message_parser.parseBody(msg_payload, value);
 
         if ( this.prepareChannels(resources, channel_names.array) )
         {
