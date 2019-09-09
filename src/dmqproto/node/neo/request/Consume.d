@@ -140,7 +140,7 @@ public abstract scope class ConsumeProtocol_v4: RequestHandler
     {
         cstring channel_name;
         cstring subscriber_name;
-        this.parser.parseBody(msg_payload, channel_name, subscriber_name);
+        this.ed.message_parser.parseBody(msg_payload, channel_name, subscriber_name);
 
         if ( !this.prepareChannel(resources, channel_name, subscriber_name) )
         {
@@ -375,7 +375,7 @@ public abstract scope class ConsumeProtocol_v4: RequestHandler
         istring file = __FILE__, int line = __LINE__ )
     {
         MessageType msg_type;
-        this.parser.parseBody(msg_payload, msg_type);
+        this.ed.message_parser.parseBody(msg_payload, msg_type);
         if (msg_type != msg_type.Stop)
             this.ed.shutdownWithProtocolError(
                 "Consume: Message received from the client is not Stop as expected",

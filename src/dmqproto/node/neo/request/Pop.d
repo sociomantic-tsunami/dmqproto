@@ -62,7 +62,7 @@ public abstract class PopProtocol_v1: RequestHandler
     {
         cstring channel_name;
 
-        this.parser.parseBody(msg_payload, channel_name);
+        this.ed.message_parser.parseBody(msg_payload, channel_name);
 
         bool subscribed;
 
