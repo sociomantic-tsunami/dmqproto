@@ -48,14 +48,6 @@ abstract class RequestHandler: IRequest
 
     /***************************************************************************
 
-        Message parser
-
-    ***************************************************************************/
-
-    protected RequestOnConn.EventDispatcher.MessageParser parser;
-
-    /***************************************************************************
-
         Called by the connection handler after the request code and version have
         been parsed from a message received over the connection, and the
         request-supported code sent in response.
@@ -82,7 +74,6 @@ abstract class RequestHandler: IRequest
         verify(this.resources !is null);
 
         this.ed = connection.event_dispatcher;
-        this.parser = this.ed.message_parser;
 
         void[]* buf = this.resources.getVoidBuffer();
         (*buf).length = init_payload.length;
