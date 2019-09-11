@@ -314,7 +314,7 @@ class DmqClient
             Performs a neo Pop request, suspending the fiber until it is done.
 
             Params:
-                channel = channel to push to
+                channel = channel to pop from
 
             Returns:
                 popped value or empty string, if the channel was empty
@@ -345,7 +345,7 @@ class DmqClient
             incremented by 3.
 
             Params:
-                channel = channel to push to
+                channel = channel to pop from
                 notifications = notification counters, the length must be
                     greater than `PopNotificationType.max`
 
