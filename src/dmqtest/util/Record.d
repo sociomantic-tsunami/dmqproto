@@ -68,8 +68,8 @@ T[] sort ( T ) ( T[] array )
 }
 
 /// `qsort` element comparison callback function, wraps `typeid(T).compare`.
-extern (C) private int cmp ( T ) ( scope Const!(void*) a,
-        scope Const!(void*) b )
+extern (C) private int cmp ( T ) ( scope const(void*) a,
+        scope const(void*) b )
 {
     return typeid(T).compare(a, b);
 }

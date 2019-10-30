@@ -36,7 +36,7 @@ abstract class RequestHandler: IRequest
 
     ***************************************************************************/
 
-    private Const!(void)[] msg_payload;
+    private const(void)[] msg_payload;
 
     /***************************************************************************
 
@@ -67,7 +67,7 @@ abstract class RequestHandler: IRequest
     ***************************************************************************/
 
     public void handle ( RequestOnConn connection, Object resources,
-        Const!(void)[] init_payload )
+        const(void)[] init_payload )
     {
         this.connection = connection;
         this.resources = cast(IRequestResources)resources;
@@ -96,5 +96,5 @@ abstract class RequestHandler: IRequest
     ***************************************************************************/
 
     abstract protected void handle ( RequestOnConn connection,
-        IRequestResources resources, Const!(void)[] msg_payload );
+        IRequestResources resources, const(void)[] msg_payload );
 }

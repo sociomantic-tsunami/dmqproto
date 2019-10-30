@@ -185,7 +185,7 @@ public class RequestParams : IChannelRequestParams
 
     ***************************************************************************/
 
-    public Const!(char[])[] channels;
+    public const(char[])[] channels;
 
     /***************************************************************************
 

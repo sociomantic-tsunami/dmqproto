@@ -23,7 +23,7 @@ abstract class IWriter
 
     ***************************************************************************/
 
-    public Const!(char[])[] test_channels;
+    public const(char[])[] test_channels;
 
     /***************************************************************************
 
@@ -42,7 +42,7 @@ abstract class IWriter
 
     ***************************************************************************/
 
-    public this ( Const!(char[])[] test_channels ... )
+    public this ( const(char[])[] test_channels ... )
     {
         this.test_channels = test_channels.dup;
     }
@@ -72,7 +72,7 @@ abstract class IWriter
 
     ***************************************************************************/
 
-    public void run ( Const!(char[])[] records )
+    public void run ( const(char[])[] records )
     in
     {
         assert(this.dmq, "Call prepare first");

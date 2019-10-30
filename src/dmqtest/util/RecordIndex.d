@@ -33,7 +33,7 @@ class RecordIndex
 
     ***************************************************************************/
 
-    private Const!(char[])[][Const!(char[])] records_per_channel;
+    private const(char[])[][const(char[])] records_per_channel;
 
     /***************************************************************************
 
@@ -44,7 +44,7 @@ class RecordIndex
 
     ***************************************************************************/
 
-    public this ( Const!(char[])[] channels ... )
+    public this ( const(char[])[] channels ... )
     {
         foreach (channel; channels)
             this.records_per_channel[channel] = null;
@@ -66,7 +66,7 @@ class RecordIndex
 
     ***************************************************************************/
 
-    public size_t fill ( Const!(char[])[] records )
+    public size_t fill ( const(char[])[] records )
     {
         foreach (ref records_in_channel; this.records_per_channel)
             records_in_channel = records;

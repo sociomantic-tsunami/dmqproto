@@ -58,7 +58,7 @@ public abstract class PopProtocol_v1: RequestHandler
     ***************************************************************************/
 
     override protected void handle ( RequestOnConn connection,
-        IRequestResources resources, Const!(void)[] msg_payload )
+        IRequestResources resources, const(void)[] msg_payload )
     {
         cstring channel_name;
 

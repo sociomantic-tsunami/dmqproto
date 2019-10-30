@@ -302,7 +302,7 @@ class DmqClient
 
         ***********************************************************************/
 
-        public void push ( Const!(char[])[] channels, cstring data )
+        public void push ( const(char[])[] channels, cstring data )
         {
             auto res = this.outer.raw_client.blocking.push(channels.dup, data);
 
@@ -364,7 +364,7 @@ class DmqClient
         {
             void[] result;
 
-            void notify ( Pop.Notification info, Const!(Pop.Args) args )
+            void notify ( Pop.Notification info, const(Pop.Args) args )
             {
                 notifications[info.active]++;
             }
@@ -507,7 +507,7 @@ class DmqClient
 
                 ***************************************************************/
 
-                public Const!(RawClient.Neo.RequestId)[] opSlice ( )
+                public const(RawClient.Neo.RequestId)[] opSlice ( )
                 {
                     return this.ids;
                 }
@@ -773,7 +773,7 @@ class DmqClient
             *******************************************************************/
 
             private void notifier ( Consume.Notification info,
-                Const!(Consume.Args) args )
+                const(Consume.Args) args )
             {
                 with ( info.Active ) switch ( info.active )
                 {

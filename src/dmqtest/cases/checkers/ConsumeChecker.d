@@ -45,7 +45,7 @@ private abstract class ConsumeCheckerBase : IChecker
 
     ***************************************************************************/
 
-    private DmqClient.Consumer[Const!(char[])] consumers;
+    private DmqClient.Consumer[const(char[])] consumers;
 
     /***************************************************************************
 
@@ -64,7 +64,7 @@ private abstract class ConsumeCheckerBase : IChecker
 
     ***************************************************************************/
 
-    protected this ( Const!(char[])[] channels )
+    protected this ( const(char[])[] channels )
     {
         foreach (channel; channels)
             this.consumers[channel] = null;
@@ -103,7 +103,7 @@ private abstract class ConsumeCheckerBase : IChecker
 
     ***************************************************************************/
 
-    override public void check ( Const!(char[])[] records )
+    override public void check ( const(char[])[] records )
     {
         foreach ( channel, consumer; this.consumers )
         {
@@ -171,7 +171,7 @@ class PreConsumeChecker : ConsumeCheckerBase
 
     ***************************************************************************/
 
-    public this ( Const!(char[])[] test_channels )
+    public this ( const(char[])[] test_channels )
     {
         super(test_channels);
     }
@@ -211,7 +211,7 @@ class PostConsumeChecker : ConsumeCheckerBase
 
     ***************************************************************************/
 
-    public this ( Const!(char[])[] test_channels )
+    public this ( const(char[])[] test_channels )
     {
         super(test_channels);
     }
@@ -231,7 +231,7 @@ class PostConsumeChecker : ConsumeCheckerBase
 
     ***************************************************************************/
 
-    override public void check ( Const!(char[])[] records )
+    override public void check ( const(char[])[] records )
     {
         this.startConsumers();
         super.check(records);
@@ -276,7 +276,7 @@ private abstract class NeoConsumeCheckerBase : IChecker
 
     ***************************************************************************/
 
-    public this ( Const!(char[])[] test_channels )
+    public this ( const(char[])[] test_channels )
     {
         this.local = new RecordIndex(test_channels);
     }
@@ -314,7 +314,7 @@ private abstract class NeoConsumeCheckerBase : IChecker
 
     ***************************************************************************/
 
-    override public void check ( Const!(char[])[] records )
+    override public void check ( const(char[])[] records )
     {
         size_t popped;
         auto expected_record_count = this.local.fill(records);
@@ -379,7 +379,7 @@ class NeoPreConsumeChecker : NeoConsumeCheckerBase
 
     ***************************************************************************/
 
-    public this ( Const!(char[])[] test_channels )
+    public this ( const(char[])[] test_channels )
     {
         super(test_channels);
     }
@@ -420,7 +420,7 @@ class NeoPostConsumeChecker : NeoConsumeCheckerBase
 
     ***************************************************************************/
 
-    public this ( Const!(char[])[] test_channels )
+    public this ( const(char[])[] test_channels )
     {
         super(test_channels);
     }
@@ -440,7 +440,7 @@ class NeoPostConsumeChecker : NeoConsumeCheckerBase
 
     ***************************************************************************/
 
-    override public void check ( Const!(char[])[] records )
+    override public void check ( const(char[])[] records )
     {
         this.startConsumers();
         super.check(records);
@@ -468,7 +468,7 @@ private abstract class NeoSuspendConsumeCheckerBase : NeoConsumeCheckerBase
 
     ***************************************************************************/
 
-    public this ( Const!(char[])[] test_channels )
+    public this ( const(char[])[] test_channels )
     {
         super(test_channels);
     }
@@ -488,7 +488,7 @@ private abstract class NeoSuspendConsumeCheckerBase : NeoConsumeCheckerBase
 
     ***************************************************************************/
 
-    override public void check ( Const!(char[])[] records )
+    override public void check ( const(char[])[] records )
     {
         size_t popped;
         auto expected_record_count = this.local.fill(records);
@@ -542,7 +542,7 @@ class NeoSuspendPreConsumeChecker : NeoSuspendConsumeCheckerBase
 
     ***************************************************************************/
 
-    public this ( Const!(char[])[] test_channels )
+    public this ( const(char[])[] test_channels )
     {
         super(test_channels);
     }
@@ -582,7 +582,7 @@ class NeoSuspendPostConsumeChecker : NeoSuspendConsumeCheckerBase
 
     ***************************************************************************/
 
-    public this ( Const!(char[])[] test_channels )
+    public this ( const(char[])[] test_channels )
     {
         super(test_channels);
     }
@@ -602,7 +602,7 @@ class NeoSuspendPostConsumeChecker : NeoSuspendConsumeCheckerBase
 
     ***************************************************************************/
 
-    override public void check ( Const!(char[])[] records )
+    override public void check ( const(char[])[] records )
     {
         this.startConsumers();
         super.check(records);

@@ -150,7 +150,7 @@ public struct Pop
                     conn.receive(
                         ( const(void)[] const_payload )
                         {
-                            Const!(void)[] payload = const_payload;
+                            const(void)[] payload = const_payload;
                             auto status =
                                 *conn.message_parser.getValue!(StatusCode)(payload);
 

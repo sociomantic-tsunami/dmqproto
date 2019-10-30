@@ -78,5 +78,5 @@ public abstract scope class Pop : SingleChannel
 
     ***************************************************************************/
 
-    abstract protected Const!(void)[] getNextValue ( cstring channel_name );
+    abstract protected const(void)[] getNextValue ( cstring channel_name );
 }

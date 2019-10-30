@@ -136,7 +136,7 @@ public abstract scope class ConsumeProtocol_v4: RequestHandler
     ***************************************************************************/
 
     override protected void handle ( RequestOnConn connection,
-        IRequestResources resources, Const!(void)[] msg_payload )
+        IRequestResources resources, const(void)[] msg_payload )
     {
         cstring channel_name;
         cstring subscriber_name;

@@ -255,7 +255,7 @@ public template Channels ( )
 
     ***************************************************************************/
 
-    private Const!(char[])[] channel_names;
+    private const(char[])[] channel_names;
 
     /***************************************************************************
 
@@ -269,7 +269,7 @@ public template Channels ( )
 
     ***************************************************************************/
 
-    public This* channels ( Const!(char[])[] channels )
+    public This* channels ( const(char[])[] channels )
     {
         verify(!!channels.length, "multi-channel request: empty list of channels");
 

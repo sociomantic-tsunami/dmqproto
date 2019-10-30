@@ -110,7 +110,7 @@ public class Dmq : Node!(DmqNode, "dmq")
     {
         mstring serialized_data;
         // make the function work with static arrays
-        static if (is(T : cstring) || is(T : Const!(void)[]))
+        static if (is(T : cstring) || is(T : const(void)[]))
         {
             serialized_data = cast(mstring) data.dup;
         }
@@ -178,7 +178,7 @@ public class Dmq : Node!(DmqNode, "dmq")
 
         auto result = queue.pop();
 
-        static if (is(T : cstring) || is(T : Const!(void)[]))
+        static if (is(T : cstring) || is(T : const(void)[]))
         {
             return cast(T) result.dup;
         }
@@ -325,7 +325,7 @@ public class Dmq : Node!(DmqNode, "dmq")
     override public DmqNode createNode ( AddrPort node_addrport )
     {
         auto node_item = NodeItem(new char[INET_ADDRSTRLEN], node_addrport.port());
-        Const!(char*) addrp = inet_ntop(AF_INET, &node_addrport.naddress,
+        const(char*) addrp = inet_ntop(AF_INET, &node_addrport.naddress,
             node_item.Address.ptr, cast(socklen_t)node_item.Address.length);
         assert(addrp);
         node_item.Address = node_item.Address.ptr[0 .. strlen(node_item.Address.ptr)];

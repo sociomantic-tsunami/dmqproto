@@ -142,8 +142,8 @@ template NeoSupport ( )
             scope parse_subscriber = (Subscriber sub) { subscriber = sub.name; };
             setupOptionalArgs!(options.length)(options, parse_subscriber);
 
-            auto params = Const!(Internals.Consume.UserSpecifiedParams)(
-                Const!(Consume.Args)(channel, subscriber), notifier
+            auto params = const(Internals.Consume.UserSpecifiedParams)(
+                const(Consume.Args)(channel, subscriber), notifier
             );
 
             auto id = this.assign!(Internals.Consume)(params);
@@ -171,7 +171,7 @@ template NeoSupport ( )
 
         ***********************************************************************/
 
-        public RequestId push ( cstring channel, Const!(void)[] value,
+        public RequestId push ( cstring channel, const(void)[] value,
             scope Push.Notifier notifier )
         {
             return this.push((&channel)[0 .. 1], value, notifier);
@@ -199,7 +199,7 @@ template NeoSupport ( )
 
         ***********************************************************************/
 
-        public RequestId push ( Const!(char[][]) channels, Const!(void)[] value,
+        public RequestId push ( const(char[][]) channels, const(void)[] value,
             scope Push.Notifier notifier )
         {
             // Validate the channels list. The number of channels is transmitted
@@ -208,8 +208,8 @@ template NeoSupport ( )
             enforce(channels.length <= 255,
                 "Push may operate on at most 255 channels");
 
-            auto params = Const!(Internals.Push.UserSpecifiedParams)(
-                Const!(Push.Args)(channels, value), notifier
+            auto params = const(Internals.Push.UserSpecifiedParams)(
+                const(Push.Args)(channels, value), notifier
             );
 
             auto id = this.assign!(Internals.Push)(params);
@@ -238,8 +238,8 @@ template NeoSupport ( )
 
         public RequestId pop ( cstring channel, scope Pop.Notifier notifier )
         {
-            auto params = Const!(Internals.Pop.UserSpecifiedParams)(
-                Const!(Pop.Args)(channel), notifier
+            auto params = const(Internals.Pop.UserSpecifiedParams)(
+                const(Pop.Args)(channel), notifier
             );
 
             auto id = this.assign!(Internals.Pop)(params);
@@ -390,7 +390,7 @@ template NeoSupport ( )
 
         ***********************************************************************/
 
-        public PushResult push ( cstring channel, Const!(void)[] value,
+        public PushResult push ( cstring channel, const(void)[] value,
             scope Neo.Push.Notifier notifier = null )
         {
             return this.push((&channel)[0 .. 1], value, notifier);
@@ -415,7 +415,7 @@ template NeoSupport ( )
 
         ***********************************************************************/
 
-        public PushResult push ( cstring[] channels, Const!(void)[] value,
+        public PushResult push ( cstring[] channels, const(void)[] value,
             scope Neo.Push.Notifier user_notifier = null )
         {
             auto task = Task.getThis();
@@ -430,7 +430,7 @@ template NeoSupport ( )
 
             FinishedStatus state;
 
-            void notifier ( Neo.Push.Notification info, Const!(Neo.Push.Args) args )
+            void notifier ( Neo.Push.Notification info, const(Neo.Push.Args) args )
             {
                 if ( user_notifier )
                     user_notifier(info, args);
@@ -529,7 +529,7 @@ template NeoSupport ( )
 
             FinishedStatus state;
 
-            void notifier ( Neo.Pop.Notification info, Const!(Neo.Pop.Args) args )
+            void notifier ( Neo.Pop.Notification info, const(Neo.Pop.Args) args )
             {
                 if ( user_notifier )
                     user_notifier(info, args);
