@@ -556,7 +556,7 @@ class Queue
 
     ***************************************************************************/
 
-    public Const!(ValueType) pop ( )
+    public const(ValueType) pop ( )
     {
         enforce!(EmptyChannelException)(this.queue.length != 0);
 

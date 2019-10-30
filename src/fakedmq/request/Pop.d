@@ -52,7 +52,7 @@ public scope class Pop : Protocol.Pop
 
     ***************************************************************************/
 
-    override protected Const!(void)[] getNextValue ( cstring channel_name )
+    override protected const(void)[] getNextValue ( cstring channel_name )
     {
         if (auto channel = global_storage.get(channel_name))
         {

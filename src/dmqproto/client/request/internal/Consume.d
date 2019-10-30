@@ -335,7 +335,7 @@ private scope class ConsumeHandler
         private void[]* batch_buffer;
 
         /// Slices the records in *batch_buffer that haven't been processed yet.
-        private Const!(void)[] remaining_batch = null;
+        private const(void)[] remaining_batch = null;
 
         /// The fiber.
         private MessageFiber fiber;
@@ -463,7 +463,7 @@ private scope class ConsumeHandler
 
                     this.passRecordToUser(
                         this.outer.conn.message_parser.getArray
-                        !(Const!(void))(this.remaining_batch)
+                        !(const(void))(this.remaining_batch)
                     );
                 }
 
@@ -617,7 +617,7 @@ private scope class ConsumeHandler
                 final switch (msg.type)
                 {
                     case MessageType.Records:
-                        Const!(void)[] received_record_batch;
+                        const(void)[] received_record_batch;
                         this.outer.conn.message_parser.parseBody(
                             msg.payload, received_record_batch
                         );

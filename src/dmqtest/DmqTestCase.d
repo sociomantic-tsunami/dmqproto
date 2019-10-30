@@ -76,7 +76,7 @@ abstract class DmqTestCase : TestCase
 
     ***************************************************************************/
 
-    protected Const!(char[])[] channels;
+    protected const(char[])[] channels;
 
     /***************************************************************************
 
@@ -88,7 +88,7 @@ abstract class DmqTestCase : TestCase
 
     ***************************************************************************/
 
-    protected this ( Const!(char[])[] channels = null )
+    protected this ( const(char[])[] channels = null )
     {
         if (channels.length)
         {
@@ -191,7 +191,7 @@ class CheckedDmqTestCase : DmqTestCase
         Writer's constructor is expected to accept no arguments.
 
         Expected form of Checker's constructor:
-            this ( Const!(char[])[] channels )
+            this ( const(char[])[] channels )
 
         Params:
             writer = the writer which is used to write data to the DMQ
@@ -645,7 +645,7 @@ class SubscribeDmqTestCase : DmqTestCase
         /*
          * Push a bunch of records to the queue channel.
          */
-        Const!(char[])[] pushed_records = this.records;
+        const(char[])[] pushed_records = this.records;
         this.writer.run(pushed_records);
 
         /*
@@ -743,7 +743,7 @@ class SubscribeDmqTestCase : DmqTestCase
 
     ***************************************************************************/
 
-    private void startConsumers ( Const!(char[])[] subscriber_names ... )
+    private void startConsumers ( const(char[])[] subscriber_names ... )
     {
         foreach (channel; this.channels)
         {
@@ -771,8 +771,8 @@ class SubscribeDmqTestCase : DmqTestCase
 
     ***************************************************************************/
 
-    private void consume ( Const!(char[])[] expected_records,
-        Const!(char[])[] subscriber_names ... )
+    private void consume ( const(char[])[] expected_records,
+        const(char[])[] subscriber_names ... )
     in
     {
         assert(expected_records.length);
@@ -780,12 +780,12 @@ class SubscribeDmqTestCase : DmqTestCase
     }
     body
     {
-        cstring[][Const!(char[])][Const!(char[])]
+        cstring[][const(char[])][const(char[])]
             records_by_channel_and_subscriber;
 
         foreach (channel; this.channels)
         {
-            cstring[][Const!(char[])] records_by_subscriber;
+            cstring[][const(char[])] records_by_subscriber;
             foreach (subscriber_name; subscriber_names)
             {
                 assert(!(subscriber_name in records_by_subscriber),
@@ -808,7 +808,7 @@ class SubscribeDmqTestCase : DmqTestCase
             foreach (record; this.consumers.received_records)
             {
                 test!(">")(records_by_channel_and_subscriber.length, 0);
-                cstring[][Const!(char[])]* records_by_subscriber =
+                cstring[][const(char[])]* records_by_subscriber =
                     record.channel in records_by_channel_and_subscriber;
                 test!("!is")(records_by_subscriber, null);
                 test!(">")(records_by_subscriber.length, 0);

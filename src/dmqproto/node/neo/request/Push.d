@@ -59,7 +59,7 @@ public abstract class PushProtocol_v3: RequestHandler
     ***************************************************************************/
 
     override protected void handle ( RequestOnConn connection,
-        IRequestResources resources, Const!(void)[] msg_payload )
+        IRequestResources resources, const(void)[] msg_payload )
     {
         // Acquire a buffer to contain slices to the channel names in the
         // message payload (i.e. not a buffer of buffers, a buffer of slices)
@@ -68,10 +68,10 @@ public abstract class PushProtocol_v3: RequestHandler
 
         foreach ( ref channel_name; channel_names.array )
         {
-            channel_name = this.ed.message_parser.getArray!(Const!(char))(msg_payload);
+            channel_name = this.ed.message_parser.getArray!(const(char))(msg_payload);
         }
 
-        Const!(void)[] value;
+        const(void)[] value;
         this.ed.message_parser.parseBody(msg_payload, value);
 
         if ( this.prepareChannels(resources, channel_names.array) )

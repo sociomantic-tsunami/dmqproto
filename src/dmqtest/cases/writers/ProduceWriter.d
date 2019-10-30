@@ -43,7 +43,7 @@ abstract class ProduceWriterBase : IWriter
 
     ***************************************************************************/
 
-    this ( Const!(char[])[] channels ... ) {super(channels);}
+    this ( const(char[])[] channels ... ) {super(channels);}
 
     /***************************************************************************
 
@@ -56,7 +56,7 @@ abstract class ProduceWriterBase : IWriter
 
     ***************************************************************************/
 
-    override public void run ( Const!(char[])[] records )
+    override public void run ( const(char[])[] records )
     {
         assert(this.producer is null);
         this.producer = this.startProduce();

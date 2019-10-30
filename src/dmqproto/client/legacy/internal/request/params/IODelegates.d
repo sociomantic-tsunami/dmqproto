@@ -48,7 +48,7 @@ import dmqproto.client.legacy.internal.request.model.IProducer;
 
 *******************************************************************************/
 
-public alias Const!(char[]) delegate (RequestContext) PutValueDg;
+public alias const(char[]) delegate (RequestContext) PutValueDg;
 
 
 /*******************************************************************************
@@ -57,7 +57,7 @@ public alias Const!(char[]) delegate (RequestContext) PutValueDg;
 
 *******************************************************************************/
 
-public alias void delegate (RequestContext, Const!(char[])) GetValueDg;
+public alias void delegate (RequestContext, const(char[])) GetValueDg;
 
 
 /*******************************************************************************
@@ -67,7 +67,7 @@ public alias void delegate (RequestContext, Const!(char[])) GetValueDg;
 
 *******************************************************************************/
 
-public alias void delegate (RequestContext, Const!(char[]), ushort, Const!(char[])) GetNodeValueDg;
+public alias void delegate (RequestContext, const(char[]), ushort, const(char[])) GetNodeValueDg;
 
 
 /*******************************************************************************
@@ -77,7 +77,7 @@ public alias void delegate (RequestContext, Const!(char[]), ushort, Const!(char[
 
 *******************************************************************************/
 
-public alias void delegate (RequestContext, Const!(char[]), ushort, size_t) GetNumConnectionsDg;
+public alias void delegate (RequestContext, const(char[]), ushort, size_t) GetNumConnectionsDg;
 
 
 /*******************************************************************************

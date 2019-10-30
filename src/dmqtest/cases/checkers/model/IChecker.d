@@ -46,6 +46,6 @@ abstract class IChecker
 
     ***************************************************************************/
 
-    abstract public void check ( Const!(char[])[] records );
+    abstract public void check ( const(char[])[] records );
 }
 

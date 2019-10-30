@@ -40,7 +40,7 @@ public abstract scope class MultiChannel : DmqCommand
 
     ***************************************************************************/
 
-    protected Const!(cstring)[] channels;
+    protected const(cstring)[] channels;
 
     /***************************************************************************
 

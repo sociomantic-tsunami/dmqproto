@@ -33,7 +33,7 @@ private abstract class PopCheckerBase : IChecker
 
     ***************************************************************************/
 
-    public Const!(char[][]) channels;
+    public const(char[][]) channels;
 
     /***************************************************************************
 
@@ -52,7 +52,7 @@ private abstract class PopCheckerBase : IChecker
 
     ***************************************************************************/
 
-    public this ( Const!(char[])[] test_channels )
+    public this ( const(char[])[] test_channels )
     {
         this.channels = test_channels;
     }
@@ -85,7 +85,7 @@ private abstract class PopCheckerBase : IChecker
 
     ***************************************************************************/
 
-    override public void check ( Const!(char[])[] records )
+    override public void check ( const(char[])[] records )
     {
         foreach ( channel; this.channels )
         {
@@ -122,7 +122,7 @@ class PopChecker : PopCheckerBase
 
     ***************************************************************************/
 
-    public this ( Const!(char[])[] test_channels )
+    public this ( const(char[])[] test_channels )
     {
         super(test_channels);
     }
@@ -154,7 +154,7 @@ class NeoPopChecker : PopCheckerBase
 
     ***************************************************************************/
 
-    public this ( Const!(char[])[] channels )
+    public this ( const(char[])[] channels )
     {
         super(channels);
     }
@@ -183,7 +183,7 @@ class ParallelNeoPopChecker : IChecker
 
     ***************************************************************************/
 
-    public Const!(char[][]) channels;
+    public const(char[][]) channels;
 
     /***************************************************************************
 
@@ -202,7 +202,7 @@ class ParallelNeoPopChecker : IChecker
 
     ***************************************************************************/
 
-    public this ( Const!(char[])[] test_channels )
+    public this ( const(char[])[] test_channels )
     {
         this.channels = test_channels;
     }
@@ -235,7 +235,7 @@ class ParallelNeoPopChecker : IChecker
 
     ***************************************************************************/
 
-    override public void check ( Const!(char[])[] records )
+    override public void check ( const(char[])[] records )
     {
         auto popped = new uint[this.channels.length];
         auto expected_record_count = records.length * popped.length;
