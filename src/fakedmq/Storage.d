@@ -723,7 +723,7 @@ class FullChannelException : Exception
     }
 }
 
-version ( UnitTest )
+version ( unittest )
 {
     import ocean.core.Test;
 }

@@ -251,7 +251,7 @@ public class Dmq : Node!(DmqNode, "dmq")
     }
 
     // instantiate templated methods to make sure they're semantically analyzed
-    version (UnitTest)
+    version ( unittest )
     {
         private struct _Struct
         {
@@ -428,7 +428,7 @@ public class Dmq : Node!(DmqNode, "dmq")
 
 }
 
-version (UnitTest)
+version ( unittest )
 {
     import ocean.core.Test;
 

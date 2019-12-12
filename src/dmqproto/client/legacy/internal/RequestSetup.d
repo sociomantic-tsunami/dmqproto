@@ -102,7 +102,7 @@ public template IODelegate ( istring name )
 
     /**************************************************************************/
 
-    version (UnitTest)
+    version ( unittest )
     {
         import dmqproto.client.legacy.DmqConst;
         import ocean.core.Test;
@@ -204,7 +204,7 @@ public template IODelegate2 ( istring name )
 
     /**************************************************************************/
 
-    version (UnitTest)
+    version ( unittest )
     {
         import dmqproto.client.legacy.DmqConst;
         import ocean.core.Test;

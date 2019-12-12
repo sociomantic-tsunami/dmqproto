@@ -14,7 +14,7 @@
 
 module dmqproto.client.UsageExamples;
 
-version ( UnitTest )
+version ( unittest )
 {
     import ocean.transition;
 
@@ -374,7 +374,7 @@ unittest
     }
 }
 
-version (UnitTest) import Consume = dmqproto.client.request.Consume;
+version ( unittest ) import Consume = dmqproto.client.request.Consume;
 
 /// Example of using a Consume controller with a suspendable throttler.
 /// (Not a full usage example. See above for more detailed examples of basic
