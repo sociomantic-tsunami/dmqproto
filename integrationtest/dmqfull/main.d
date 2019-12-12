@@ -27,7 +27,7 @@ import ocean.io.Stdout;
 
 static immutable RECORD_COUNT = 10000;
 
-version (UnitTest) {} else
+version ( unittest ) {} else
 void main ()
 {
     global_storage.channel_size_limit = RECORD_COUNT / 10;

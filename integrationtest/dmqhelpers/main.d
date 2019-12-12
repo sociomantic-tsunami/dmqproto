@@ -20,7 +20,7 @@ import turtle.runner.Runner;
 import turtle.TestCase;
 import turtle.env.Dmq;
 
-version (UnitTest) {} else
+version ( unittest ) {} else
 int main ( istring[] args )
 {
     return (new TurtleRunner!(MyTurtleTests)("dmqapp")).main(args);

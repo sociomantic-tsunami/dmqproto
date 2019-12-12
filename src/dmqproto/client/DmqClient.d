@@ -1163,7 +1163,7 @@ public class DmqClient : IClient
     }
 }
 
-version ( UnitTest )
+version ( unittest )
 {
     import ocean.io.select.EpollSelectDispatcher;
     import swarm.client.request.params.IRequestParams;
