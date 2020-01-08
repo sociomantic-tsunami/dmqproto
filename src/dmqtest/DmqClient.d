@@ -1141,7 +1141,7 @@ class DmqClient
 
             auto producer = this.producers[$-1];
             this.producers.length = this.producers.length - 1;
-            enableStomping(this.producers);
+            assumeSafeAppend(this.producers);
 
             producer(record);
 

@@ -83,7 +83,7 @@ class ConsumeRemoveChannel : DmqTestCase
         this.dmq.push(this.channels[0], "something"[]);
         consumer.waitNextEvent();
         consumer.data.length = 0;
-        enableStomping(consumer.data);
+        assumeSafeAppend(consumer.data);
         test(!consumer.finished);
 
         this.dmq.removeChannel(this.channels[0]);

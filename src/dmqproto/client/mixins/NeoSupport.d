@@ -566,7 +566,7 @@ template NeoSupport ( )
             }
 
             value.length = 0;
-            enableStomping(value);
+            assumeSafeAppend(value);
 
             this.outer.neo.pop(channel, &notifier);
             if ( state == state.None ) // if request not completed, suspend

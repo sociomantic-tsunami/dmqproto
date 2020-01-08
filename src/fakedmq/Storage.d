@@ -562,7 +562,7 @@ class Queue
 
         auto value = this.queue[$-1];
         this.queue = this.queue[0 .. $ - 1];
-        enableStomping(this.queue);
+        assumeSafeAppend(this.queue);
         return value;
     }
 
@@ -584,7 +584,7 @@ class Queue
             bytes + value.length < global_storage.channel_size_limit);
 
         this.queue.length = this.queue.length + 1;
-        enableStomping(this.queue);
+        assumeSafeAppend(this.queue);
         for (size_t i = this.queue.length - 1; i > 0; --i)
             this.queue[i] = this.queue[i - 1];
         this.queue[0] = value.dup;

@@ -389,7 +389,7 @@ private scope class ConsumeHandler
             // be empty.
 
             if (!(*this.batch_buffer).length)
-                enableStomping(*this.batch_buffer);
+                assumeSafeAppend(*this.batch_buffer);
 
             // Append record_batch, then set this.remaining_batch to reference
             // the remaining records. To avoid a dangling slice if

@@ -305,7 +305,7 @@ public abstract scope class ConsumeProtocol_v4: RequestHandler
         scope (exit)
         {
             (*this.record_batch).length = 0;
-            enableStomping(*this.record_batch);
+            assumeSafeAppend(*this.record_batch);
         }
 
         // Send the records but be ready to potentially receive a Stop message.

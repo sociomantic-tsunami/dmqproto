@@ -124,7 +124,7 @@ private abstract class ConsumeCheckerBase : IChecker
                 }
 
                 consumer.data.length = 0;
-                enableStomping(consumer.data);
+                assumeSafeAppend(consumer.data);
             }
 
             test!("==")(consumer.data.length, 0);
@@ -331,7 +331,7 @@ private abstract class NeoConsumeCheckerBase : IChecker
                 popped++;
             }
             this.consumers.received_records.length = 0;
-            enableStomping(this.consumers.received_records);
+            assumeSafeAppend(this.consumers.received_records);
         }
 
         test!("==")(popped, expected_record_count);
@@ -507,7 +507,7 @@ private abstract class NeoSuspendConsumeCheckerBase : NeoConsumeCheckerBase
                 popped++;
             }
             this.consumers.received_records.length = 0;
-            enableStomping(this.consumers.received_records);
+            assumeSafeAppend(this.consumers.received_records);
 
             if ( popped > suspend_at )
             {
