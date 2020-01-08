@@ -820,7 +820,7 @@ class SubscribeDmqTestCase : DmqTestCase
             }
 
             this.consumers.received_records.length = 0;
-            enableStomping(this.consumers.received_records);
+            assumeSafeAppend(this.consumers.received_records);
         }
 
         test!("==")(popped, n_expected_records);
