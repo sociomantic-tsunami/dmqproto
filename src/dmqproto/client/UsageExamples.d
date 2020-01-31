@@ -192,7 +192,6 @@ unittest
                                 info.unsupported.node_addr.address_bytes,
                                 info.unsupported.node_addr.port);
                             break;
-                        version (D_Version2) {} else default: assert(false);
                     }
                     break;
 
@@ -338,7 +337,6 @@ unittest
                                 info.unsupported.node_addr.address_bytes,
                                 info.unsupported.node_addr.port);
                             break;
-                        version (D_Version2) {} else default: assert(false);
                     }
                     break;
 

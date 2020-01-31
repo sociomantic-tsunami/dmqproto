@@ -387,9 +387,6 @@ public class DmqNodeRegistry : NodeRegistry, IDmqNodeRegistry, IReregistrator
             case PushMulti:
             case Pop:
                 return false;
-
-            version (D_Version2) {} else default:
-                assert(false, typeof(this).stringof ~ ".allNodesCommand: invalid request");
         }
     }
 }

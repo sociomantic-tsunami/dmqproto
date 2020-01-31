@@ -109,8 +109,6 @@ public scope class PopRequest : IChannelRequest
                     assert(false);
                 case NoMoreNodes:
                     this.finished(value); break;
-                version (D_Version2) {} else default:
-                    assert(false, "pop: unknown registerNext response");
             }
         }
     }

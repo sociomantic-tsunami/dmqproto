@@ -623,8 +623,6 @@ public class DmqRequestConnection :
                         this.conn_pool.port, this.object_pool_index,
                         this.exception.toString());
                     break;
-                version (D_Version2) {} else default:
-                    assert(false, "unknown registerNext response");
             }
         }
     }
