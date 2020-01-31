@@ -52,8 +52,8 @@ public struct Consume
 
     import ocean.io.select.protocol.generic.ErrnoIOException: IOError;
 
-    import ocean.transition;
-    mixin TypeofThis!();
+
+    alias typeof(this) This;
 
     /***************************************************************************
 

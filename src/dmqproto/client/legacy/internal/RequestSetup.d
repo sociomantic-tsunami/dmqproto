@@ -44,7 +44,7 @@ public template IODelegate ( istring name )
     import ocean.core.Verify;
     import ocean.core.TypeConvert : downcast;
 
-    mixin TypeofThis;
+    alias typeof(this) This;
     static assert (is(This == struct));
 
     /***************************************************************************
@@ -146,7 +146,7 @@ public template IODelegate2 ( istring name )
     import ocean.transition;
     import ocean.core.TypeConvert : downcast;
 
-    mixin TypeofThis;
+    alias typeof(this) This;
     static assert (is(This == struct));
 
     /***************************************************************************
@@ -246,7 +246,7 @@ public template Channels ( )
     import ocean.core.Verify;
     import ocean.transition;
 
-    mixin TypeofThis;
+    alias typeof(this) This;
     static assert (is(This == struct));
 
     /***************************************************************************
