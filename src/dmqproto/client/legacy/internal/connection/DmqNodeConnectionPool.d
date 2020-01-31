@@ -208,9 +208,6 @@ public class DmqNodeConnectionPool : NodeConnectionPool
                 case RegisterNextResult.MultipleNodeQuery:
                     super.queueRequest(params);
                     break;
-
-                version (D_Version2) {} else default:
-                    assert(false, "invalid RegisterNextResult");
             }
         }
     }

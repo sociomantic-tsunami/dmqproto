@@ -631,9 +631,6 @@ private scope class ConsumeHandler
                     case MessageType.ChannelRemoved:
                         // TODO
                         break;
-
-                    version (D_Version2) {} else default:
-                        assert(false);
                 }
             }
         }
@@ -706,9 +703,6 @@ private scope class ConsumeHandler
 
                     case FiberSignal.StopController:
                         return;
-
-                    version (D_Version2) {} else default:
-                        assert(false);
                 }
             }
         }

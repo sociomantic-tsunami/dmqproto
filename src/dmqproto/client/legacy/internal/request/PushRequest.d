@@ -152,8 +152,6 @@ public scope class PushRequest : IChannelRequest
             case MultipleNodeQuery:
                 verify(false, "push: is not multiple node");
                 assert(false);
-            version (D_Version2) {} else default:
-                assert(false, "push: unknown registerNext response");
         }
     }
 
