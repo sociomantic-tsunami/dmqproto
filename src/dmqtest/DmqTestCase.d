@@ -1,5 +1,5 @@
 /*******************************************************************************
-    
+
     Common bases for all dmqtest test cases. Provides DMQ client instance and
     defines standard name for tested channel.
 
