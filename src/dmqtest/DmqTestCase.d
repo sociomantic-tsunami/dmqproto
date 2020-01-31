@@ -25,8 +25,9 @@ import dmqtest.DmqClient;
 
 import turtle.TestCase;
 
-import ocean.transition;
 import ocean.core.Test;
+import ocean.core.TypeConvert : assumeUnique;
+import ocean.meta.types.Qualifiers;
 import ocean.task.Task;
 import ocean.task.Scheduler;
 
