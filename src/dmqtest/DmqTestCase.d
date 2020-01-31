@@ -56,10 +56,7 @@ abstract class DmqTestCase : TestCase
 
     ***************************************************************************/
 
-    version (D_Version2)
-        mixin(global("public immutable(char[][]) records;"));
-    else
-        public static char[][] records;
+    public __gshared immutable(char[][]) records;
 
     /***************************************************************************
 
@@ -96,7 +93,7 @@ abstract class DmqTestCase : TestCase
         }
         else
         {
-            mixin(global("static istring default_channel = \"test_channel\""));
+            __gshared static istring default_channel = "test_channel";
             this.channels = (&default_channel)[0 .. 1];
         }
     }
