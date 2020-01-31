@@ -134,22 +134,13 @@ abstract class DmqTestCase : TestCase
 
     ***************************************************************************/
 
-    static immutable static_this =
-    `
-        static this ( )
-        {
-            auto records = new istring[bulk_test_record_count];
-            foreach (uint i, ref record; records)
-                record = getRecord(i);
-            this.records = assumeUnique(records);
-        }
-    `;
-
-    version (D_Version2)
-        mixin("shared" ~ static_this);
-    else
-        mixin(static_this);
-
+    shared static this ( )
+    {
+        auto records = new istring[bulk_test_record_count];
+        foreach (uint i, ref record; records)
+            record = getRecord(i);
+        this.records = assumeUnique(records);
+    }
 }
 
 /*******************************************************************************
