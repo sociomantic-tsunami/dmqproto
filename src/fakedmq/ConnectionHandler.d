@@ -26,7 +26,7 @@ import ocean.net.server.connection.IConnectionHandler;
 import swarm.node.connection.ConnectionHandler;
 import dmqproto.client.legacy.DmqConst;
 
-import ocean.transition;
+import ocean.meta.types.Qualifiers;
 
 /*******************************************************************************
 

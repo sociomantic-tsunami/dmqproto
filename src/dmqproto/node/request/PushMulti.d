@@ -18,7 +18,7 @@ module dmqproto.node.request.PushMulti;
 
 *******************************************************************************/
 
-import ocean.transition;
+import ocean.meta.types.Qualifiers;
 
 import dmqproto.node.request.model.MultiChannel;
 import dmqproto.node.request.model.DmqCommand;

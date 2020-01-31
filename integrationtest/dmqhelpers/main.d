@@ -13,7 +13,7 @@
 
 module integrationtest.dmqhelpers.main;
 
-import ocean.transition;
+import ocean.meta.types.Qualifiers;
 import ocean.task.Scheduler;
 
 import turtle.runner.Runner;

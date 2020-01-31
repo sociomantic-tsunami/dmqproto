@@ -49,7 +49,7 @@ import dmqproto.client.legacy.internal.request.model.IRequest;
 
 import ocean.core.TypeConvert : downcast;
 
-import ocean.transition;
+import ocean.meta.types.Qualifiers;
 import ocean.core.Verify;
 
 /*******************************************************************************

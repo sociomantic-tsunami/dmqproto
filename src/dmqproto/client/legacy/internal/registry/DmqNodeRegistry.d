@@ -47,7 +47,7 @@ import ocean.core.TypeConvert : castFrom, downcast;
 
 debug ( SwarmClient ) import ocean.io.Stdout;
 
-import ocean.transition;
+import ocean.meta.types.Qualifiers;
 import ocean.core.Verify;
 
 /******************************************************************************

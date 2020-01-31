@@ -32,7 +32,7 @@ import swarm.client.request.model.IStreamInfo;
 
 import ocean.io.select.client.FiberSelectEvent;
 
-import ocean.transition;
+import ocean.meta.types.Qualifiers;
 
 
 /*******************************************************************************

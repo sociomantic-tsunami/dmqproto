@@ -21,7 +21,7 @@ abstract class RequestHandler: IRequest
     import swarm.neo.node.RequestOnConn;
     import dmqproto.node.neo.request.core.IRequestResources;
     import ocean.core.Verify;
-    import ocean.transition;
+    import ocean.meta.types.Qualifiers;
 
     /// Request-on-conn of this request handler.
     protected RequestOnConn connection;

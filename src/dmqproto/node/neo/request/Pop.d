@@ -29,7 +29,7 @@ public abstract class PopProtocol_v1: RequestHandler
     import swarm.neo.node.RequestOnConn;
     import swarm.neo.request.Command;
 
-    import ocean.transition;
+    import ocean.meta.types.Qualifiers;
 
     /// Request name for stats tracking. Required by ConnectionHandler.
     static immutable istring name = "pop";

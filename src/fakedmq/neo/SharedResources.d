@@ -12,7 +12,7 @@
 
 module fakedmq.neo.SharedResources;
 
-import ocean.transition;
+import ocean.meta.types.Qualifiers;
 
 import dmqproto.node.neo.request.core.IRequestResources;
 

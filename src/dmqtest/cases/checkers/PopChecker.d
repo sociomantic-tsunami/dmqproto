@@ -22,7 +22,7 @@ import dmqtest.cases.checkers.model.IChecker;
 import dmqtest.DmqClient;
 
 import ocean.core.Test;
-import ocean.transition;
+import ocean.meta.types.Qualifiers;
 
 
 private abstract class PopCheckerBase : IChecker

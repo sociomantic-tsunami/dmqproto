@@ -20,7 +20,7 @@ module dmqtest.cases.writers.PushMultiWriter;
 
 import dmqtest.cases.writers.model.IWriter;
 
-import ocean.transition;
+import ocean.meta.types.Qualifiers;
 
 
 class PushMultiWriter : IWriter

@@ -30,7 +30,7 @@ public abstract class PushProtocol_v3: RequestHandler
     import swarm.neo.request.Command;
     import ocean.util.container.VoidBufferAsArrayOf;
 
-    import ocean.transition;
+    import ocean.meta.types.Qualifiers;
 
     /// Request name for stats tracking. Required by ConnectionHandler.
     static immutable istring name = "push";

@@ -23,7 +23,7 @@ import dmqproto.node.request.model.DmqCommand;
 import dmqproto.client.legacy.DmqConst;
 import swarm.Const : validateChannelName;
 
-import ocean.transition;
+import ocean.meta.types.Qualifiers;
 import ocean.text.convert.Formatter;
 
 /*******************************************************************************

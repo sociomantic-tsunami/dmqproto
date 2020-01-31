@@ -20,7 +20,7 @@ module fakedmq.neo.request.Pop;
 
 import dmqproto.node.neo.request.Pop;
 
-import ocean.transition;
+import ocean.meta.types.Qualifiers;
 
 /*******************************************************************************
 

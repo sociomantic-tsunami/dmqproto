@@ -29,7 +29,7 @@ import dmqproto.client.legacy.internal.request.notifier.RequestNotification;
 
 import dmqproto.client.legacy.internal.connection.model.IReregistrator;
 
-import ocean.transition;
+import ocean.meta.types.Qualifiers;
 import ocean.core.Verify;
 
 

@@ -16,7 +16,7 @@ module dmqproto.client.UsageExamples;
 
 version ( unittest )
 {
-    import ocean.transition;
+    import ocean.meta.types.Qualifiers;
 
     import dmqproto.client.DmqClient;
 

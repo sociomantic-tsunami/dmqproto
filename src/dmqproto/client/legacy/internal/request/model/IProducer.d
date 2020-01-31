@@ -15,7 +15,7 @@ module dmqproto.client.legacy.internal.request.model.IProducer;
 import swarm.client.request.model.INodeInfo;
 import swarm.client.request.model.IContextInfo;
 
-import ocean.transition;
+import ocean.meta.types.Qualifiers;
 
 
 public interface IProducer : IContextInfo, INodeInfo

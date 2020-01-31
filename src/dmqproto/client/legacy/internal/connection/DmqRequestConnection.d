@@ -61,7 +61,7 @@ import dmqproto.client.legacy.internal.request.PushMultiRequest;
 
 debug ( SwarmClient ) import ocean.io.Stdout;
 
-import ocean.transition;
+import ocean.meta.types.Qualifiers;
 import ocean.core.Verify;
 
 /*******************************************************************************

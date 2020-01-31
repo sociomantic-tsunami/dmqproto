@@ -18,7 +18,7 @@ module dmqproto.client.request.internal.Push;
 
 *******************************************************************************/
 
-import ocean.transition;
+import ocean.meta.types.Qualifiers;
 import ocean.core.Verify;
 import ocean.util.log.Logger;
 

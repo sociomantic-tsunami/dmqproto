@@ -42,7 +42,7 @@ public import swarm.protocol.StringListReader;
 
 import dmqproto.client.legacy.internal.DmqClientExceptions : AllNodesFailedException;
 
-import ocean.transition;
+import ocean.meta.types.Qualifiers;
 
 /*******************************************************************************
 

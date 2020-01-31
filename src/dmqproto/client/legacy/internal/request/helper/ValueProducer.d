@@ -22,7 +22,7 @@ module dmqproto.client.legacy.internal.request.helper.ValueProducer;
 
 *******************************************************************************/
 
-import ocean.transition;
+import ocean.meta.types.Qualifiers;
 
 import dmqproto.client.legacy.internal.request.model.IProducer;
 
