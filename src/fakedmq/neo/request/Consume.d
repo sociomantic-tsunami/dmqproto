@@ -22,7 +22,7 @@ import dmqproto.node.neo.request.Consume;
 
 import fakedmq.Storage;
 
-import ocean.transition;
+import ocean.meta.types.Qualifiers;
 
 /*******************************************************************************
 

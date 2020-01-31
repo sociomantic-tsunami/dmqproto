@@ -21,7 +21,7 @@ module dmqtest.cases.writers.ProduceWriter;
 import dmqtest.cases.writers.model.IWriter;
 import dmqtest.DmqClient;
 
-import ocean.transition;
+import ocean.meta.types.Qualifiers;
 
 
 abstract class ProduceWriterBase : IWriter

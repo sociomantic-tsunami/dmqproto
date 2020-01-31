@@ -25,7 +25,7 @@ module dmqproto.client.legacy.internal.RequestSetup;
 
 public import swarm.client.RequestSetup;
 
-import ocean.transition;
+import ocean.meta.types.Qualifiers;
 
 /*******************************************************************************
 
@@ -40,7 +40,7 @@ import ocean.transition;
 
 public template IODelegate ( istring name )
 {
-    import ocean.transition;
+    import ocean.meta.types.Qualifiers;
     import ocean.core.Verify;
     import ocean.core.TypeConvert : downcast;
 
@@ -141,7 +141,7 @@ public template IODelegate ( istring name )
 
 public template IODelegate2 ( istring name )
 {
-    import ocean.transition;
+    import ocean.meta.types.Qualifiers;
     import ocean.core.TypeConvert : downcast;
 
     alias typeof(this) This;
@@ -239,7 +239,7 @@ public template Channels ( )
 {
     import ocean.core.TypeConvert : downcast;
     import ocean.core.Verify;
-    import ocean.transition;
+    import ocean.meta.types.Qualifiers;
 
     alias typeof(this) This;
     static assert (is(This == struct));

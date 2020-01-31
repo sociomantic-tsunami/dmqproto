@@ -21,7 +21,7 @@ module dmqtest.util.Record;
 import ocean.text.convert.Formatter;
 import core.stdc.stdlib;
 
-import ocean.transition;
+import ocean.meta.types.Qualifiers;
 
 version ( unittest )
 {

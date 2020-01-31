@@ -24,7 +24,7 @@ import dmqproto.client.legacy.DmqConst;
 import swarm.Const : validateChannelName;
 import swarm.protocol.StringListReader;
 
-import ocean.transition;
+import ocean.meta.types.Qualifiers;
 
 /*******************************************************************************
 

@@ -18,7 +18,7 @@ module dmqproto.node.request.Produce;
 
 *******************************************************************************/
 
-import ocean.transition;
+import ocean.meta.types.Qualifiers;
 
 import dmqproto.node.request.model.SingleChannel;
 import dmqproto.node.request.model.DmqCommand;

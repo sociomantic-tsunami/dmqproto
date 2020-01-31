@@ -18,7 +18,7 @@ module fakedmq.request.Consume;
 
 *******************************************************************************/
 
-import ocean.transition;
+import ocean.meta.types.Qualifiers;
 import Protocol = dmqproto.node.request.Consume;
 import fakedmq.Storage;
 import ocean.core.TypeConvert;

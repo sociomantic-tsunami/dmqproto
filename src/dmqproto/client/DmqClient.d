@@ -143,7 +143,7 @@ import dmqproto.client.legacy.DmqConst;
 
 import ocean.core.Enforce;
 
-import ocean.transition;
+import ocean.meta.types.Qualifiers;
 
 
 /*******************************************************************************

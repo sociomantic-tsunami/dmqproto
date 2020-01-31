@@ -25,7 +25,7 @@ module dmqtest.util.RecordIndex;
 class RecordIndex
 {
     import ocean.core.Test;
-    import ocean.transition;
+    import ocean.meta.types.Qualifiers;
 
     /***************************************************************************
 

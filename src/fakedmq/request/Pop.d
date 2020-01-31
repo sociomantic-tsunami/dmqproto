@@ -18,7 +18,7 @@ module fakedmq.request.Pop;
 
 *******************************************************************************/
 
-import ocean.transition;
+import ocean.meta.types.Qualifiers;
 import Protocol = dmqproto.node.request.Pop;
 
 /*******************************************************************************

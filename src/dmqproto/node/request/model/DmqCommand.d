@@ -12,7 +12,7 @@
 
 module dmqproto.node.request.model.DmqCommand;
 
-import ocean.transition;
+import ocean.meta.types.Qualifiers;
 
 import swarm.node.protocol.Command;
 import swarm.protocol.StringListReader;

@@ -24,7 +24,7 @@ module dummydmqapp.main;
 
 *******************************************************************************/
 
-import ocean.transition;
+import ocean.meta.types.Qualifiers;
 import ocean.io.Stdout;
 import core.stdc.stdlib : abort;
 

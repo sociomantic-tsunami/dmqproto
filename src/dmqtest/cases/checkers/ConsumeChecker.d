@@ -25,7 +25,7 @@ module dmqtest.cases.checkers.ConsumeChecker;
 
 import ocean.core.Test;
 import ocean.task.Task;
-import ocean.transition;
+import ocean.meta.types.Qualifiers;
 import dmqtest.cases.checkers.model.IChecker;
 import dmqtest.DmqClient;
 

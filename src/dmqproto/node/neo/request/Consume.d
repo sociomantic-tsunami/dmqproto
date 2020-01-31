@@ -31,7 +31,7 @@ public abstract scope class ConsumeProtocol_v4: RequestHandler
     import swarm.util.RecordBatcher;
 
     import ocean.core.Verify;
-    import ocean.transition;
+    import ocean.meta.types.Qualifiers;
 
     /// Request name for stats tracking. Required by ConnectionHandler.
     static immutable istring name = "consume";

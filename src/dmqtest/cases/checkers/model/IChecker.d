@@ -17,7 +17,7 @@ abstract class IChecker
     import ocean.core.Test; // makes `test` available in derivatives
     import dmqtest.DmqClient;
 
-    import ocean.transition;
+    import ocean.meta.types.Qualifiers;
 
     /***************************************************************************
 

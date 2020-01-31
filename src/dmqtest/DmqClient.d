@@ -19,7 +19,7 @@ module dmqtest.DmqClient;
 
 *******************************************************************************/
 
-import ocean.transition;
+import ocean.meta.types.Qualifiers;
 import ocean.core.VersionCheck;
 import ocean.util.log.Logger;
 

@@ -18,7 +18,7 @@ module fakedmq.request.RemoveChannel;
 
 *******************************************************************************/
 
-import ocean.transition;
+import ocean.meta.types.Qualifiers;
 import Protocol = dmqproto.node.request.RemoveChannel;
 
 /*******************************************************************************

@@ -25,7 +25,7 @@ struct LocalStore
     import turtle.runner.Logging;
     import ocean.core.array.Search : contains;
     import ocean.core.Test;
-    import ocean.transition;
+    import ocean.meta.types.Qualifiers;
 
     /***************************************************************************
 

@@ -12,7 +12,7 @@
 
 module dmqproto.client.request.internal.Consume;
 
-import ocean.transition;
+import ocean.meta.types.Qualifiers;
 import ocean.core.Verify;
 
 import swarm.neo.client.RequestOnConn;
