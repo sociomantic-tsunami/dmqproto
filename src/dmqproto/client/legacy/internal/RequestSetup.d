@@ -72,7 +72,7 @@ public template IODelegate ( istring name )
 
     ***************************************************************************/
 
-    public This* io ( Delegate io )
+    public This* io ( Delegate io ) return
     {
         mixin(`this.io_item.` ~ name ~ `(io);`);
 
@@ -171,7 +171,7 @@ public template IODelegate2 ( istring name )
 
     ***************************************************************************/
 
-    public This* io2 ( Delegate io )
+    public This* io2 ( Delegate io ) return
     {
         mixin(`this.io_item2.` ~ name ~ `(io);`);
 
@@ -264,7 +264,7 @@ public template Channels ( )
 
     ***************************************************************************/
 
-    public This* channels ( const(char[])[] channels )
+    public This* channels ( const(char[])[] channels ) return
     {
         verify(!!channels.length, "multi-channel request: empty list of channels");
 
