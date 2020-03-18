@@ -107,7 +107,7 @@ public scope class ProduceRequest : IChannelRequest, IStreamInfo
 
     override protected void sendRequestData__ ( )
     {
-        this.resources.flushables() += this.resources.value_producer;
+        this.resources.flushables().register(this.resources.value_producer);
     }
 
 
@@ -120,7 +120,10 @@ public scope class ProduceRequest : IChannelRequest, IStreamInfo
 
     override protected void handle__ ( )
     {
-        scope ( exit ) this.resources.flushables() -= this.resources.value_producer;
+        scope ( exit )
+        {
+            this.resources.flushables().unregister(this.resources.value_producer);
+        }
 
         // Pass stream info interface to user.
         if ( this.params.stream_info_register !is null )
