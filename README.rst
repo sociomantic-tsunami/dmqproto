@@ -19,10 +19,10 @@ Dependencies
 
 Dependency | Version
 -----------|---------
-ocean      | v4.0.x
-swarm      | v5.0.x
-makd       | v2.1.3
-turtle     | v9.0.x
+ocean      | v5.0.x
+swarm      | v6.0.x
+makd       | v2.1.4
+turtle     | v10.0.x
 
 Versioning
 ==========
@@ -46,7 +46,7 @@ Maintained Major Branches
 ======= ==================== =============== =====
 Major   Initial release date Supported until Notes
 ======= ==================== =============== =====
-v14.x.x v14.0.0_: 30/01/2018 TBD             
+v15.x.x v15.0.0_: 04/06/2019 TBD
 ======= ==================== =============== =====
 
-.. _v14.0.0: https://github.com/sociomantic-tsunami/dmqproto/releases/tag/v14.0.0
+.. _v15.0.0: https://github.com/sociomantic-tsunami/dmqproto/releases/tag/v15.0.0
