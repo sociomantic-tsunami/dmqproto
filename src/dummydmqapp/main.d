@@ -87,7 +87,7 @@ void main ( )
 class Sync
 {
     import core.thread;
-    import ocean.core.Time;
+    import core.time;
 
     cstring src;
     cstring dst;
@@ -112,7 +112,7 @@ class Sync
             // app compatible with them, listen request needs to be restarted
             // upon failures until the app gets killed
             Stderr.formatln("Listen failure, trying again in 100 ms").flush();
-            Thread.sleep(seconds(0.1));
+            Thread.sleep(100.msecs);
             (new Sync(this.src, this.dst)).register();
         }
     }
