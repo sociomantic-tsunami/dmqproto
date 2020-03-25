@@ -40,7 +40,7 @@ version ( unittest )
 
 *******************************************************************************/
 
-istring getRecord ( uint i )
+istring getRecord ( size_t i )
 {
     return format("{:d9}", i); // i.max has 9 decimal digits
 }
