@@ -495,7 +495,11 @@ class DmqClient
                 body
                 {
                     if (!--this.n)
-                        delete this.ids;
+                    {
+                        import core.memory;
+
+                        GC.free(cast(void*)this.ids);
+                    }
 
                     return this.n;
                 }
