@@ -455,11 +455,11 @@ unittest
 
         // Per-request stats.
         auto rq_stats = dmq.neo.new RequestStats;
-        foreach ( name, stats; rq_stats.allRequests() )
+        foreach ( name, s; rq_stats.allRequests() )
         {
             // See swarm.neo.client.requests.Stats
             Stdout.formatln("{} {} requests handled, mean time: {}μs",
-                stats.count, name, stats.mean_time_micros());
+                s.count, name, s.mean_time_micros());
         }
     }
 }
