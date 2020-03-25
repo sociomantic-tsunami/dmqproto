@@ -138,7 +138,7 @@ abstract class DmqTestCase : TestCase
     shared static this ( )
     {
         auto records = new istring[bulk_test_record_count];
-        foreach (uint i, ref record; records)
+        foreach (i, ref record; records)
             record = getRecord(i);
         this.records = assumeUnique(records);
     }
