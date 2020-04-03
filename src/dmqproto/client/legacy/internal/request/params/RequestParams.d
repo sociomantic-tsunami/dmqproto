@@ -41,7 +41,6 @@ import swarm.client.request.model.ISuspendableRequest;
 import dmqproto.client.legacy.internal.request.model.IProducer;
 
 import ocean.core.SmartUnion;
-import ocean.core.Traits;
 
 import ocean.io.select.EpollSelectDispatcher;
 
@@ -260,10 +259,6 @@ public class RequestParams : IChannelRequestParams
         Copies the fields of this instance from another.
 
         All fields are copied by value. (i.e. all arrays are sliced.)
-
-        Note that the copyFields template used by this method relies on the fact
-        that all the class' fields are non-private. (See template documentation
-        in ocean.core.Traits for further info.)
 
         Params:
             params = instance to copy fields from

@@ -13,7 +13,6 @@
 
 module integrationtest.dmqfull.main;
 
-import ocean.core.Traits;
 import ocean.core.Enforce;
 import ocean.task.Task;
 import ocean.task.Scheduler;
