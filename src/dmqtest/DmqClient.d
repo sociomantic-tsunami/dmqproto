@@ -884,9 +884,6 @@ class DmqClient
         this.raw_client = new RawClient(theScheduler.epoll, auth_name,
             auth_key.content,
             &this.neo.connectionNotifier, connections);
-
-        static if (!hasFeaturesFrom!("swarm", 5, 1))
-            this.raw_client.neo.enableSocketNoDelay();
     }
 
     /***************************************************************************
