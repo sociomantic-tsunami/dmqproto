@@ -107,10 +107,6 @@ public class DmqNode
         Options neo_options;
         neo_options.requests = request_handlers;
         neo_options.epoll = epoll;
-
-        static if (!hasFeaturesFrom!("swarm", 5, 1))
-            neo_options.no_delay = true; // favour network turn-around over packet efficiency
-
         neo_options.credentials_map["test"] = Key.init;
 
         ushort neo_port = node_item.Port;
