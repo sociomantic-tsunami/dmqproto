@@ -1,8 +1,8 @@
 export ASSERT_ON_STOMPING_PREVENTION=1
 
 override LDFLAGS += -llzo2 -lebtree -lrt -lgcrypt -lgpg-error -lglib-2.0 -lpcre
-override DFLAGS += -w -de
-DC:=dmd-transitional
+override DFLAGS += -w -dw
+DC ?= dmd
 
 $B/fakedmq: $C/src/fakedmq/main.d
 
