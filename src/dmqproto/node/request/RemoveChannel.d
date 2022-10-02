@@ -31,7 +31,7 @@ import dmqproto.client.legacy.DmqConst;
 
 *******************************************************************************/
 
-public abstract scope class RemoveChannel : SingleChannel
+public abstract class RemoveChannel : SingleChannel
 {
     /***************************************************************************
 

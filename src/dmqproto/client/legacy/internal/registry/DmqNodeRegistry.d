@@ -333,7 +333,7 @@ public class DmqNodeRegistry : NodeRegistry, IDmqNodeRegistry, IReregistrator
             Stdout.formatln("getPoolWithLowestQueueUsage({}) -- {}:{}", start, node.address, node.port).flush();
         }
     }
-    body
+    do
     {
         verify(start < this.nodes.list.length);
 

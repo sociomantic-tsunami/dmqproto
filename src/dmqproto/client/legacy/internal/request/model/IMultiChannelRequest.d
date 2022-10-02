@@ -30,7 +30,7 @@ import dmqproto.client.legacy.internal.request.model.IRequest;
 
 *******************************************************************************/
 
-public abstract scope class IMultiChannelRequest : IRequest
+public abstract class IMultiChannelRequest : IRequest
 {
     /***************************************************************************
 

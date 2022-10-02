@@ -42,7 +42,7 @@ import ocean.core.Verify;
 
 *******************************************************************************/
 
-public scope class PushRequest : IChannelRequest
+public class PushRequest : IChannelRequest
 {
     /***************************************************************************
 

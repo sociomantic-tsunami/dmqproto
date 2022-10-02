@@ -32,7 +32,7 @@ import ocean.meta.types.Qualifiers;
 
 *******************************************************************************/
 
-public abstract scope class MultiChannel : DmqCommand
+public abstract class MultiChannel : DmqCommand
 {
     /***************************************************************************
 

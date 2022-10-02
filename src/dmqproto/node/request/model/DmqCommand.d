@@ -18,7 +18,7 @@ import swarm.node.protocol.Command;
 import swarm.protocol.StringListReader;
 import dmqproto.client.legacy.DmqConst;
 
-public abstract scope class DmqCommand : Command
+public abstract class DmqCommand : Command
 {
     /***************************************************************************
     

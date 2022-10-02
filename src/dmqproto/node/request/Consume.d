@@ -31,7 +31,7 @@ import dmqproto.client.legacy.DmqConst;
 
 *******************************************************************************/
 
-public abstract scope class Consume : SingleChannel
+public abstract class Consume : SingleChannel
 {
     /***************************************************************************
 

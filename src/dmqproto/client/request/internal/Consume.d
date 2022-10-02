@@ -152,7 +152,7 @@ public struct Consume
 
 *******************************************************************************/
 
-private scope class ConsumeHandler
+private class ConsumeHandler
 {
     import swarm.neo.connection.RequestOnConnBase;
     import swarm.neo.client.mixins.AllNodesRequestCore;

@@ -40,7 +40,7 @@ import ocean.core.Verify;
 
 *******************************************************************************/
 
-public scope class PushMultiRequest : IMultiChannelRequest
+public class PushMultiRequest : IMultiChannelRequest
 {
     /***************************************************************************
 

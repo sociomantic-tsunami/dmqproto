@@ -20,7 +20,7 @@ import dmqproto.node.neo.request.core.RequestHandler;
 
 *******************************************************************************/
 
-public abstract scope class ConsumeProtocol_v4: RequestHandler
+public abstract class ConsumeProtocol_v4: RequestHandler
 {
     import swarm.neo.node.RequestOnConn;
     import swarm.neo.request.Command;
@@ -34,7 +34,7 @@ public abstract scope class ConsumeProtocol_v4: RequestHandler
     import ocean.meta.types.Qualifiers;
 
     /// Request name for stats tracking. Required by ConnectionHandler.
-    static immutable istring name = "consume";
+    static immutable string name = "consume";
 
     /// Request code / version. Required by ConnectionHandler.
     static immutable Command command = Command(RequestCode.Consume, 4);
@@ -372,7 +372,7 @@ public abstract scope class ConsumeProtocol_v4: RequestHandler
     ***************************************************************************/
 
     private void verifyReceivedMessageIsStop ( in void[] msg_payload,
-        istring file = __FILE__, int line = __LINE__ )
+        string file = __FILE__, int line = __LINE__ )
     {
         MessageType msg_type;
         this.ed.message_parser.parseBody(msg_payload, msg_type);

@@ -92,7 +92,7 @@ class RecordIndex
     ***************************************************************************/
 
     public cstring pop ( cstring channel,
-        istring file = __FILE__, int line = __LINE__ )
+        string file = __FILE__, int line = __LINE__ )
     {
         auto records_in_channel = channel in this.records_per_channel;
         test!("!is")(records_in_channel, null, file, line);

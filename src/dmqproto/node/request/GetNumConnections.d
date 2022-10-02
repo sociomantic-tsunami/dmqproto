@@ -30,7 +30,7 @@ import dmqproto.client.legacy.DmqConst;
 
 *******************************************************************************/
 
-public abstract scope class GetNumConnections : DmqCommand
+public abstract class GetNumConnections : DmqCommand
 {
     /***************************************************************************
 

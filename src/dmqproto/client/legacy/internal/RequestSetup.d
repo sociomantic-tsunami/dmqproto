@@ -38,7 +38,7 @@ import ocean.meta.types.Qualifiers;
 
 *******************************************************************************/
 
-public template IODelegate ( istring name )
+public template IODelegate ( string name )
 {
     import ocean.meta.types.Qualifiers;
     import ocean.core.Verify;
@@ -139,7 +139,7 @@ public template IODelegate ( istring name )
 
 *******************************************************************************/
 
-public template IODelegate2 ( istring name )
+public template IODelegate2 ( string name )
 {
     import ocean.meta.types.Qualifiers;
     import ocean.core.TypeConvert : downcast;

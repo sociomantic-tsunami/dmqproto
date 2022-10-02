@@ -40,7 +40,7 @@ version ( unittest )
 
 *******************************************************************************/
 
-istring getRecord ( size_t i )
+string getRecord ( size_t i )
 {
     return format("{:d9}", i); // i.max has 9 decimal digits
 }

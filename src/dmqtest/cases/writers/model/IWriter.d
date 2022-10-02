@@ -77,7 +77,7 @@ abstract class IWriter
     {
         assert(this.dmq, "Call prepare first");
     }
-    body
+    do
     {
         foreach (record; records)
             this.dmqSend(record);

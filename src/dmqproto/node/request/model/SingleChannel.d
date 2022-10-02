@@ -32,7 +32,7 @@ import ocean.text.convert.Formatter;
 
 *******************************************************************************/
 
-public abstract scope class SingleChannel : DmqCommand
+public abstract class SingleChannel : DmqCommand
 {
     /***************************************************************************
 

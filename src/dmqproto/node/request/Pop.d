@@ -31,7 +31,7 @@ import dmqproto.client.legacy.DmqConst;
 
 *******************************************************************************/
 
-public abstract scope class Pop : SingleChannel
+public abstract class Pop : SingleChannel
 {
     /***************************************************************************
 

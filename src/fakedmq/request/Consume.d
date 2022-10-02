@@ -29,7 +29,7 @@ import ocean.core.TypeConvert;
 
 *******************************************************************************/
 
-public scope class Consume : Protocol.Consume, DmqListener
+public class Consume : Protocol.Consume, DmqListener
 {
     import fakedmq.mixins.RequestConstruction;
 

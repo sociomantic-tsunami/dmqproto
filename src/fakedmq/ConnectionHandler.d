@@ -72,7 +72,7 @@ public class DmqConnectionHandler :
 
     ***************************************************************************/
 
-    private scope class DmqRequestResources : DmqCommand.Resources
+    private class DmqRequestResources : DmqCommand.Resources
     {
         import swarm.protocol.StringListReader;
 
@@ -259,7 +259,7 @@ public class DmqConnectionHandler :
 
     /***************************************************************************
 
-        Generic command handler. Creates request-specific handler scope class
+        Generic command handler. Creates request-specific handler class
         and uses it for actual processing.
 
     ***************************************************************************/

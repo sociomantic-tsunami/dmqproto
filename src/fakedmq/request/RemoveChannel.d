@@ -27,7 +27,7 @@ import Protocol = dmqproto.node.request.RemoveChannel;
 
 *******************************************************************************/
 
-public scope class RemoveChannel : Protocol.RemoveChannel
+public class RemoveChannel : Protocol.RemoveChannel
 {
     import fakedmq.Storage;
     import fakedmq.mixins.RequestConstruction;

@@ -146,7 +146,7 @@ private abstract class ConsumeCheckerBase : IChecker
     {
         assert(this.dmq, "Call prepare() first");
     }
-    body
+    do
     {
         foreach ( channel, ref consumer; this.consumers )
             consumer = this.dmq.startConsume(channel);
@@ -353,7 +353,7 @@ private abstract class NeoConsumeCheckerBase : IChecker
     {
         assert(this.consumers, "Call prepare() first");
     }
-    body
+    do
     {
         foreach ( channel; this.local )
             this.consumers.startConsumer(channel);

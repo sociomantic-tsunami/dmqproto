@@ -27,7 +27,7 @@ import Protocol = dmqproto.node.request.Produce;
 
 *******************************************************************************/
 
-public scope class Produce : Protocol.Produce
+public class Produce : Protocol.Produce
 {
     import fakedmq.Storage;
     import fakedmq.mixins.RequestConstruction;
