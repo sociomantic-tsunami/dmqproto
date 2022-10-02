@@ -32,7 +32,7 @@ public abstract class PopProtocol_v1: RequestHandler
     import ocean.meta.types.Qualifiers;
 
     /// Request name for stats tracking. Required by ConnectionHandler.
-    static immutable istring name = "pop";
+    static immutable string name = "pop";
 
     /// Request code / version. Required by ConnectionHandler.
     static immutable Command command = Command(RequestCode.Pop, 1);

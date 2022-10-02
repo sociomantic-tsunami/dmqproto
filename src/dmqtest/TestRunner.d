@@ -63,7 +63,7 @@ class DmqTestRunner : TurtleRunnerTask!(TestedAppKind.Daemon)
     ***************************************************************************/
 
     override protected void configureTestedApplication ( out double delay,
-        out istring[] args, out istring[istring] env )
+        out string[] args, out string[string] env )
     {
         delay = 1.0;
         args  = null;

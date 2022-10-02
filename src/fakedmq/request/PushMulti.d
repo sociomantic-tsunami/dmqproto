@@ -27,7 +27,7 @@ import Protocol = dmqproto.node.request.PushMulti;
 
 *******************************************************************************/
 
-public scope class PushMulti : Protocol.PushMulti
+public class PushMulti : Protocol.PushMulti
 {
     import fakedmq.Storage;
     import fakedmq.mixins.RequestConstruction;

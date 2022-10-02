@@ -94,7 +94,7 @@ abstract class DmqTestCase : TestCase
         }
         else
         {
-            __gshared static istring default_channel = "test_channel";
+            __gshared static string default_channel = "test_channel";
             this.channels = (&default_channel)[0 .. 1];
         }
     }
@@ -137,7 +137,7 @@ abstract class DmqTestCase : TestCase
 
     shared static this ( )
     {
-        auto records = new istring[bulk_test_record_count];
+        auto records = new string[bulk_test_record_count];
         foreach (i, ref record; records)
             record = getRecord(i);
         this.records = assumeUnique(records);
@@ -767,7 +767,7 @@ class SubscribeDmqTestCase : DmqTestCase
         assert(expected_records.length);
         assert(subscriber_names.length);
     }
-    body
+    do
     {
         cstring[][const(char[])][const(char[])]
             records_by_channel_and_subscriber;

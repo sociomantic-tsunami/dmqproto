@@ -25,7 +25,7 @@ class DmqRestartTests : TurtleRunnerTask!(TestedAppKind.Daemon)
     import turtle.env.Dmq;
 
     override protected void configureTestedApplication ( out double delay,
-        out istring[] args, out istring[istring] env )
+        out string[] args, out string[string] env )
     {
         delay = 0.1;
     }
@@ -45,7 +45,7 @@ class DmqRestartTests : TurtleRunnerTask!(TestedAppKind.Daemon)
 
 version ( unittest ) { }
 else
-int main ( istring[] args )
+int main ( string[] args )
 {
     auto runner = new TurtleRunner!(DmqRestartTests)("dmqapp", "");
     return runner.main(args);

@@ -37,7 +37,7 @@ import dmqproto.client.legacy.internal.request.params.RequestParams;
 
 *******************************************************************************/
 
-public abstract scope class IRequest : Core.IRequest
+public abstract class IRequest : Core.IRequest
 {
     /***************************************************************************
 

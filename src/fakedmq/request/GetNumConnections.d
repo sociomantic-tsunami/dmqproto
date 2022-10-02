@@ -26,7 +26,7 @@ import Protocol = dmqproto.node.request.GetNumConnections;
 
 *******************************************************************************/
 
-public scope class GetNumConnections : Protocol.GetNumConnections
+public class GetNumConnections : Protocol.GetNumConnections
 {
     import fakedmq.mixins.RequestConstruction;
 

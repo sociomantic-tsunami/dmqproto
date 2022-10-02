@@ -33,7 +33,7 @@ public abstract class PushProtocol_v3: RequestHandler
     import ocean.meta.types.Qualifiers;
 
     /// Request name for stats tracking. Required by ConnectionHandler.
-    static immutable istring name = "push";
+    static immutable string name = "push";
 
     /// Request code / version. Required by ConnectionHandler.
     static immutable Command command = Command(RequestCode.Push, 3);

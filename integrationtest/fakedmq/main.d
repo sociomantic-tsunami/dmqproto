@@ -27,7 +27,7 @@ import dmqtest.TestRunner;
 *******************************************************************************/
 
 version ( unittest ) {} else
-int main ( istring[] args )
+int main ( string[] args )
 {
     auto runner = new TurtleRunner!(DmqTestRunner)("fakedmq", "dmqtest.cases");
     return runner.main(args);

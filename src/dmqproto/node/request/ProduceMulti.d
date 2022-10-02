@@ -31,7 +31,7 @@ import dmqproto.client.legacy.DmqConst;
 
 *******************************************************************************/
 
-public abstract scope class ProduceMulti : MultiChannel
+public abstract class ProduceMulti : MultiChannel
 {
     /***************************************************************************
 

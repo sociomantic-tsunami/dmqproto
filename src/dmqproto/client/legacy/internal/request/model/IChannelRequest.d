@@ -35,7 +35,7 @@ import dmqproto.client.legacy.internal.request.params.RequestParams;
 
 *******************************************************************************/
 
-public scope class IChannelRequest : IRequest
+public class IChannelRequest : IRequest
 {
     /***************************************************************************
 

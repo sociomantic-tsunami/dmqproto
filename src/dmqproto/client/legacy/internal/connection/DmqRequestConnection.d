@@ -106,7 +106,7 @@ public class DmqRequestConnection :
 
     ***************************************************************************/
 
-    private scope class DmqRequestResources
+    private class DmqRequestResources
         : RequestResources, IDmqRequestResources
     {
         import swarm.Const : NodeItem;

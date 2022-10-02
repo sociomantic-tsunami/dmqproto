@@ -27,7 +27,7 @@ import Protocol = dmqproto.node.request.Push;
 
 *******************************************************************************/
 
-public scope class Push : Protocol.Push
+public class Push : Protocol.Push
 {
     import fakedmq.Storage;
     import fakedmq.mixins.RequestConstruction;

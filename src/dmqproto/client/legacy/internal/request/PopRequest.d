@@ -39,7 +39,7 @@ import ocean.core.Verify;
 
 *******************************************************************************/
 
-public scope class PopRequest : IChannelRequest
+public class PopRequest : IChannelRequest
 {
     /***************************************************************************
 

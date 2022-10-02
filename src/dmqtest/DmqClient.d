@@ -360,7 +360,7 @@ class DmqClient
         {
             assert(notifications.length > PopNotificationType.max);
         }
-        body
+        do
         {
             void[] result;
 
@@ -394,9 +394,9 @@ class DmqClient
 
             public static struct ReceivedRecord
             {
-                istring subscriber;
-                istring channel;
-                istring value;
+                string subscriber;
+                string channel;
+                string value;
             }
 
             /*******************************************************************
@@ -492,7 +492,7 @@ class DmqClient
                 {
                     assert(this.n);
                 }
-                body
+                do
                 {
                     if (!--this.n)
                     {
@@ -534,7 +534,7 @@ class DmqClient
                 {
                     assert(&instance);
                 }
-                body
+                do
                 {
                     return typeof(this)([id], 1);
                 }
@@ -547,7 +547,7 @@ class DmqClient
 
             *******************************************************************/
 
-            private RequestIds[istring][istring] request_ids;
+            private RequestIds[string][string] request_ids;
 
             /*******************************************************************
 
@@ -596,7 +596,7 @@ class DmqClient
                     }
                 }
             }
-            body
+            do
             {
                 auto id = this.outer.neo_client.consume(
                     channel.dup, &this.notifier,
@@ -793,9 +793,9 @@ class DmqClient
 
                     case stopped:
                         this.errors.stopped = true;
-                        // Use cast(istring) to work around DMD bug 6722.
-                        auto ichn = cast(istring)args.channel;
-                        auto isub = cast(istring)args.subscriber;
+                        // Use cast(string) to work around DMD bug 6722.
+                        auto ichn = cast(string)args.channel;
+                        auto isub = cast(string)args.subscriber;
                         if (!this.request_ids[ichn][isub].remove())
                         {
                             this.request_ids[ichn].remove(isub);
@@ -921,7 +921,7 @@ class DmqClient
     public void pushMulti ( in cstring[] channels_, cstring data )
     {
         // raw_client.pushMulti() needs cstring[] -- const(char)[][], but the
-        // argument is const(char[])[] to allow for calling with istring[].
+        // argument is const(char[])[] to allow for calling with string[].
         // These types are not compatible so duplicate all strings. This should
         // be removed when raw_client.pushMulti() is fixed to accept
         // const(char[])[] or `in cstring[]` for the channels.
@@ -1033,7 +1033,7 @@ class DmqClient
     public Producer startProduceMulti ( in cstring[] channels_ )
     {
         // raw_client.produceMulti() needs cstring[] -- const(char)[][], but
-        // the argument is const(char[])[] to allow for calling with istring[].
+        // the argument is const(char[])[] to allow for calling with string[].
         // These types are not compatible so duplicate all strings. This should
         // be removed when raw_client.produceMulti() is fixed to accept
         // const(char[])[] or `in cstring[]` for the channels.
@@ -1261,7 +1261,7 @@ class DmqClient
 
         ***********************************************************************/
 
-        static istring marker_value =
+        static string marker_value =
             "dmqtest marker value to ensure consume has started";
 
         /***********************************************************************

@@ -27,7 +27,7 @@ import Protocol = dmqproto.node.request.Pop;
 
 *******************************************************************************/
 
-public scope class Pop : Protocol.Pop
+public class Pop : Protocol.Pop
 {
     import fakedmq.Storage;
     import fakedmq.mixins.RequestConstruction;

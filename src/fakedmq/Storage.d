@@ -266,7 +266,7 @@ class Channel
 
     ***************************************************************************/
 
-    private Queue[istring] subscribers;
+    private Queue[string] subscribers;
 
     /***************************************************************************
 
@@ -687,7 +687,7 @@ class Queue
 
 class MissingChannelException : Exception
 {
-    this(cstring name, istring file = __FILE__, int line = __LINE__)
+    this(cstring name, string file = __FILE__, int line = __LINE__)
     {
         super("Trying to work with non-existent channel " ~ idup(name), file, line);
     }
@@ -701,7 +701,7 @@ class MissingChannelException : Exception
 
 class EmptyChannelException : Exception
 {
-    this(istring file = __FILE__, int line = __LINE__)
+    this(string file = __FILE__, int line = __LINE__)
     {
         super("Trying to read from an empty channel", file, line);
     }
@@ -715,7 +715,7 @@ class EmptyChannelException : Exception
 
 class FullChannelException : Exception
 {
-    this(istring file = __FILE__, int line = __LINE__)
+    this(string file = __FILE__, int line = __LINE__)
     {
         super("Trying to write to a full channel. If your test really needs to "
             ~ "write this much data to the DMQ, please change the value of "

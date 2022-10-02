@@ -39,7 +39,7 @@ import ocean.meta.types.Qualifiers;
 
 *******************************************************************************/
 
-public scope class ProduceRequest : IChannelRequest, IStreamInfo
+public class ProduceRequest : IChannelRequest, IStreamInfo
 {
     /***************************************************************************
 
